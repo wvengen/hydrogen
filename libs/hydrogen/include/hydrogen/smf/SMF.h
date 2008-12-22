@@ -97,6 +97,27 @@ private:
 
 };
 
+class SMFReader : Object
+{
+public:
+	SMFReader();
+	~SMFReader();
+
+	SMF* load( const QString& sFilename );
+
+private:
+
+};
+
+class SMFConverter : Object
+{
+public:
+	SMFConverter();
+	~SMFConverter();
+	Song* midi2H2Song(SMF *pSmf);
+
+};
+
 };
 
 #endif

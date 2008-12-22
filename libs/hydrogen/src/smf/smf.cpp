@@ -334,4 +334,52 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 	fclose( m_file );
 }
 
+
+// :::::::::::::::::::...
+
+SMFReader::SMFReader(): 
+		Object( "SMFReader" )
+{
+	INFOLOG( "INIT" );
 };
+
+SMFReader::~SMFReader()
+{
+	INFOLOG( "DESTROY" );
+};
+
+SMF* SMFReader::load( const QString& sFilename )
+{
+	SMF *pSmf = NULL;
+
+	// todo
+
+	return pSmf;
+	
+};
+
+
+// :::::::::::::::::::...
+
+SMFConverter::SMFConverter(): 
+		Object( "SMFConverter" )
+{
+	INFOLOG( "INIT" );
+};
+
+SMFConverter::~SMFConverter()
+{
+	INFOLOG( "DESTROY" );
+};
+
+Song* SMFConverter::midi2H2Song( SMF *pSmf )
+{
+	Song *pSong = NULL;
+
+	// todo
+	
+	return pSong;	
+};
+
+
+}

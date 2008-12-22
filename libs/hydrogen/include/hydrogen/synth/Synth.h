@@ -24,8 +24,6 @@
 #ifndef SYNTH_H
 #define SYNTH_H
 
-#include <stdint.h> // For uint32_t et al
-
 #include <hydrogen/Object.h>
 #include <hydrogen/note.h>
 #include <hydrogen/Song.h>
