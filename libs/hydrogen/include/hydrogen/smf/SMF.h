@@ -106,6 +106,7 @@ public:
 	SMF* load( const QString& sFilename );
 
 private:
+	FILE *m_file;
 
 };
 

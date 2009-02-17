@@ -24,6 +24,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/note.h>
 #include <hydrogen/instrument.h>
+//#include <libsmf/src/smf.h>
 
 #include <fstream>
 
@@ -338,7 +339,8 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 // :::::::::::::::::::...
 
 SMFReader::SMFReader(): 
-		Object( "SMFReader" )
+		Object( "SMFReader" ),
+		m_file(NULL)
 {
 	INFOLOG( "INIT" );
 };
@@ -349,10 +351,57 @@ SMFReader::~SMFReader()
 };
 
 SMF* SMFReader::load( const QString& sFilename )
-{
+{	
+	INFOLOG( sFilename );
 	SMF *pSmf = NULL;
+	size_t result;
+	long lSize;
+	vector<char> smfVect;
 
-	// todo
+
+	//smf_t *smf;
+	//smf = smf_load(sFilename);
+
+	if (QFile( sFilename ).exists() == false ) 
+	{
+		ERRORLOG( "Midi file " + sFilename + " not found." );
+		return NULL;
+	}
+
+	m_file = fopen( sFilename.toAscii(), "r" );
+	
+	if( m_file == NULL ) 
+	{	
+		ERRORLOG( "Midi file " + sFilename + " could not be opened." );
+		return NULL;
+	}
+
+	// obtain file size:
+  	fseek (m_file , 0 , SEEK_END);
+  	lSize = ftell (m_file);
+  	rewind (m_file);
+	
+	// allocate memory to contain the whole file:
+	char *buffer;
+  	buffer = (char*) malloc (sizeof(char)*lSize);
+  	if (buffer == NULL) 
+		{fputs ("Memory error",stderr); exit (2);}
+
+
+	result = fread(buffer, 1, lSize, m_file);
+
+	if (result != lSize) 
+	{
+		fputs ("Reading error",stderr); exit (3);
+	}
+
+	for(int i=0; i < lSize; i++)
+	{
+		smfVect.push_back(buffer[i]);
+		//printf ("buffer[i]: %s \n", buffer[i]);
+
+	}
+
 
 	return pSmf;
 	
