@@ -67,6 +67,8 @@ def get_platform_flags( opts ):
 		cppflags.append('-DFLAC_SUPPORT')
 		cppflags.append('-DLADSPA_SUPPORT')
 		
+		# Needed for libsmf, which is often compiled locally
+		includes.append( '/usr/local/include' )
 
 		if str(env['lash']) == "1": includes.append( '/usr/lib/lash-1.0' )
 
@@ -229,6 +231,7 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 	env.Append( LIBS = lib_hydrogen )
 	env.Append( LIBS = ["sndfile"] )
 	
+	# Needed for libsmf, which is usally compiled locally
 	env.Append( LIBPATH = '/usr/local/lib' )
 	env.Append( LIBS = ["smf"] )
 

@@ -24,7 +24,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/note.h>
 #include <hydrogen/instrument.h>
-//#include <libsmf/src/smf.h>
+#include <smf.h>
 
 #include <fstream>
 
