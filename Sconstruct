@@ -49,10 +49,16 @@ def get_platform_flags( opts ):
 
 	if sys.platform == "linux2" or sys.platform == "darwin":
 		if str(env['debug']) == "1":
-			cppflags += ['-Wall',  '-g2', '-ggdb', '-O0']
+			cppflags += ['-Wall',  '-g2', '-ggdb', '-O0'] 
+			for flag in env["optflags"].split(" "):
+				cppflags.append(flag)
+			
 		else:
 			cppflags += ['-O3', '-fomit-frame-pointer', '-funroll-loops']
 			#cppflags += " %s" % get_optimized_flags( target_cpu )
+			for flag in env["optflags"].split(" "):
+				cppflags.append(flag)
+
 
 		if str(env['oss']) == "1": cppflags.append('-DOSS_SUPPORT')
 		if str(env['alsa']) == "1": cppflags.append('-DALSA_SUPPORT')
@@ -61,16 +67,15 @@ def get_platform_flags( opts ):
                 if str(env['lrdf']) == "1": cppflags.append('-DLRDF_SUPPORT')
 		if str(env['portaudio']) == "1": cppflags.append('-DPORTAUDIO_SUPPORT')
 		if str(env['portmidi']) == "1": cppflags.append('-DPORTMIDI_SUPPORT')
+                if str(env['flac']) == "1": cppflags.append('-DFLAC_SUPPORT')
 		
 		if sys.platform == "darwin" and str(env['coreaudio']) == "1": cppflags.append('-DCOREAUDIO_SUPPORT')
 
-		cppflags.append('-DFLAC_SUPPORT')
 		cppflags.append('-DLADSPA_SUPPORT')
 		
 		# Needed for libsmf, which is often compiled locally
 		includes.append( '/usr/local/include' )
 
-		if str(env['lash']) == "1": includes.append( '/usr/lib/lash-1.0' )
 
 	if str(env['libarchive']) == "1": cppflags.append('-DLIBARCHIVE_SUPPORT')
 
@@ -165,7 +170,9 @@ def get_hydrogen_lib( opts ):
 	includes, cppflags, ldflags = get_platform_flags( opts )
 
 	includes.append( "libs/hydrogen/include" )
-	includes.append( "/usr/include/lash-1.0")
+	
+	env = Environment( options = opts ) 
+	if str(env['lash']) == "1": includes.append( "/usr/include/lash-1.0")
 
 
 	#location of qt4.py
@@ -175,8 +182,10 @@ def get_hydrogen_lib( opts ):
 	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=False)
 	env.CacheDir( "scons_cache" )
 	
+
         if str(env['jack']) == "1":
             env.ParseConfig('pkg-config --modversion jack', get_jack_api_flags)
+
 
 	#env.Decider is not known in older scons version
 	try:
@@ -191,6 +200,18 @@ def get_hydrogen_lib( opts ):
 	static_lib = env.StaticLibrary(target = 'hydrogen', source = src )
 	return static_lib
 
+
+def install_images( arg , dir , files):
+	#install all image files in a subdirectory
+	for file in files:
+		if file.endswith(".png"):
+			
+			if env['prefix'].endswith("/"):
+				dname = dir[2:]  
+			else:
+				dname = dir[1:]  
+
+			env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/' + dname, source= dir + "/" + file))
 
 def get_hydrogen_gui( lib_hydrogen , opts ):
 	includes, cppflags, ldflags = get_platform_flags( opts )
@@ -267,6 +288,11 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/i18n"))
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/img"))
+
+	#add every img in ./data/img to the install list. 
+	os.path.walk("./data/img/",install_images,env) 
+
+
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/drumkits"))
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/demo_songs"))
 	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/share/hydrogen/data', source="./data/hydrogen.default.conf"))
@@ -300,6 +326,7 @@ opts.Add('debug', 'Set to 1 to build with debug informations', 0)
 opts.Add('libarchive', 'Set to 1 to enable libarchive instead of libtar', 0)
 opts.Add('prefix','Default: /usr/local',"/usr/local")
 opts.Add('DESTDIR','Default: none',"")
+opts.Add('optflags','Default: none',"")
 
 #platform dependent settings
 if sys.platform == "darwin":
@@ -314,16 +341,12 @@ if sys.platform != "win32":
 	
 	opts.Add('lash', 'Set to 1 to enable lash',0)
 	
-	
 	opts.Add('alsa', 'Set to 1 to enable alsa',1)
 	
-
 	opts.Add('jack', 'Set to 1 to enable jack',1)	
 	
-
 	opts.Add('lrdf', 'Set to 1 to enable lrdf',1)
 	
-
 	opts.Add('flac', 'Set to 1 to enable flac',1)
 else:
 	#alsa, lash,oss and jack are not available on windows
@@ -449,7 +472,7 @@ print "      lash: " + printStatus( env["lash"] )
 print "      oss: " + printStatus( env["oss"] )
 print "      alsa: " + printStatus( env["alsa"] )
 print "      jack: " + printStatus( env["jack"] )
-print "libarchive: " + printStatus( env["libarchive"] ) + (' (using libtar instead)', '')[env['libarchive']]
+print "libarchive: " + printStatus( env["libarchive"] ) 
 print " portaudio: " + printStatus( env["portaudio"] )
 print "  portmidi: " + printStatus( env["portmidi"] ) 
 if sys.platform == "darwin":

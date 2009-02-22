@@ -90,7 +90,7 @@ float m_fMaxProcessTime = 0.0f;		///< max ms usable in process with no xrun
 //100,000 ms in 1 second.
 #define US_DIVIDER .000001
 
-float m_ntaktoMeterCompute = 1;	  	///< beatcounter note lenght
+float m_ntaktoMeterCompute = 1;	  	///< beatcounter note length
 int m_nbeatsToCount = 4;		///< beatcounter beats to count
 int eventCount = 1;			///< beatcounter event
 int tempochangecounter = 0;		///< count tempochanges for timeArray
@@ -1178,7 +1178,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 
 			if ( m_pPlayingPatterns->get_size() != 0 ) {
 				Pattern *pFirstPattern = m_pPlayingPatterns->get( 0 );
-				nPatternSize = pFirstPattern->get_lenght();
+				nPatternSize = pFirstPattern->get_length();
 			}
 
 			if ( nPatternSize == 0 ) {
@@ -1340,7 +1340,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 		if ( pColumn->get_size() != 0 ) {
 			// tengo in considerazione solo il primo pattern. I
 			// pattern nel gruppo devono avere la stessa lunghezza.
-			nPatternSize = pColumn->get( 0 )->get_lenght();
+			nPatternSize = pColumn->get( 0 )->get_length();
 		} else {
 			nPatternSize = MAX_NOTES;
 		}
@@ -1365,7 +1365,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 				// tengo in considerazione solo il primo
 				// pattern. I pattern nel gruppo devono avere la
 				// stessa lunghezza.
-				nPatternSize = pColumn->get( 0 )->get_lenght();
+				nPatternSize = pColumn->get( 0 )->get_length();
 			} else {
 				nPatternSize = MAX_NOTES;
 			}
@@ -1718,8 +1718,9 @@ Hydrogen::Hydrogen()
 	_INFOLOG( "[Hydrogen]" );
 
 	hydrogenInstance = this;
-// 	__instance = this;
 	audioEngine_init();
+	// Prevent double creation caused by calls from MIDI thread 
+	__instance = this;
 	audioEngine_startAudioDrivers();
 
 }
@@ -1842,9 +1843,9 @@ void Hydrogen::addRealtimeNote( int instrument,
 	if ( column >= lookaheadTicks ) {
 		column -= lookaheadTicks;
 	} else {
-		lookaheadTicks %= currentPattern->get_lenght();
-		column = (column + currentPattern->get_lenght() - lookaheadTicks)
-			% currentPattern->get_lenght();
+		lookaheadTicks %= currentPattern->get_length();
+		column = (column + currentPattern->get_length() - lookaheadTicks)
+			% currentPattern->get_length();
 	}
 
 	realcolumn = getRealtimeTickPosition();
@@ -1868,7 +1869,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 	if ( currentPattern && ( getState() == STATE_PLAYING ) ) {
 		bool bNoteAlreadyExist = false;
 		for ( unsigned nNote = 0 ;
-		      nNote < currentPattern->get_lenght() ;
+		      nNote < currentPattern->get_length() ;
 		      nNote++ ) {
 			std::multimap <int, Note*>::iterator pos;
 			for ( pos = currentPattern->note_map.lower_bound( nNote ) ;
@@ -2317,6 +2318,24 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 		getSong()->purge_instrument( pInstr );
 	}
 
+	Song *pSong = getSong();
+	InstrumentList* pList = pSong->get_instrument_list();
+	if(pList->get_size()==1){
+		AudioEngine::get_instance()->lock("HYdrogen::removeInstrument remove last instrument");
+		Instrument* pInstr = pList->get( 0 );
+		pInstr->set_name( (QString( "Instrument 1" )) );
+		// remove all layers
+		for ( int nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
+			InstrumentLayer* pLayer = pInstr->get_layer( nLayer );
+			delete pLayer;
+			pInstr->set_layer( NULL, nLayer );
+		}		
+	AudioEngine::get_instance()->unlock();
+	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
+	INFOLOG("clear last instrument to empty instrument 1 instead delete the last instrument");
+	return;
+	}
+
 	// if the instrument was the last on the instruments list, select the
 	// next-last
 	if ( instrumentnumber
@@ -2396,7 +2415,7 @@ long Hydrogen::getTickForPosition( int pos )
 		// stessa lunghezza
 		pPattern = pColumn->get( 0 );
 		if ( pPattern ) {
-			nPatternSize = pPattern->get_lenght();
+			nPatternSize = pPattern->get_length();
 		} else {
 			nPatternSize = MAX_NOTES;
 		}
@@ -2635,14 +2654,14 @@ int Hydrogen::getbeatsToCount()
 }
 
 
-void Hydrogen::setNoteLengh( float notelengh)
+void Hydrogen::setNoteLength( float notelength)
 {
-	m_ntaktoMeterCompute = notelengh;
+	m_ntaktoMeterCompute = notelength;
 }
 
 
 
-float Hydrogen::getNoteLengh()
+float Hydrogen::getNoteLength()
 {
 	return m_ntaktoMeterCompute;
 }
@@ -2837,13 +2856,13 @@ long Hydrogen::getTickForHumanPosition( int humanpos )
 
 // 	std::vector<PatternList*> *pColumns =
 //		m_pSong->get_pattern_group_vector()[ humanpos - 1 ]
-//			.get( 0 )->get_lenght();
+//			.get( 0 )->get_length();
 	
 //	ERRORLOG( "Kick me!" );
 	if ( humanpos == 0 ) return 0;
 	Pattern *pPattern = columns->at( humanpos - 1 )->get( 0 );
 	if ( pPattern ) {
-		return pPattern->get_lenght();
+		return pPattern->get_length();
 	} else {
 		return MAX_NOTES;
 	}
@@ -2856,7 +2875,7 @@ long Hydrogen::getTickForHumanPosition( int humanpos )
 		PatternList *pColumn = ( *pColumns )[ i ];
 		pPattern = pColumn->get( 0 );
 		if ( pPattern ) {
-			nPatternSize = pPattern->get_lenght();
+			nPatternSize = pPattern->get_length();
 		} else {
 			nPatternSize = MAX_NOTES;
 		}

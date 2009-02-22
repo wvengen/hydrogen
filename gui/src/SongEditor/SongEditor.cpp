@@ -131,7 +131,7 @@ void SongEditor::mousePressEvent( QMouseEvent *ev )
 	if ( ev->x() < 10 ) {
 		return;
 	}
-	WARNINGLOG( "editor-pressed" );
+	//WARNINGLOG( "editor-pressed" );
 
 	int nRow = ev->y() / m_nGridHeight;
 	int nColumn = ( (int)ev->x() - 10 ) / (int)m_nGridWidth;
@@ -1118,8 +1118,13 @@ void SongEditorPatternList::patternPopup_delete()
 		pEngine->setSelectedPatternNumber( 0 );
 	}
 	else {
-		// there's no patterns..
-		pEngine->setSelectedPatternNumber( -1 );	// cosi' il pattern editor viene costretto ad aggiornarsi
+		// there's no patterns..	
+		Pattern *emptyPattern = Pattern::get_empty_pattern();
+		emptyPattern->set_name( trUtf8("Pattern 1") );
+		emptyPattern->set_category( trUtf8("not_categorized") );
+		pSongPatternList->add( emptyPattern );
+		pEngine->setSelectedPatternNumber( -1 );
+		pEngine->setSelectedPatternNumber( 0 );
 	}
 
 	delete pattern;
@@ -1516,7 +1521,7 @@ void SongEditorPositionRuler::paintEvent( QPaintEvent *ev )
 
 	if ( H->getCurrentPatternList()->get_size() != 0 ) {
 		H2Core::Pattern *pPattern = H->getCurrentPatternList()->get( 0 );
-		fPos += (float)H->getTickPosition() / (float)pPattern->get_lenght();
+		fPos += (float)H->getTickPosition() / (float)pPattern->get_length();
 	}
 	else {
 		// nessun pattern, uso la grandezza di default

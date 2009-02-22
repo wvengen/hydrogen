@@ -45,6 +45,7 @@
 
 #include <QDir>
 #include <QApplication>
+#include <QVector>
 
 #include "xml/tinyxml.h"
 
@@ -259,7 +260,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	TiXmlElement patternNode( "pattern" );
 	LocalFileMng::writeXmlString( &patternNode, "pattern_name", realpatternname );
 	LocalFileMng::writeXmlString( &patternNode, "category", pat->get_category() );
-	writeXmlString( &patternNode, "size", to_string( pat->get_lenght() ) );
+	writeXmlString( &patternNode, "size", to_string( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
 		std::multimap <int, Note*>::iterator pos;
@@ -277,7 +278,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 			writeXmlString( &noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
-			writeXmlString( &noteNode, "length", to_string( pNote->get_lenght() ) );
+			writeXmlString( &noteNode, "length", to_string( pNote->get_length() ) );
 			writeXmlString( &noteNode, "instrument", pNote->get_instrument()->get_id() );
 			noteListNode.InsertEndChild( noteNode );
 		}
@@ -336,15 +337,22 @@ void LocalFileMng::fileCopy( const QString& sOrigFilename, const QString& sDestF
 std::vector<QString> LocalFileMng::getSongList()
 {
 	std::vector<QString> list;
-	QString sDirectory = Preferences::getInstance()->getDataDirectory()  + "/songs/";
+	QString sDirectory = Preferences::getInstance()->getDataDirectory();
 
+	if( ! sDirectory.endsWith("/") ) { 
+		sDirectory += "/songs/";
+	} else {
+		sDirectory += "songs/";
+	}
+	
 	QDir dir( sDirectory );
 
 	if ( !dir.exists() ) {
 		ERRORLOG( QString( "[getSongList] Directory %1 not found" ).arg( sDirectory ) );
 	} else {
+		dir.setFilter( QDir::Files );
 		QFileInfoList fileList = dir.entryInfoList();
-		dir.setFilter( QDir::Dirs );
+		
 		for ( int i = 0; i < fileList.size(); ++i ) {
 			QString sFile = fileList.at( i ).fileName();
 
@@ -365,7 +373,7 @@ int LocalFileMng::getPatternList( const QString&  sPatternDir)
 	QDir dir( sPatternDir );
 
 	if ( !dir.exists() ) {
-		ERRORLOG( QString( "[getPatternList] Directory %1patterns not found" ).arg( sPatternDir ) );
+		ERRORLOG( QString( "[getPatternList] Directory %1 not found" ).arg( sPatternDir ) );
 	} else {
 		dir.setFilter( QDir::Files );
 		QFileInfoList fileList = dir.entryInfoList();
@@ -471,8 +479,9 @@ std::vector<QString> LocalFileMng::getPatternsForDrumkit( const QString& sDrumki
 	if ( !dir.exists() ) {
 		INFOLOG( QString( "No patterns for drumkit '%1'." ).arg( sDrumkit ) );
 	} else {
-		QFileInfoList fileList = dir.entryInfoList();
 		dir.setFilter( QDir::Dirs );
+		QFileInfoList fileList = dir.entryInfoList();
+		
 		for ( int i = 0; i < fileList.size(); ++i ) {
 			QString sFile = fileList.at( i ).fileName();
 
@@ -501,8 +510,9 @@ std::vector<QString> LocalFileMng::getDrumkitsFromDirectory( QString sDirectory 
 	if ( !dir.exists() ) {
 		ERRORLOG( QString( "[getDrumkitList] Directory %1 not found" ).arg( sDirectory ) );
 	} else {
-		QFileInfoList fileList = dir.entryInfoList();
 		dir.setFilter( QDir::Dirs );
+		QFileInfoList fileList = dir.entryInfoList();
+		
 		for ( int i = 0; i < fileList.size(); ++i ) {
 			QString sFile = fileList.at( i ).fileName();
 			if ( ( sFile == "." ) || ( sFile == ".." ) || ( sFile == "CVS" )  || ( sFile == ".svn" ) || 
@@ -555,7 +565,7 @@ std::vector<QString> mergeQStringVectors( std::vector<QString> firstVector , std
 
 std::vector<QString> LocalFileMng::getPatternDirList()
 {
-	return getDrumkitsFromDirectory( Preferences::getInstance()->getDataDirectory() + "patterns" );;
+	return getDrumkitsFromDirectory( Preferences::getInstance()->getDataDirectory() + "patterns" );
 }
 
 
@@ -759,6 +769,8 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	INFOLOG( "[saveDrumkit]" );
 	info->dump();	// debug
 
+	QVector<QString> tempVector(16);
+
 	QString sDrumkitDir = Preferences::getInstance()->getDataDirectory() + "drumkits/" + info->getName();
 
 	// check if the directory exists
@@ -800,12 +812,26 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 				QString sOrigFilename = pSample->get_filename();
 
 				QString sDestFilename = sOrigFilename;
+		
+				/*
+					Till rev. 743, the samples got copied into the
+					root of the drumkit folder.
+					
+					Now the sample gets only copied to the folder
+					if it doesn't reside in a subfolder of the drumkit dir.
+				*/
+			
+				if( sOrigFilename.startsWith( sDrumkitDir ) ){
+					INFOLOG("sample is already in drumkit dir");
+					tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
+				} else {
+					int nPos = sDestFilename.lastIndexOf( '/' );
+					sDestFilename = sDestFilename.mid( nPos + 1, sDestFilename.size() - nPos - 1 );
+					sDestFilename = sDrumkitDir + "/" + sDestFilename;
 
-				int nPos = sDestFilename.lastIndexOf( '/' );
-				sDestFilename = sDestFilename.mid( nPos + 1, sDestFilename.size() - nPos - 1 );
-				sDestFilename = sDrumkitDir + "/" + sDestFilename;
-
-				fileCopy( sOrigFilename, sDestFilename );
+					fileCopy( sOrigFilename, sDestFilename );
+					tempVector[ nLayer ] = sDestFilename.remove( sDrumkitDir + "/" );
+				}
 			}
 		}
 
@@ -834,18 +860,10 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 		for ( unsigned nLayer = 0; nLayer < MAX_LAYERS; nLayer++ ) {
 			InstrumentLayer *pLayer = instr->get_layer( nLayer );
 			if ( pLayer == NULL ) continue;
-			Sample *pSample = pLayer->get_sample();
-
-			QString sFilename = pSample->get_filename();
-
-			//if (instr->getDrumkitName() != "") {
-			// se e' specificato un drumkit, considero solo il nome del file senza il path
-			int nPos = sFilename.lastIndexOf( "/" );
-			sFilename = sFilename.mid( nPos + 1, sFilename.length() );
-			//}
+			// Sample *pSample = pLayer->get_sample();
 
 			TiXmlElement layerNode( "layer" );
-			LocalFileMng::writeXmlString( &layerNode, "filename", sFilename );
+			LocalFileMng::writeXmlString( &layerNode, "filename", tempVector[ nLayer ] );
 			LocalFileMng::writeXmlString( &layerNode, "min", to_string( pLayer->get_start_velocity() ) );
 			LocalFileMng::writeXmlString( &layerNode, "max", to_string( pLayer->get_end_velocity() ) );
 			LocalFileMng::writeXmlString( &layerNode, "gain", to_string( pLayer->get_gain() ) );
@@ -1197,7 +1215,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		TiXmlElement patternNode( "pattern" );
 		LocalFileMng::writeXmlString( &patternNode, "name", pat->get_name() );
 		LocalFileMng::writeXmlString( &patternNode, "category", pat->get_category() );
-		LocalFileMng::writeXmlString( &patternNode, "size", to_string( pat->get_lenght() ) );
+		LocalFileMng::writeXmlString( &patternNode, "size", to_string( pat->get_length() ) );
 
 		TiXmlElement noteListNode( "noteList" );
 		std::multimap <int, Note*>::iterator pos;
@@ -1215,7 +1233,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			LocalFileMng::writeXmlString( &noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
-			LocalFileMng::writeXmlString( &noteNode, "length", to_string( pNote->get_lenght() ) );
+			LocalFileMng::writeXmlString( &noteNode, "length", to_string( pNote->get_length() ) );
 			LocalFileMng::writeXmlString( &noteNode, "instrument", pNote->get_instrument()->get_id() );
 			noteListNode.InsertEndChild( noteNode );
 		}
