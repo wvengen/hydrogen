@@ -31,7 +31,6 @@ namespace H2Core
 
 Note::Note(
     Instrument *pInstrument,
-    unsigned position,
     float velocity,
     float fPan_L,
     float fPan_R,
@@ -40,17 +39,8 @@ Note::Note(
     NoteKey key
 )
 		: Object( "Note" )
-		, m_fSamplePosition( 0.0 )
 		, m_nHumanizeDelay( 0 )
 		, m_noteKey( key )
-// , m_pADSR( NULL )
-		, m_fCutoff( 1.0 )
-		, m_fResonance( 0.0 )
-		, m_fBandPassFilterBuffer_L( 0.0 )
-		, m_fBandPassFilterBuffer_R( 0.0 )
-		, m_fLowPassFilterBuffer_L( 0.0 )
-		, m_fLowPassFilterBuffer_R( 0.0 )
-		, __position( position )
 		, __velocity( velocity )
 		, __leadlag( 0.0 )
 {
@@ -68,7 +58,6 @@ Note::Note(
 Note::Note( const Note* pNote )
 		: Object( "Note" )
 {
-	__position	=	pNote->get_position();
 	__velocity	=	pNote->get_velocity();
 	set_pan_l(	pNote->get_pan_l()	);
 	set_pan_r(	pNote->get_pan_r()	);
@@ -76,14 +65,7 @@ Note::Note( const Note* pNote )
 	set_length(	pNote->get_length()	);
 	set_pitch(	pNote->get_pitch()	);
 	m_noteKey	=	pNote->m_noteKey;
-	m_fCutoff	=	pNote->m_fCutoff;
-	m_fResonance	=	pNote->m_fResonance;
-	m_fBandPassFilterBuffer_L	= 	pNote->m_fBandPassFilterBuffer_L;
-	m_fBandPassFilterBuffer_R	= 	pNote->m_fBandPassFilterBuffer_R;
-	m_fLowPassFilterBuffer_L	=	pNote->m_fLowPassFilterBuffer_L;
-	m_fLowPassFilterBuffer_R	=	pNote->m_fLowPassFilterBuffer_R;
 	m_nHumanizeDelay		= 	pNote->m_nHumanizeDelay;
-	m_fSamplePosition		=	pNote->m_fSamplePosition;
 	set_instrument( pNote->__instrument );
 }
 
@@ -104,30 +86,13 @@ void Note::set_instrument( Instrument* instrument )
 	}
 
 	__instrument = instrument;
-	assert( __instrument->get_adsr() );
-	m_adsr = ADSR( *( __instrument->get_adsr() ) );
-
-	/*
-		if ( pInstrument->m_pADSR == NULL ) {
-			ERRORLOG( "NULL ADSR? Instrument: " + pInstrument->m_sName );
-		}
-		else {
-			INFOLOG( "copio l'adsr dallo strumento" );
-			if ( m_pADSR ) {
-				WARNINGLOG( "Replacing an existing ADSR" );
-				delete m_pADSR;
-				m_pADSR = NULL;
-			}
-			m_pADSR = new ADSR( *(m_pInstrument->m_pADSR) );
-		}
-	*/
 }
 
 
 
 void Note::dumpInfo()
 {
-	INFOLOG( "pos: " + to_string( get_position() ) + "\t humanize offset" + to_string(m_nHumanizeDelay) + "\t instr: " + __instrument->get_name()+ "\t key: " + keyToString( m_noteKey ) + "\t pitch: " + to_string( get_pitch() ) );
+	INFOLOG( "humanize offset" + to_string(m_nHumanizeDelay) + "\t instr: " + __instrument->get_name()+ "\t key: " + keyToString( m_noteKey ) + "\t pitch: " + to_string( get_pitch() ) );
 }
 
 
@@ -232,7 +197,6 @@ Note* Note::copy()
 {
 	Note* note = new Note(
 	    get_instrument(),
-	    get_position(),
 	    get_velocity(),
 	    get_pan_l(),
 	    get_pan_r(),

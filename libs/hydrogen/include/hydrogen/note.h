@@ -25,13 +25,11 @@
 
 #include <cassert>
 #include <hydrogen/Object.h>
-#include <hydrogen/adsr.h>
 
 
 namespace H2Core
 {
 
-class ADSR;
 class Instrument;
 
 class NoteKey
@@ -78,24 +76,11 @@ class Note : public Object
 {
 public:
 
-	float m_fSamplePosition; ///< Place marker for overlapping process() cycles
 	int m_nHumanizeDelay;	///< Used in "humanize" function
 	NoteKey m_noteKey;
 
-	ADSR m_adsr;
-
-	// Low pass resonant filter
-	float m_fCutoff;		///< Filter cutoff (0..1)
-	float m_fResonance;	///< Filter resonant frequency (0..1)
-	float m_fBandPassFilterBuffer_L;		///< Band pass filter buffer
-	float m_fBandPassFilterBuffer_R;		///< Band pass filter buffer
-	float m_fLowPassFilterBuffer_L;		///< Low pass filter buffer
-	float m_fLowPassFilterBuffer_R;		///< Low pass filter buffer
-	//~ filter
-
 	Note(
 	    Instrument *pInstrument,
-	    unsigned nPosition,
 	    float fVelocity,
 	    float fPan_L,
 	    float fPan_R,
@@ -120,16 +105,6 @@ public:
 	static NoteKey stringToKey( const QString& sKey );
 	static QString keyToString( NoteKey key );
 
-
-	/// Return the note position inside a pattern
-	unsigned get_position() const {
-		return __position;
-	}
-
-	/// Set the note position inside a pattern
-	void set_position( unsigned position ) {
-		__position = position;
-	}
 
 	/// Return the note velocity
 	float get_velocity() const {
@@ -202,7 +177,6 @@ public:
 
 private:
 	Instrument* __instrument;
-	unsigned __position;		///< Note position inside the pattern
 	float __velocity;		///< Velocity (intensity) of the note [0..1]
 	float __pan_l;			///< Pan of the note (left volume) [0..1]
 	float __pan_r;			///< Pan of the note (right volume) [0..1]
@@ -210,7 +184,6 @@ private:
 
 	int __length;
 	float __pitch;
-
 };
 
 };
