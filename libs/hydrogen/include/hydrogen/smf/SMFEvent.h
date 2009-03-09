@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef SMF_EVENT_H
-#define SMF_EVENT_H
+#ifndef H2CORE_SMF_EVENT_H
+#define H2CORE_SMF_EVENT_H
 
 #include <vector>
 #include <hydrogen/Object.h>
@@ -138,5 +138,4 @@ protected:
 
 };
 
-#endif
-
+#endif // H2CORE_SMF_EVENT_H

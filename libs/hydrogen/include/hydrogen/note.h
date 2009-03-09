@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef H2_NOTE_H
-#define H2_NOTE_H
+#ifndef H2CORE_NOTE_H
+#define H2CORE_NOTE_H
 
 #include <cassert>
 #include <hydrogen/Object.h>
@@ -188,4 +188,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_NOTE_H

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef H2_JACK_OUTPUT_H
-#define H2_JACK_OUTPUT_H
+#ifndef H2CORE_JACK_OUTPUT_H
+#define H2CORE_JACK_OUTPUT_H
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/NullDriver.h>
@@ -110,5 +110,4 @@ public:
 
 };
 
-#endif
-
+#endif // H2CORE_JACK_OUTPUT_H

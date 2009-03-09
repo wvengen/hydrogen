@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef SMF_H
-#define SMF_H
+#ifndef H2CORE_SMF_H
+#define H2CORE_SMF_H
 
 #include <hydrogen/Object.h>
 #include <hydrogen/Song.h>
@@ -99,5 +99,4 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_SMF_H

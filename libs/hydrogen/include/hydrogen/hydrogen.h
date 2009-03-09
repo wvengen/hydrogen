@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef HYDROGEN_H
-#define HYDROGEN_H
+#ifndef H2CORE_HYDROGEN_H
+#define H2CORE_HYDROGEN_H
 
 #include <stdint.h> // for uint32_t et al
 #include <hydrogen/action.h>
@@ -222,5 +222,4 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_HYDROGEN_H

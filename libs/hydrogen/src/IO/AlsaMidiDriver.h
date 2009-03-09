@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef ALSA_MIDI_DRIVER_H
-#define ALSA_MIDI_DRIVER_H
+#ifndef H2CORE_ALSA_MIDI_DRIVER_H
+#define H2CORE_ALSA_MIDI_DRIVER_H
 
 #ifdef ALSA_SUPPORT
 
@@ -59,4 +59,4 @@ private:
 
 #endif // ALSA_SUPPORT
 
-#endif
+#endif // H2CORE_ALSA_MIDI_DRIVER_H

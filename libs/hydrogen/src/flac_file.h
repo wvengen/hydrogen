@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef FLAC_FILE_H
-#define FLAC_FILE_H
+#ifndef H2CORE_FLAC_FILE_H
+#define H2CORE_FLAC_FILE_H
 
 #include <hydrogen/Object.h>
 #include <string>
@@ -44,5 +44,4 @@ public:
 
 };
 
-#endif
-
+#endif // H2CORE_FLAC_FILE_H

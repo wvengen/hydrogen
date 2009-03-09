@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef EVENT_QUEUE_H
-#define EVENT_QUEUE_H
+#ifndef H2CORE_EVENT_QUEUE_H
+#define H2CORE_EVENT_QUEUE_H
 
 #include <hydrogen/Object.h>
 
@@ -76,4 +76,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_EVENT_QUEUE_H

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef FAKE_DRIVER_H
-#define FAKE_DRIVER_H
+#ifndef H2CORE_FAKE_DRIVER_H
+#define H2CORE_FAKE_DRIVER_H
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <inttypes.h>
@@ -62,4 +62,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_FAKE_DRIVER_H

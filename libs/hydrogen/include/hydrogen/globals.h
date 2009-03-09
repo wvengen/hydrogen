@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef ENGINE_GLOBALS_H
-#define ENGINE_GLOBALS_H
+#ifndef H2CORE_ENGINE_GLOBALS_H
+#define H2CORE_ENGINE_GLOBALS_H
 
 #define MAX_INSTRUMENTS		1000
 #define MAX_NOTES		192
@@ -37,4 +37,4 @@
 #define UNUSED( v )  v = v
 
 
-#endif
+#endif // H2CORE_ENGINE_GLOBALS_H

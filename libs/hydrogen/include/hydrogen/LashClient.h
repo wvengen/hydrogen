@@ -23,8 +23,8 @@
 
 #ifdef LASH_SUPPORT
 
-#ifndef LASH_CLIENT
-#define LASH_CLIENT
+#ifndef H2CORE_LASH_CLIENT
+#define H2CORE_LASH_CLIENT
 
 #include <lash-1.0/lash/lash.h>
 
@@ -63,7 +63,7 @@ private:
 	static LashClient* instance;
 };
 
-#endif // LASH_CLIENT
+#endif // H2CORE_LASH_CLIENT
 #endif // LASH_SUPPORT
 
 

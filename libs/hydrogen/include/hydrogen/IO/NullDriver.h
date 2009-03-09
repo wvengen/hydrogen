@@ -21,8 +21,8 @@
  */
 
 
-#ifndef NULL_AUDIO_DRIVER_H
-#define NULL_AUDIO_DRIVER_H
+#ifndef H2CORE_NULL_AUDIO_DRIVER_H
+#define H2CORE_NULL_AUDIO_DRIVER_H
 
 #include <hydrogen/IO/AudioOutput.h>
 
@@ -51,5 +51,4 @@ public:
 
 };
 
-#endif
-
+#endif // H2CORE_NULL_AUDIO_DRIVER_H

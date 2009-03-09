@@ -25,8 +25,8 @@
  */
 
 
-#ifndef DATA_PATH_H
-#define DATA_PATH_H
+#ifndef H2CORE_DATA_PATH_H
+#define H2CORE_DATA_PATH_H
 
 #include <QtCore>
 
@@ -44,5 +44,4 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_DATA_PATH_H

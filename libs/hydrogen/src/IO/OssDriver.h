@@ -21,8 +21,8 @@
  */
 
 
-#ifndef OSS_AUDIO_DRIVER_H
-#define OSS_AUDIO_DRIVER_H
+#ifndef H2CORE_OSS_AUDIO_DRIVER_H
+#define H2CORE_OSS_AUDIO_DRIVER_H
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/NullDriver.h>
@@ -111,8 +111,8 @@ public:
 
 
 
-#endif // OSS support
+#endif // OSS_SUPPORT
 
 };
 
-#endif
+#endif // H2CORE_OSS_AUDIO_DRIVER_H

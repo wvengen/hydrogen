@@ -25,8 +25,8 @@
  * Removed some unused code (20060514 Jonathan Dempsey)
  */
 
-#ifndef CORE_MIDI_DRIVER_H
-#define CORE_MIDI_DRIVER_H
+#ifndef H2CORE_CORE_MIDI_DRIVER_H
+#define H2CORE_CORE_MIDI_DRIVER_H
 
 #ifdef COREMIDI_SUPPORT
 
@@ -62,5 +62,4 @@ public:
 #endif // COREMIDI_SUPPORT
 
 
-#endif
-
+#endif // H2CORE_CORE_MIDI_DRIVER_H

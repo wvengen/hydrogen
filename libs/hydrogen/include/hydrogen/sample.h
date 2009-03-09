@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef SAMPLE_BUFFER_H
-#define SAMPLE_BUFFER_H
+#ifndef H2CORE_SAMPLE_BUFFER_H
+#define H2CORE_SAMPLE_BUFFER_H
 
 #include <string>
 
@@ -87,4 +87,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_SAMPLE_BUFFER_H

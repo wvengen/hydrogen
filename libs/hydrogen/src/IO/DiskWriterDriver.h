@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef DISK_WRITER_DRIVER_H
-#define DISK_WRITER_DRIVER_H
+#ifndef H2CORE_DISK_WRITER_DRIVER_H
+#define H2CORE_DISK_WRITER_DRIVER_H
 
 #include <sndfile.h>
 
@@ -76,4 +76,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_DISK_WRITER_DRIVER_H

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef H2CORE_PATTERN_H
+#define H2CORE_PATTERN_H
 
 #include <hydrogen/globals.h>
 #include <hydrogen/Object.h>
@@ -116,5 +116,4 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_PATTERN_H

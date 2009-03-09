@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef SONG_H
-#define SONG_H
+#ifndef H2CORE_SONG_H
+#define H2CORE_SONG_H
 
 
 #include <QString>
@@ -219,6 +219,4 @@ private:
 
 
 
-#endif
-
-
+#endif // H2CORE_SONG_H

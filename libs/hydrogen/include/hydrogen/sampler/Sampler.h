@@ -21,8 +21,8 @@
  */
 
 
-#ifndef SAMPLER_H
-#define SAMPLER_H
+#ifndef H2CORE_SAMPLER_H
+#define H2CORE_SAMPLER_H
 
 #include <hydrogen/Object.h>
 #include <hydrogen/globals.h>
@@ -121,5 +121,4 @@ private:
 
 } // namespace
 
-#endif
-
+#endif // H2CORE_SAMPLER_H

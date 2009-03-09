@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef H2_OBJECT_H
-#define H2_OBJECT_H
+#ifndef H2CORE_OBJECT_H
+#define H2CORE_OBJECT_H
 
 #ifdef check
 #undef check
@@ -137,4 +137,4 @@ inline float string_to_float( const QString& str )
 	return t;
 }
 
-#endif
+#endif // H2CORE_OBJECT_H

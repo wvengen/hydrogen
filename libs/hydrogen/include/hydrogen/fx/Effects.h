@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef EFFECTS_H
-#define EFFECTS_H
+#ifndef H2CORE_EFFECTS_H
+#define H2CORE_EFFECTS_H
 
 #ifdef LADSPA_SUPPORT
 
@@ -69,7 +69,6 @@ private:
 
 };
 
-#endif
+#endif // LADSPA_SUPPORT
 
-
-#endif
+#endif // H2CORE_EFFECTS_H

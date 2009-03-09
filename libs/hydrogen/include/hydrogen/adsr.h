@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef ADSR_H
-#define ADSR_H
+#ifndef H2CORE_ADSR_H
+#define H2CORE_ADSR_H
 
 #include <hydrogen/Object.h>
 
@@ -71,4 +71,4 @@ private:
 };
 
 
-#endif
+#endif // H2CORE_ADSR_H

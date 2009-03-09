@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef TRANSPORTMASTERINTERFACE_H
-#define TRANSPORTMASTERINTERFACE_H
+#ifndef H2CORE_TRANSPORTMASTERINTERFACE_H
+#define H2CORE_TRANSPORTMASTERINTERFACE_H
 
 #include <stdint.h>  // int32_t, uint32_t
 
@@ -89,4 +89,4 @@ namespace H2Core
 
 }
 
-#endif // TRANSPORTMASTERINTERFACE_H
+#endif // H2CORE_TRANSPORTMASTERINTERFACE_H

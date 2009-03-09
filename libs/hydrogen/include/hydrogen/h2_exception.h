@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef H2EXCEPTION_H
-#define H2EXCEPTION_H
+#ifndef H2CORE_H2_EXCEPTION_H
+#define H2CORE_H2_EXCEPTION_H
 
 #include <string>
 #include <stdexcept>
@@ -41,4 +41,4 @@ public:
 
 };
 
-#endif
+#endif // H2CORE_H2_EXCEPTION_H

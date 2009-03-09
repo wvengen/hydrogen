@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef LADSPA_FX_H
-#define LADSPA_FX_H
+#ifndef H2CORE_LADSPA_FX_H
+#define H2CORE_LADSPA_FX_H
 
 #ifdef LADSPA_SUPPORT
 
@@ -191,6 +191,6 @@ private:
 
 };
 
-#endif
-
 #endif // LADSPA_SUPPORT
+
+#endif // H2CORE_LADSPA_FX_H

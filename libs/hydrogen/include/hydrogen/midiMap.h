@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef MIDIMAP_H
-#define MIDIMAP_H
+#ifndef H2CORE_MIDIMAP_H
+#define H2CORE_MIDIMAP_H
 
 
 #include <map>
@@ -55,4 +55,5 @@ class MidiMap : public Object
 
 		std::map< QString, Action* > mmcMap;
 };
-#endif
+
+#endif // H2CORE_MIDIMAP_H

@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2_AUDIO_OUTPUT_H
-#define H2_AUDIO_OUTPUT_H
+#ifndef H2CORE_AUDIO_OUTPUT_H
+#define H2CORE_AUDIO_OUTPUT_H
 
 #include <hydrogen/Object.h>
 
@@ -58,5 +58,4 @@ protected:
 
 };
 
-#endif
-
+#endif // H2CORE_AUDIO_OUTPUT_H

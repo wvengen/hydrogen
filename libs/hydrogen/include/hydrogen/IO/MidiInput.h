@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef H2_MIDI_INPUT_H
-#define H2_MIDI_INPUT_H
+#ifndef H2CORE_MIDI_INPUT_H
+#define H2CORE_MIDI_INPUT_H
 
 #include <hydrogen/Object.h>
 #include <string>
@@ -107,5 +107,4 @@ protected:
 
 };
 
-#endif
-
+#endif // H2CORE_MIDI_INPUT_H

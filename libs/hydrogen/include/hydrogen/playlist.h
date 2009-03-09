@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#ifndef H2CORE_PLAYLIST_H
+#define H2CORE_PLAYLIST_H
 
 #include <QDialog>
 #include <hydrogen/Object.h>
@@ -73,4 +73,4 @@ class Playlist :  public Object
 };
 
 
-#endif
+#endif // H2CORE_PLAYLIST_H

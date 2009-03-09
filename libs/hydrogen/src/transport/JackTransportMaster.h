@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef JACKTRANSPORTMASTER_H
-#define JACKTRANSPORTMASTER_H
+#ifndef H2CORE_JACKTRANSPORTMASTER_H
+#define H2CORE_JACKTRANSPORTMASTER_H
 
 #include <hydrogen/TransportMasterInterface.h>
 
@@ -74,4 +74,4 @@ namespace H2Core
 
 }
 
-#endif // JACKTRANSPORTMASTER_H
+#endif // H2CORE_JACKTRANSPORTMASTER_H

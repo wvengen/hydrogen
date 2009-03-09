@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PREFERENCES_H
-#define PREFERENCES_H
+#ifndef H2CORE_PREFERENCES_H
+#define H2CORE_PREFERENCES_H
 
 #include <list>
 //#include <string>
@@ -514,5 +514,4 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_PREFERENCES_H

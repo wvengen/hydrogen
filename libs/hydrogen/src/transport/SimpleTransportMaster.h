@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef SIMPLETRANSPORTMASTER_H
-#define SIMPLETRANPOSRTMASTER_H
+#ifndef H2CORE_SIMPLETRANSPORTMASTER_H
+#define H2CORE_SIMPLETRANPOSRTMASTER_H
 
 #include <hydrogen/TransportMasterInterface.h>
 
@@ -61,4 +61,4 @@ namespace H2Core
 
 }
 
-#endif // SIMPLETRANSPORTMASTER_H
+#endif // H2CORE_SIMPLETRANPOSRTMASTER_H

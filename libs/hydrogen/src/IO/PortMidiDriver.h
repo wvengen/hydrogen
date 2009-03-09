@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef PORT_MIDI_DRIVER_H
-#define PORT_MIDI_DRIVER_H
+#ifndef H2CORE_PORTMIDI_DRIVER_H
+#define H2CORE_PORTMIDI_DRIVER_H
 
 #ifdef PORTMIDI_SUPPORT
 
@@ -50,7 +50,6 @@ private:
 
 };
 
-#endif
+#endif // PORTMIDI_SUPPORT
 
-#endif
-
+#endif // H2CORE_PORTMIDI_DRIVER_H

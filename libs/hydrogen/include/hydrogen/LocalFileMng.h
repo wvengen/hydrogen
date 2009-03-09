@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef LFILEMNG_H
-#define LFILEMNG_H
+#ifndef H2CORE_LOCALFILEMNG_H
+#define H2CORE_LOCALFILEMNG_H
 
 #include <iostream>
 #include <fstream>
@@ -113,5 +113,4 @@ public:
 };
 
 
-#endif //LFILEMNG_H
-
+#endif // H2CORE_LOCALFILEMNG_H

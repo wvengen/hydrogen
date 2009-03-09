@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef SOUNDLIBRARY_H
-#define SOUNDLIBRARY_H
+#ifndef H2CORE_SOUNDLIBRARY_H
+#define H2CORE_SOUNDLIBRARY_H
 
 #include <string>
 #include <hydrogen/Object.h>
@@ -123,4 +123,4 @@ private:
 
 };
 
-#endif
+#endif // H2CORE_SOUNDLIBRARY_H

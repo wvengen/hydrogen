@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef INSTRUMENT_H
-#define INSTRUMENT_H
+#ifndef H2CORE_INSTRUMENT_H
+#define H2CORE_INSTRUMENT_H
 
 #include <QtCore/QString>
 #include <hydrogen/globals.h>
@@ -352,6 +352,5 @@ private:
 
 };
 
-#endif
-
+#endif // H2CORE_INSTRUMENT_H
 

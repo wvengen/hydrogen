@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef SONGHELPERS_H
-#define SONGHELPERS_H
+#ifndef H2CORE_SONGHELPERS_H
+#define H2CORE_SONGHELPERS_H
 
 /**
  * This declares several functions that are useful in translating Song
@@ -70,4 +70,4 @@ namespace H2Core
 
 }
 
-#endif // SIMPLETRANSPORTMASTER_H
+#endif // H2CORE_SONGHELPERS_H

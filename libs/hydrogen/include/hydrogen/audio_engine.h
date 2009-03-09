@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef AUDIO_ENGINE_H
-#define AUDIO_ENGINE_H
+#ifndef H2CORE_AUDIO_ENGINE_H
+#define H2CORE_AUDIO_ENGINE_H
 
 #include <hydrogen/Object.h>
 #include <hydrogen/sampler/Sampler.h>
@@ -65,4 +65,4 @@ private:
 };
 
 
-#endif
+#endif // H2CORE_AUDIO_ENGINE_H

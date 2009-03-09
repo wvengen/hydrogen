@@ -26,8 +26,8 @@
  * More cleaning . . . (2005/12/31 Jonathan Dempsey)
  */
 
-#ifndef COREAUDIO_DRIVER_H
-#define COREAUDIO_DRIVER_H
+#ifndef H2CORE_COREAUDIO_DRIVER_H
+#define H2CORE_COREAUDIO_DRIVER_H
 
 #ifdef COREAUDIO_SUPPORT
 #include <AudioUnit/AudioUnit.h>
@@ -102,4 +102,4 @@ public:
 
 }
 
-#endif
+#endif // H2CORE_COREAUDIO_DRIVER_H

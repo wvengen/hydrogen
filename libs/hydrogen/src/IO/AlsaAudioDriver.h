@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef ALSA_AUDIO_DRIVER_H
-#define ALSA_AUDIO_DRIVER_H
+#ifndef H2CORE_ALSA_AUDIO_DRIVER_H
+#define H2CORE_ALSA_AUDIO_DRIVER_H
 
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/NullDriver.h>
@@ -77,4 +77,4 @@ public:
 
 };
 
-#endif
+#endif // H2CORE_ALSA_AUDIO_DRIVER_H
