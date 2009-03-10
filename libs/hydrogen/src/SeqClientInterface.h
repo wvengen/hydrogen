@@ -26,6 +26,7 @@
 
 namespace H2Core
 {
+    class TransportPosition;
 
     /**
      * This is the base class for any audio or midi classes that serve as
@@ -40,9 +41,19 @@ namespace H2Core
          * Process the events supplied by the sequencer.  The events will be
          * sorted by frame number (ascending).  This function must be realtime
          * safe.
+         *
+         * The 'pos' parameter should *not* unless you are *really* needing to
+         * map frames back to B:b.t.  The 'pos' parameter is intended for
+         * clients that are doing something like MIDI recording (mapping
+         * realtime events back to the B:b.t location in the song.  Audio
+         * (i.e. the sampler) and MIDI outputs should *not* use the pos
+         * parameter.  Neither should the pos parameter be used to drive a
+         * transport.  Adding the 'pos' parameter here makes for a more flexable
+         * design.
          */
         virtual int process(SeqScriptConstIterator begin,
                             SeqScriptConstIterator end,
+                            const TransportPosition& pos,
                             uint32_t nframes) = 0;
     };
 

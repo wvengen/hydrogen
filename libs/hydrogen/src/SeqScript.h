@@ -67,9 +67,11 @@ namespace H2Core
      *
      *         pSampler->process(seq.begin_const(),
      *                           seq.end_const(nframes),
+     *                           pos,
      *                           nframes);
      *         pMidiOut->process(seq.begin_const(),
      *                           seq.end_const(nframes),
+     *                           pos,
      *                           nframes);
      *
      *         seq.consumed(nframes);
@@ -77,8 +79,10 @@ namespace H2Core
      *
      *     SeqClientImplementation::process(SeqScriptConstIterator beg,
      *                                      SeqScriptConstIterator end,
+     *                                      const TransportPosition& // pos //,
      *                                      uint32_t nframes)
      *     {
+     *         // Do not use pos if you can help it!!
      *         SeqScriptConstIterator k;
      *
      *         for( k=beg ; k != end ; ++k ) {

@@ -53,7 +53,7 @@ int Sequencer::process(const TransportPosition& pos, uint32_t nframes)
     }
 
     for( c = m_clients.begin() ; c != m_clients.end() ; ++c ) {
-        tmp = c->process(m_seq.begin_const(), m_seq.end_const(nframes), nframes);
+        tmp = c->process(m_seq.begin_const(), m_seq.end_const(nframes), pos, nframes);
         if( tmp ) rv = -1;
     }
 
