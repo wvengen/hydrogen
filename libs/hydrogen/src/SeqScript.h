@@ -50,10 +50,20 @@ namespace H2Core
      *     sequencer_process(uint32_t nframes)
      *     {
      *         SeqScript seq;
+     *         TransportPosition pos;
+     *         SeqInputInterface* pSongSeq;  // i.e. Song -> SeqEvents
+     *         SeqInputInterface* pMidiInput;
+     *         SeqInputInterface* pGuiInput;
      *         SeqClientInterface* pSampler; // i.e. H2Core::Sampler
      *         SeqClientInterface* pMidiOut; // i.e. H2Core::MidiOutput
      *
-     *         // manipulate sequence
+     *         // Get events from input sources
+     *
+     *         pSongSeq->process(seq, pos, nframes);
+     *         pMidiInput->process(seq, pos, nframes);
+     *         pGuiInput->process(seq, pos, nframes);
+     *
+     *         // Send events to the clients to be processed.
      *
      *         pSampler->process(seq.begin_const(),
      *                           seq.end_const(nframes),
@@ -79,7 +89,6 @@ namespace H2Core
      * This way, SeqScript is protected from manipulation by SequencerClients.
      *
      */
-    #warning "SeqScript needs to conform to an STL Sequence"
     class SeqScript
     {
     public:
@@ -127,21 +136,22 @@ namespace H2Core
         /// Clears out all queued events.
         void clear();
 
+        /// Schedules the note on/off pair, and cancel any note-off events
+        /// currently between the two (unless this note is already scheduled to
+        /// be interrupted by another note-on event).
+        void insert_note(const value_type& event, frame_type length);
+
         /// Provides a read-only view of this sequence script from frames 0 to
         /// nframes.
         SeqScriptConstIterator begin_const() const;
         SeqScriptConstIterator end_const() const;
+        SeqScriptConstIterator end_const(frame_type nframes) const;
 
         #warning "Temporary method SeqScript::at()"
         // This is a temporary method so things will compile...
         // should last until things get fully defined.
         value_type& at(frame_type frame);
         const value_type& at(frame_type frame) const;
-
-        /**
-         * TODO:  Needs iterator API.
-         */
-        #warning "TODO: Add iterators to SeqScript"
 
     private:
         SeqScriptPrivate* d;

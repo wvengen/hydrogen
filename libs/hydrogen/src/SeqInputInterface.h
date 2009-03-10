@@ -19,33 +19,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQCLIENTINTERFACE_H
-#define H2CORE_SEQCLIENTINTERFACE_H
-
-#include "SeqScriptIterator.h"
+#ifndef H2CORE_SEQINPUTINTERFACE_H
+#define H2CORE_SEQINPUTINTERFACE_H
 
 namespace H2Core
 {
+    class SeqScript;
+    class TransportPosition;
 
     /**
-     * This is the base class for any audio or midi classes that serve as
-     * outputs for the sequencer.
+     * This is the base class for any classes that serve as inputs for the
+     * sequencer (e.g. song, MIDI Input, GUI Input, etc.
      */
-    class SeqClientInterface
+    class SeqInputInterface
     {
     public:
-        virtual ~SeqClientInterface() {}
+        virtual ~SeqInputInterface() {}
 
         /**
-         * Process the events supplied by the sequencer.  The events will be
-         * sorted by frame number (ascending).  This function must be realtime
-         * safe.
+         * Supply data to the sequencer by directly writing them to the
+         * SeqScript object.  This function must be realtime safe.
          */
-        virtual int process(SeqScriptConstIterator begin,
-                            SeqScriptConstIterator end,
+        virtual int process(SeqScript& seq,
+                            const TransportPosition& pos,
                             uint32_t nframes) = 0;
     };
 
 } // namespace H2Core
 
-#endif // H2CORE_SEQCLIENTINTERFACE_H
+#endif // H2CORE_SEQINPUTINTERFACE_H
