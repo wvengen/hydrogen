@@ -21,6 +21,8 @@
  */
 
 #include <hydrogen/Transport.h>
+#include <hydrogen/TransportPosition.h>
+
 #include "SimpleTransportMaster.h"
 
 #include <hydrogen/Song.h>
@@ -30,6 +32,7 @@
 #include <QtCore/QMutexLocker>
 
 #include "songhelpers.h"
+#include <cmath>
 #include <cassert>
 
 using namespace H2Core;

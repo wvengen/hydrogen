@@ -22,6 +22,8 @@
 #ifndef H2CORE_SEQINPUTINTERFACE_H
 #define H2CORE_SEQINPUTINTERFACE_H
 
+#include <stdint.h> // uint32_t
+
 namespace H2Core
 {
     class SeqScript;

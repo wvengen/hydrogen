@@ -62,7 +62,7 @@ namespace H2Core
         inputs_list_t m_inputs;
         QMutex m_clients_add_mutex;  // Must be locked when adding clients
         clients_list_t m_clients;
-    }
+    };
 
 } // namespace H2Core
 
