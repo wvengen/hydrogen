@@ -23,10 +23,10 @@
 #ifndef H2CORE_PORT_AUDIO_DRIVER_H
 #define H2CORE_PORT_AUDIO_DRIVER_H
 
-#ifdef PORTAUDIO_SUPPORT
-
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/NullDriver.h>
+
+#ifdef PORTAUDIO_SUPPORT
 
 #include <inttypes.h>
 #include <portaudio.h>
