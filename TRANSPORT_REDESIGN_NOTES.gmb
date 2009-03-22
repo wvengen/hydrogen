@@ -838,3 +838,148 @@ HOWEVER, Hydrogen is all about pattern based sequencing... so...
 
     THEREFORE: beats_per_bar, beat_type, ticks_per_beat, and
                bar_start_tick will all be unsigned integer types.
+
+--------------------------------------------------------------------------------
+2009-03-16 SEQUENCER THRU AUDIO OUT
+===================================
+
+Sequencer
+ |    |
+ |    +----> (Other outputs)
+ |
+ | (Via SeqScript)
+ |
+ V
+Sampler
+ |   (routing)
+ +-+-+-+-+-+ ... +-+-+-+
+ | | | | | |     | | | |
+ (I n s t r u m e n t s)
+ | | | | | |     | | | |
+ V V V V V V     V V V V
+.........................
+.                       .<--> FX1 SEND/RETURN
+.                       .<--> FX2 SEND/RETURN
+.       Mixer           .<--> FX3 SEND/RETURN
+.                       .<--> FX4 SEND/RETURN
+.                       .
+.                       .<--> Anything else
+.........................
+ | |  | | | | | | |
+ L R  TRACKING-OUTS
+ | |  | | | | | | |
+ V V  V V V V V V V
+.....................
+.   Audio Driver    . 
+.....................
+
+This causes the mixer to have a ton of buffers.  But, with "tracking outs," I
+don't think there's much way to avoid it.
+
+One way to reduce the buffers is to provide an interface for the instruments to
+write directly to mixer buffers with desired gains.
+
+int Instrument::process(nframes)
+{
+    float atten = 1.0;
+    sample_type* out;
+    Mixer* M;
+    //...
+    out = M->get_buffer_for_input(this);
+    atten = M->get_fader_atten_for_input(this);
+    end = out + nframes;
+    while(out != end) {
+        (*out) += atten * this->sample; // Write directly to mixer's buffer.
+        ++out;
+    }
+
+    return 0;
+}
+
+But... things change for tracking outs.
+
+-- or do they?  We still ask the mixer for a pointer to the buffer where the
+data goes.  If the mixer wants direct outs, the atten will be something like
+1/32.  If the mixer handles tracking outs, it will be 1.0.
+
+But... this setup feels like we're wagging the dog.  The call stack is something
+like:
+
+jackd process()
+  Hydrogen::process()
+    Sequencer::process()
+      Sampler::process()
+        Instrument::process()
+          Mixer::get_buffer()
+
+Seems like the Mixer should be in control of the instruments, instead of the
+Instruments being in control.  But how do we do that w/o the mixer being part of
+the sampler (thus, not a generic mixer)?
+
+But -- it doesn't seem like it would be too difficult to optimize tracks like
+this -- with inst's that aren't playing assumed to be zero and skipped.
+
+Here's a target Mixer API:
+
+int Hydrogen::process(nframes)
+{
+    Sequencer* seq;
+    Mixer* mix;
+    Transport* xport;
+    TransportPosition xpos;
+
+    xport->get_position(xpos);
+    seq->process(xpos, nframes);
+    mix->process(nframes);        // Is 'nframes' necc.?
+
+    return 0;
+}
+
+int SomeSeqClient::process(beg, end, xpos, nframes)
+{
+    Mixer* mix;
+    sample_type* obuf;
+
+    mix = Hydrogen::get_instance()::get_mixer();  // How do we avoid invoking
+                                                  // the Singleton here?
+    obuf = mix->get_buf_for_input(this);
+
+    // write stuff to obuf
+
+    return 0;
+}
+
+class Mixer
+{
+    //...
+
+private:
+    some_sequence_type<SeqClient*> used;
+    some_map_type<SeqClient* sample_type*> bufs;
+
+    //...
+};
+
+sample_type* Mixer::get_buf_for_input(that)
+{
+    used.push_back(that);
+    return bufs[that];
+}
+
+int Mixer::process(nframes)
+{
+    sample_type* outL, outR, that;
+
+    //...
+
+    while( ! used.empty() ) {
+        that = bufs[used.front()];
+        used.pop();
+        for(uint32_t k=0; k<nframes; ++k) {
+            outL[k] += that[k];
+            outR[k] += that[k];
+        } // what about L/R pan?
+    }
+
+    return 0;
+}
