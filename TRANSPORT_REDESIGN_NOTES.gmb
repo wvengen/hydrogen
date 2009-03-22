@@ -983,3 +983,78 @@ int Mixer::process(nframes)
 
     return 0;
 }
+
+--------------------------------------------------------------------------------
+2009-03-22 REVISED ROLE OF H2Core::Hydrogen
+===========================================
+
+The Hydrogen class has become a combination of the sequencer, audio engine, and
+controller for the audio backend.  That seems to me like too much.  The new
+Hydrogen class will simply be a controller for the audio engine.
+
+Note that this here is more of a concept.  I'm not married to the details (such
+as using std::string as the generic driver identifier).  Also, I'd prefer to
+take "Input" and "Output" out of the audio and midi drivers.  We generally use
+the same driver for both the input and output side.
+
+class Hydrogen : public Object
+{
+public:
+	typedef std::string driver_id_t;
+	typedef std::deque<driver_id_t> driver_list_t;
+
+	/// Return the Hydrogen instance
+	static Hydrogen* get_instance();
+
+	~Hydrogen();
+
+	/// Access to major objects.
+	TransportMasterInterface& get_transport();
+	Mixer& get_mixer();
+	Sequencer& get_sequencer();
+	Sampler& get_sampler();
+	AudioOutput& get_audiooutput();
+	MidiInput& get_midiinput();
+
+	/// Should LADSPA effects be handled by Hydrogen or the Mixer?
+
+	/// Song manipulation
+	/// Should Hydrogen or GUI be loading songs??
+	Song& get_song();
+	void set_song(Song* s);
+	void set_song(std::string path);
+	void remove_song();
+
+	/// Configuration options
+	const driver_list_t& get_transport_drivers();
+	int set_transport_driver(const driver_id_t& name);
+	const driver_list_t& get_audio_outputs();
+	int set_audio_output(const driver_id_t& name);
+	const driver_list_t& get_midi_drivers();
+	int set_midi_input(const driver_id_t& name);	
+
+	/// Future ideas for interfaces.  We could feed the
+	/// GUI a list of the configuration parameters by driver.
+	/// The GUI would create the config dialog based on this
+	/// list.  This way, new features can be handled automagically.
+	// typedef (unknown) config_list_t;
+	// const config_list_t& get_transport_configuration();
+	// int set_transport_configuration(...);
+	// const config_list_t& get_audio_configuration()
+	// ...etc.
+
+	/// Misc.
+	int get_state();  // For implementing a global "pause", maybe
+	/// playlist stuff?
+	void panic();     // Immediately cease all audio
+
+private:
+	static Hydrogen* __instance;
+
+	class HydrogenPrivate;
+	HydrogenPrivate* d;
+
+	Hydrogen();  // private because Hydrogen is a singleton.
+};
+
+
