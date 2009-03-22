@@ -20,7 +20,7 @@
  *
  */
 
-#include "SeqSong.h"
+#include "SeqSongInput.h"
 #include "SeqScript.h"
 #include "SeqEvent.h"
 
@@ -35,15 +35,15 @@
 using namespace H2Core;
 using namespace std;
 
-SeqSong::SeqSong()
+SeqSongInput::SeqSongInput()
 {
 }
 
-SeqSong::~SeqSong()
+SeqSongInput::~SeqSongInput()
 {
 }
 
-int SeqSong::process(SeqScript& seq,
+int SeqSongInput::process(SeqScript& seq,
                      const TransportPosition& pos,
                      uint32_t nframes)
 {
@@ -112,7 +112,7 @@ int SeqSong::process(SeqScript& seq,
  * something simple working.  When adding back in the lookahead, this
  * would be a good place to start.  - gabriel
  *
- * It requires SeqSong to have two private members:
+ * It requires SeqSongInput to have two private members:
  *
     private:
         // These two are used to keep track of how much we have sequenced up to
@@ -122,9 +122,9 @@ int SeqSong::process(SeqScript& seq,
 
  */
 
-virtual int SeqSong::process(SeqScript& seq,
-                             const TransportPosition& pos,
-                             uint32_t nframes)
+virtual int SeqSongInput::process(SeqScript& seq,
+                                  const TransportPosition& pos,
+                                  uint32_t nframes)
 {
     Song* pSong = Hydrogen::get_instance()->getSong();
     TransportPosition left, right;

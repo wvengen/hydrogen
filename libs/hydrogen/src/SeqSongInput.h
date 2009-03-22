@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQSONG_H
-#define H2CORE_SEQSONG_H
+#ifndef H2CORE_SEQSONGINPUT_H
+#define H2CORE_SEQSONGINPUT_H
 
 #include "SeqInputInterface.h"
 #include <hydrogen/TransportPosition.h>
@@ -35,11 +35,11 @@ namespace H2Core
      * Schedules note events based on the current song and the transport
      * position.
      */
-    class SeqSong : public SeqInputInterface
+    class SeqSongInput : public SeqInputInterface
     {
     public:
-        SeqSong();
-        virtual ~SeqSong();
+        SeqSongInput();
+        virtual ~SeqSongInput();
 
         /**
          * Supply data to the sequencer by directly writing them to the
@@ -52,4 +52,4 @@ namespace H2Core
 
 } // namespace H2Core
 
-#endif // H2CORE_SEQINPUTINTERFACE_H
+#endif // H2CORE_SEQSONGINPUT_H
