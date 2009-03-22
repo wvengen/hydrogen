@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef H2CORE_SEQCLIENTINTERFACE_H
-#define H2CORE_SEQCLIENTINTERFACE_H
+#ifndef H2CORE_SEQOUTPUTINTERFACE_H
+#define H2CORE_SEQOUTPUTINTERFACE_H
 
 #include "SeqScriptIterator.h"
 
@@ -32,10 +32,10 @@ namespace H2Core
      * This is the base class for any audio or midi classes that serve as
      * outputs for the sequencer.
      */
-    class SeqClientInterface
+    class SeqOutputInterface
     {
     public:
-        virtual ~SeqClientInterface() {}
+        virtual ~SeqOutputInterface() {}
 
         /**
          * Process the events supplied by the sequencer.  The events will be
@@ -44,7 +44,7 @@ namespace H2Core
          *
          * The 'pos' parameter should *not* unless you are *really* needing to
          * map frames back to B:b.t.  The 'pos' parameter is intended for
-         * clients that are doing something like MIDI recording (mapping
+         * outputs that are doing something like MIDI recording (mapping
          * realtime events back to the B:b.t location in the song.  Audio
          * (i.e. the sampler) and MIDI outputs should *not* use the pos
          * parameter.  Neither should the pos parameter be used to drive a
@@ -59,4 +59,4 @@ namespace H2Core
 
 } // namespace H2Core
 
-#endif // H2CORE_SEQCLIENTINTERFACE_H
+#endif // H2CORE_SEQOUTPUTINTERFACE_H

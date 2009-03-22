@@ -33,7 +33,7 @@ namespace H2Core
 {
     class TransportPosition;
     class SeqInputInterface;
-    class SeqClientInterface;
+    class SeqOutputInterface;
 
     /**
      * The Sequencer manages inputs and outputs, translating and scheduling the data
@@ -49,19 +49,19 @@ namespace H2Core
 
         int add_input(SeqInputInterface* i);
         int remove_input(SeqInputInterface* i);
-        int add_client(SeqClientInterface* c);
-        int remove_client(SeqClientInterface* c);
+        int add_output(SeqOutputInterface* c);
+        int remove_output(SeqOutputInterface* c);
 
     private:
         typedef std::list<SeqInputInterface*> inputs_list_t;
-        typedef std::list<SeqClientInterface*> clients_list_t;
+        typedef std::list<SeqOutputInterface*> outputs_list_t;
 
         SeqScript m_seq;
 
         QMutex m_inputs_add_mutex;   // Must be locked when adding inputs
         inputs_list_t m_inputs;
-        QMutex m_clients_add_mutex;  // Must be locked when adding clients
-        clients_list_t m_clients;
+        QMutex m_outputs_add_mutex;  // Must be locked when adding outputs
+        outputs_list_t m_outputs;
     };
 
 } // namespace H2Core

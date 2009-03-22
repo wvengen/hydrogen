@@ -27,7 +27,7 @@
 
 /**
  * The SeqScript is how the sequencer communicates events to sequence
- * clients.  It communicates a series of SeqEvents (typically note on/note
+ * output clients.  It communicates a series of SeqEvents (typically note on/note
  * off stuff).  Each event is indexed with an offset to the first frame of the
  * current process() cycle.
  *
@@ -54,8 +54,8 @@ namespace H2Core
      *         SeqInputInterface* pSongSeq;  // i.e. Song -> SeqEvents
      *         SeqInputInterface* pMidiInput;
      *         SeqInputInterface* pGuiInput;
-     *         SeqClientInterface* pSampler; // i.e. H2Core::Sampler
-     *         SeqClientInterface* pMidiOut; // i.e. H2Core::MidiOutput
+     *         SeqOutputInterface* pSampler; // i.e. H2Core::Sampler
+     *         SeqOutputInterface* pMidiOut; // i.e. H2Core::MidiOutput
      *
      *         // Get events from input sources
      *
@@ -63,7 +63,7 @@ namespace H2Core
      *         pMidiInput->process(seq, pos, nframes);
      *         pGuiInput->process(seq, pos, nframes);
      *
-     *         // Send events to the clients to be processed.
+     *         // Send events to the ouput clients to be processed.
      *
      *         pSampler->process(seq.begin_const(),
      *                           seq.end_const(nframes),
@@ -77,7 +77,7 @@ namespace H2Core
      *         seq.consumed(nframes);
      *     }
      *
-     *     SeqClientImplementation::process(SeqScriptConstIterator beg,
+     *     SeqOutputImplementation::process(SeqScriptConstIterator beg,
      *                                      SeqScriptConstIterator end,
      *                                      const TransportPosition& // pos //,
      *                                      uint32_t nframes)
@@ -90,7 +90,7 @@ namespace H2Core
      *         }
      *     }
      *
-     * This way, SeqScript is protected from manipulation by SequencerClients.
+     * This way, SeqScript is protected from manipulation by SeqOutputs.
      *
      */
     class SeqScript
@@ -119,10 +119,8 @@ namespace H2Core
         /**
          * METHODS FOR THE SEQUENCER
          *
-         * These methods should *only* be used by the sequencer.  Sequencer
-         * clients should *not* use these.  This could possibly be enforced by
-         * always passing the sequencer script to the client as
-         * 'const SequencerScript& script'.
+         * These methods should *only* be used by the sequencer inputs.  Sequencer
+         * outputs should *not* use these.
          */
         /// Reserves memory for a specific number of events.  This
         /// will almost always reallocate memory and should not be

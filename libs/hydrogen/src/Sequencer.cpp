@@ -22,7 +22,7 @@
 
 #include "Sequencer.h"
 #include "SeqInputInterface.h"
-#include "SeqClientInterface.h"
+#include "SeqOutputInterface.h"
 
 #include <hydrogen/TransportPosition.h>
 
@@ -44,7 +44,7 @@ Sequencer::~Sequencer()
 int Sequencer::process(const TransportPosition& pos, uint32_t nframes)
 {
     inputs_list_t::iterator i;
-    clients_list_t::iterator c;
+    outputs_list_t::iterator o;
     int tmp, rv = 0;
 
     for( i = m_inputs.begin() ; i != m_inputs.end() ; ++i ) {
@@ -52,8 +52,8 @@ int Sequencer::process(const TransportPosition& pos, uint32_t nframes)
         if( tmp ) rv = -1;
     }
 
-    for( c = m_clients.begin() ; c != m_clients.end() ; ++c ) {
-        tmp = (*c)->process(m_seq.begin_const(), m_seq.end_const(nframes), pos, nframes);
+    for( o = m_outputs.begin() ; o != m_outputs.end() ; ++o ) {
+        tmp = (*o)->process(m_seq.begin_const(), m_seq.end_const(nframes), pos, nframes);
         if( tmp ) rv = -1;
     }
 
@@ -83,23 +83,23 @@ int Sequencer::remove_input(SeqInputInterface* i)
     return 0;
 }
 
-int Sequencer::add_client(SeqClientInterface* c)
+int Sequencer::add_output(SeqOutputInterface* o)
 {
-    QMutexLocker lk(&m_clients_add_mutex);
+    QMutexLocker lk(&m_outputs_add_mutex);
     int rv = -1;
-    clients_list_t::iterator k;
-    k = find(m_clients.begin(), m_clients.end(), c);
-    if( k != m_clients.end() ) {
-        m_clients.push_back(c);
+    outputs_list_t::iterator k;
+    k = find(m_outputs.begin(), m_outputs.end(), o);
+    if( k != m_outputs.end() ) {
+        m_outputs.push_back(o);
         rv = 0;
     }
     return rv;
 }
 
-int Sequencer::remove_client(SeqClientInterface* c)
+int Sequencer::remove_output(SeqOutputInterface* o)
 {
-    #warning "When we return... it's assumed that it's OK to delete c... but it could still"
-    #warning "be in c->process().  How do we protect against that?"
-    m_clients.remove(c);
+    #warning "When we return... it's assumed that it's OK to delete o... but it could still"
+    #warning "be in o->process().  How do we protect against that?"
+    m_outputs.remove(o);
     return 0;
 }
