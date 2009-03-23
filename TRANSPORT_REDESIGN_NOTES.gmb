@@ -1008,6 +1008,10 @@ public:
 
 	~Hydrogen();
 
+        // Master process() callbacks
+        static int process_callback(frames_type nframes, void* arg);
+        int process(frames_type nframes);
+
 	/// Access to major objects.
 	TransportMasterInterface& get_transport();
 	Mixer& get_mixer();
@@ -1057,4 +1061,87 @@ private:
 	Hydrogen();  // private because Hydrogen is a singleton.
 };
 
+--------------------------------------------------------------------------------
+2009-03-22 THE PROCESS() CALLBACK - PROPOSED
+============================================
 
+Currently, Hydrogen requires the AudioOutput driver to supply something that
+will call the process() callback.  When using JACK, CoreAudio, or PortAudio for
+Audio, those API's supply a thread that calls the process() callback.  When
+using OSS or ALSA, they are required to supply a thread that calls process()
+repeatedly.  When using MIDI, the MIDI happens _outside_ of the process()
+callback.  This makes it difficult to synchronize MIDI events with audio
+frames.  When I did the JACK MIDI driver, I had to add a hook into the audio
+process callback and kludge a lot of the "getCurrentFrame" logic.
+
+Here's a listing of the current/planned/potential Hydrogen driver API's:
+
+API       | Data  | API TYPE | Requires   | Syncs with
+==========+=======+==========+============+============
+JACK      | Audio | Callback | (none)     | JACK MIDI
+ALSA      | Audio | I/O      | (none)     |
+OSS       | Audio | I/O      | (none)     |
+CoreAudio | Audio | Callback | (none)     |
+PortAudio | Audio | Callback | (none)     |
+JACK *%   | MIDI  | Callback | JACK Audio | JACK Audio
+ALSA      | MIDI  | I/O      | (none)     |
+CoreMidi  | MIDI  | Callback | (none)     |
+PortMidi  | MIDI  | I/O      | (none)     |
+LADSPA *  | Audio | Callback | (none)     | (Host app)
+LV2 *     | (any) | Callback | (none)     | (Host app)
+DSSI *    | Au+Mi | Callback | (none)     | (Host app)
+OSC *     | (any) | Event    | (none)     | Wall clock
+
+* - an API that is not currently supported by Hydrogen.
+% - an API that is planned to be supported by Hydrogen.
+
+Note that a good resource on this topic is this article on writing ALSA
+applications, written by Paul Davis:
+http://www.equalarea.com/paul/alsa-audio.html
+
+So, the issue is: how do we handle and synchronize all of these?  And in a way
+that isn't confusing to users?  And what do we do when we have two Callback
+API's that aren't synchronized (like CoreAudio and CoreMidi)?
+
+First off, Davis's article shows how to turn an I/O API into a Callback API.  So
+then, it becomes a matter of who is controlling the clock.  It looks like we
+have the following 5 situations:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | ???            | ???
+---------------+--------------------+----------------+--------------------
+I/O Audio      | ???                | N/A            | ???
+
+Here's how H2 currently does it:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | N/A            | Audio uses API thd.
+               |                    |                | MIDI supplies thd.
+---------------+--------------------+----------------+--------------------
+I/O Audio      | N/A                | N/A            | Ea. supplies thread
+
+Here's how H2 might do it:
+
+               | Callback MIDI      | Callback MIDI  | I/O MIDI
+               | (Same as Aud.)     | (Ind. of Aud.) |
+===============+====================+================+====================
+Callback Audio | Use API's thread   | Use Audio API's| Use Audio API's
+               |                    | thread.        | thread.
+               |                    | (???)          | MIDI supplies own
+               |                    |                | thread only if necc
+---------------+--------------------+----------------+--------------------
+I/O Audio      | H2 Supplies thread | N/A            | H2 Supplies thread
+               | and timer          |                | and timer.
+
+Suggest:  Examine how ALSA was implemented in the JACK codebase.  At first
+glance, JACK supplies a thread to control timings for noncallback API's (called
+_nt_ drivers for non-thread).  Callback API's handle it themselves.  I'm still
+not clear on how they set timer interrupts -- whether it's done using audio
+hardware frame-based interrupts or by using an internal timer like HPET.
+
+Hmmm... would be much easier if it were JACK only.  I feel like this is
+rewriting JACK.  Maybe I'm barking up the wrong tree here.
