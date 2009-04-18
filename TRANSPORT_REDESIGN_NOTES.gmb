@@ -1190,3 +1190,40 @@ HydrogenProcess().  This will require some manner of circular (ring) buffer.
 Note that the timer sync (m_epoch) could be incorperated into the
 circular_buffer's API.
 
+One issue: If our master callback is called much more frequently than
+this "rogue" callback... what do we do?  For example:
+
+     Wall Clock: 0 . . . . 1 . . . . 2 . . . . 3 . . . . 4 . . . . 5
+         Thread: X                                       X
+HydrogenProcess: X         X         X         X         X         X
+       m_epoch =  0         1         2         3         4         5
+
+Between 0 and 4, data may be received.  When normalized to the current
+buffer, all time will be from the span 0 to 4.  Measuring time from 3,
+our span is from -3 to 1.  This is a problem, because our processing
+is expecting all the events to be between 0 and 1.
+
+What do we do?  Here's two options:
+
+  * Add latency to the signal.  All data is scheduled, say, 4 periods
+    after how we would normally schedule it.
+
+  * Squash the data between 0 and 3 and schedule it as if they all
+    happened at 3.
+
+For now (since I'm writing more aobut it than coding :-)), either will
+do.  But the bottom line is that Hydrogen needs these (as utilities):
+
+1. A master thread sourced by Hydrogen for when the Audio API is not
+   interrupt-driven (callbacks).
+
+2. A lock-free circular (ring) buffer.
+
+3. A high precision timer that can roughly be mapped back to the frame
+   rate.
+
+In the Ardour source tree is a libs/pbd/pbd/ringbuffer.h, which is a
+C++ ring buffer class.  This was the basis of the JACK ringbuffer
+design (translating the code from C++ to C).  It is GPL v2+, so I'm
+grafting it in to our code.
+
