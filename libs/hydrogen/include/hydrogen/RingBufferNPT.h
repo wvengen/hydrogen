@@ -16,13 +16,20 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */
+/*  This file came from the Ardour sources, SVN Rev 3435 2008-06-02.
+    Changed file name and added Hydrogen namespaces and include guards.
+    - Gabriel Beddingfield 2009-04-17
+*/
 
-#ifndef ringbuffer_npt_h
-#define ringbuffer_npt_h
+#ifndef H2CORE_RINGBUFFER_NPT_H
+#define H2CORE_RINGBUFFER_NPT_H
 
 //#include <sys/mman.h>
 
 #include <glib.h>
+
+namespace H2Core
+{
 
 /* ringbuffer class where the element size is not required to be a power of two */
 
@@ -271,4 +278,6 @@ RingBufferNPT<T>::get_write_vector (RingBufferNPT<T>::rw_vector *vec)
 	}
 }
 
-#endif /* __ringbuffer_npt_h__ */
+} // namespace H2Core
+
+#endif /* H2CORE_RINGBUFFER_NPT_H */

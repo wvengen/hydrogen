@@ -16,12 +16,19 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */
+/*  This file came from the Ardour sources, SVN Rev 3435 2008-06-02.
+    Changed file name and added Hydrogen namespaces and include guards.
+    - Gabriel Beddingfield 2009-04-17
+*/
 
-#ifndef ringbuffer_h
-#define ringbuffer_h
+#ifndef H2CORE_RINGBUFFER_H
+#define H2CORE_RINGBUFFER_H
 
 #include <cstring>
 #include <glib.h>
+
+namespace H2Core
+{
 
 template<class T>
 class RingBuffer 
@@ -277,5 +284,6 @@ RingBuffer<T>::get_write_vector (RingBuffer<T>::rw_vector *vec)
 	}
 }
 
+} // namespace H2Core
 
-#endif /* __ringbuffer_h__ */
+#endif // H2CORE_RINGBUFFER_H
