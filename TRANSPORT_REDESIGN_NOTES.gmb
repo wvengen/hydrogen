@@ -1,6 +1,18 @@
 NOTES ON REDESIGNING THE TRANSPORT IN HYDROGEN
 ==============================================
 
+#####################################
+#####    W A R N I N G ! ! !    *****
+#####################################
+#                                   #
+# This file represents the          #
+# evolution of ideas.  If you wnat  #
+# to know "what is the new design?" #
+# then you should read the file:    #
+# NEW_DESIGN.txt                    #
+#                                   #
+#####################################
+
 --------------------------------------------------------------------------------
 Date: Tue, 26 Aug 2008 12:42:47 -0500
 From: "Gabriel M. Beddingfield" <gabriel@teuton.org>
