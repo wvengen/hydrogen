@@ -1145,3 +1145,48 @@ hardware frame-based interrupts or by using an internal timer like HPET.
 
 Hmmm... would be much easier if it were JACK only.  I feel like this is
 rewriting JACK.  Maybe I'm barking up the wrong tree here.
+
+2009-04-17: OK, after thinking about it a while, I think that the table at the
+bottom is OK, and this is what we should do.  For API's that don't synchronize,
+synchronization can be approximated like this... for example the case of a
+MidiDriver which has a callback API not compatible with the AudioDriver's
+callback API...
+
+   circular_buffer<MidiDriver::ev_t> MidiDriver::m_buf;
+   some_timer_t MidiDriver::m_epoch;
+
+   MidiDriver::ThreadMain()
+   {
+      driver_data_t buf[];
+      MidiDriver::ev_t *ev;
+      size_t k;
+   
+      while( count = driver_read(buf) ) {
+         ev = m_buf.reserve(count);
+         for( k=0 ; k<count ; ++k ) {
+	    ev[k].timestamp = some_timer_calculation() - m_epoch;
+            ev[k].data = buf[k];
+         }
+         m_buf.push();
+      }
+   }
+
+   MidiDriver::HydrogenProcess()
+   {
+      size_t k;
+      MidiDriver::ev_t ev;
+
+      m_epoch = some_timer();
+      size_t data = m_buf.avail_for_read();
+
+      for( k = 0 ; k < data ; ++k ) {
+         ev = m_buf.pop();
+	 // Process ev
+      }
+   }
+
+Thus, timing is synchronized roughly by the distince between calls to
+HydrogenProcess().  This will require some manner of circular (ring) buffer.
+Note that the timer sync (m_epoch) could be incorperated into the
+circular_buffer's API.
+
