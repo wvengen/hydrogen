@@ -173,6 +173,29 @@ ensure that the transports will follow certain rules.
 The names "Master" are a little confusing when you think in terms of
 being the Jack Transport Master.
 
+THE JACK TRANSPORT
+==================
+
+When Hydrogen wishes to be the JACK Transport master, it must be done in a
+special way.  The JACK API provides a funtion for (optionally) taking control of
+the JACK Transport.  However, it does *not* provide any means of notification
+that you are no longer the transport master.
+
+Therefore, we can *never* make any decision based on whether or not Hydrogen is
+the JACK transport master.  Furthermore, when Hydrogen wishes to be the
+transport master, it works like this:
+
+
+                                        .....................
+  Song ---> JackTransportCallback ----->.                   .
+                                        . jackd             .
+  Transport <-- JackTransportMaster <---.                   .
+                                        .....................
+
+In this way, our JackTransportMaster "driver" has no clue who is really
+controlling the JACK transport.  Meanwhile, the JackTransportCallback is mapping
+the current Song to the Jack timeline.
+
 THE SEQUENCER
 =============
 
