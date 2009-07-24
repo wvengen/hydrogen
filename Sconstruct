@@ -54,11 +54,10 @@ def get_platform_flags( opts ):
 				cppflags.append(flag)
 			
 		else:
-			cppflags += ['-O3', '-fomit-frame-pointer', '-funroll-loops']
+			cppflags += ['-fno-default-inline','-O3', '-fomit-frame-pointer', '-funroll-loops']
 			#cppflags += " %s" % get_optimized_flags( target_cpu )
 			for flag in env["optflags"].split(" "):
 				cppflags.append(flag)
-
 
 		if str(env['oss']) == "1": cppflags.append('-DOSS_SUPPORT')
 		if str(env['alsa']) == "1": cppflags.append('-DALSA_SUPPORT')
@@ -74,7 +73,10 @@ def get_platform_flags( opts ):
 		cppflags.append('-DLADSPA_SUPPORT')
 		
 
-
+	
+	cppflags.append(['-fno-inline','-g','-frtti','-mthreads','-fexceptions'] )
+	 # -g -frtti -mthreads -fexceptions')
+	cppflags.append('-DQT_THREAD_SUPPORT')
 	if str(env['libarchive']) == "1": cppflags.append('-DLIBARCHIVE_SUPPORT')
 
 	includes.append( './' )
@@ -93,6 +95,7 @@ def get_platform_flags( opts ):
 		includes.append( 'build\pthreads\include' )
 		includes.append( '3rdparty\libarchive\include' )
 		includes.append( 'windows\timeFix' )
+		includes.append( 'C:\Program Files\GnuWin32\include' )
 	else:
 		raise Exception( "Platform '%s' not supported" % sys.platform )
 
@@ -176,7 +179,7 @@ def get_hydrogen_lib( opts ):
 	qt4ToolLocation="."
 
 	env = Environment(options = opts , tools=['default','qt4'], toolpath=[qt4ToolLocation], ENV=os.environ, CPPPATH = includes, CPPFLAGS = cppflags, CCFLAGS = "", LINKFLAGS=ldflags )
-	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=False)
+	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=True)
 	env.CacheDir( "scons_cache" )
 	
 
@@ -223,7 +226,7 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 
 	env = Environment(options = opts , tools=['default','qt4'], toolpath=[qt4ToolLocation], ENV=os.environ, CPPPATH = includes, CPPFLAGS = cppflags, CCFLAGS = "", LINKFLAGS=ldflags )
 	
-	env.EnableQt4Modules( ['QtCore', 'QtGui','QtNetwork','QtXml'], debug=False)
+	env.EnableQt4Modules( ['QtCore', 'QtGui','QtNetwork','QtXml'], debug=True)
 	#
 	env.CacheDir( "scons_cache" )
 	
@@ -247,9 +250,15 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 	src = scanFiles( directory, ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
 
 	env.Append( LIBS = lib_hydrogen )
-	env.Append( LIBS = ["sndfile"] )
+	
+	if sys.platform != "win32":
+		env.Append( LIBS = ["sndfile"] )
+	else:
+		env.Append( LIBS = ["sndfile-1"] )
+
 	if sys.platform == "win32":
 		env.Append( LIBS = [ "pthread" ] )
+		env.Append( LIBS = [ "qtmaind" ] )
 	
 	if str(env['lrdf']) == "1": env.Append( LIBS = ["lrdf"] )
 	if str(env['flac']) == "1": env.Append( LIBS = ["FLAC","FLAC++"] )
@@ -273,9 +282,12 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 		env.Append( LINKFLAGS = ['-framework','Coreaudio'])
 
 
-
+	env.Append( LINKFLAGS = [ '-enable-stdcall-fixup','-Wl,' ] ) 
+	env.Append( LINKFLAGS = [ '-enable-auto-import','-Wl,' ] ) 
+	env.Append( LINKFLAGS = [ '-enable-runtime-pseudo-reloc','-mthreads','-Wl','-Wl,' ] ) 
+	env.Append( LINKFLAGS = [ '-subsystem,windows' ] ) 
 	env.Append( LIBPATH = '3rdparty\libsndfile-1_0_17' )
-	env.Append( LIBPATH = 'build\pthreads\lib' )
+	env.Append( LIBPATH = 'C:\Program Files\GnuWin32\lib' )
 
 	app = env.Program(target = 'hydrogen', source = src )
 
@@ -374,6 +386,7 @@ env = Environment(options = opts, CPPPATH = includes)
 
 Help(opts.GenerateHelpText(env))
 
+print includes
 
 platform = sys.platform
 
@@ -392,7 +405,7 @@ def CheckPKG(context, name):
     return ret
 
 conf = Configure(env, custom_tests = { 'CheckPKG' : CheckPKG })
-if not conf.CheckCHeader('sndfile.h'):
+if platform != "win32" and not conf.CheckCHeader('sndfile.h') :
     print 'libsndfile must be installed!'
     Exit(1)
 
