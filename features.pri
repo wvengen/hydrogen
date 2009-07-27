@@ -11,9 +11,17 @@ macx-g++ {
 
 	H2DEFINES += LADSPA_SUPPORT
 	H2DEFINES += FLAC_SUPPORT
-#	H2DEFINES += JACK_SUPPORT
+	H2DEFINES += JACK_SUPPORT
 	H2DEFINES += COREAUDIO_SUPPORT
 	H2DEFINES += COREMIDI_SUPPORT
+
+	LIBS += /opt/local/lib/libFLAC.dylib
+	LIBS += /opt/local/lib/libFLAC++.dylib
+	LIBS += /opt/local/lib/libjack.dylib
+	LIBS += /opt/local/lib/libtar.dylib
+	LIBS += /opt/local/lib/libpng.dylib
+	LIBS += /opt/local/lib/libsndfile.dylib 
+	
 }
 
 

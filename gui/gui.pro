@@ -29,9 +29,14 @@ win32 {
 	#INCLUDEPATH += ../3rdparty/install/libs/portaudio
 	#INCLUDEPATH += ../3rdparty/install/libs/portmidi
 	INCLUDEPATH += ../../../source/pthreads-w32-2-8-0-release
+	
+	LIBS += "C:\Program Files\GnuWin32\lib\libarchive.lib"
+	LIBS += "C:\Qt\2009.03\mingw\lib\libpthread.a"
+	LIBS += "C:\Documents and Settings\sebastian\Desktop\hydrogen\3rdparty\libsndfile-1_0_17\libsndfile-1.dll"
 }
 
-# LIBS += ../libflac++.lib ../libflac++_dynamic.lib ../libflac++_static.lib ../libflac.lib winmm.lib
+#old windows libs..
+#LIBS += ../libflac++.lib ../libflac++_dynamic.lib ../libflac++_static.lib ../libflac.lib winmm.lib
 #LIBS += ../libflac++_static.lib ../libflac_static.lib winmm.lib
 #LIBS += ../optarg.lib
 #LIBS += ../ogg_static.lib
@@ -41,9 +46,7 @@ win32 {
 #LIBS += ../porttime.lib
 #LIBS += ../pthreadvc2.lib
 #LIBS += dsound.lib ../cmtar.lib ../sndfile.lib wsock32.lib
-LIBS += "C:\Program Files\GnuWin32\lib\libarchive.lib"
-LIBS += "C:\Qt\2009.03\mingw\lib\libpthread.a"
-LIBS += "C:\Documents and Settings\sebastian\Desktop\hydrogen\3rdparty\libsndfile-1_0_17\libsndfile-1.dll"
+
 
 DEPENDPATH += . \
               src \
