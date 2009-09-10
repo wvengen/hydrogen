@@ -306,6 +306,70 @@ def get_hydrogen_gui( lib_hydrogen , opts ):
 
 	return app
 
+
+def get_hydrogen_player( lib_hydrogen , opts ):
+	includes, cppflags, ldflags = get_platform_flags( opts )
+
+	includes.append( "libs/hydrogen/include" )
+	
+	env = Environment( options = opts ) 
+
+	#location of qt4.py
+	qt4ToolLocation="."
+
+	env = Environment(options = opts , tools=['default','qt4'], toolpath=[qt4ToolLocation], ENV=os.environ, CPPPATH = includes, CPPFLAGS = cppflags, CCFLAGS = "", LINKFLAGS=ldflags )
+	env.EnableQt4Modules( ['QtCore', 'QtGui'], debug=False)
+	env.CacheDir( "scons_cache" )
+
+	env.Append( LIBS = lib_hydrogen )	
+	
+	if sys.platform != "win32":
+		env.Append( LIBS = ["sndfile"] )
+	else:
+		env.Append( LIBS = ["sndfile-1"] )
+		env.Append( LIBPATH = '3rdparty\libsndfile-1_0_17' )
+		env.Append( LIBPATH = 'C:\Program Files\GnuWin32\lib' )
+		env.Append( LIBS = [ "pthread" ] )
+	
+	if str(env['lrdf']) == "1": env.Append( LIBS = ["lrdf"] )
+	if str(env['flac']) == "1": env.Append( LIBS = ["FLAC","FLAC++"] )
+	if str(env['jack']) == "1": env.Append( LIBS = ["jack"])
+	if str(env['alsa']) == "1": env.Append( LIBS = ["asound"])
+	if str(env['libarchive']) == "1": env.Append( LIBS = ["archive"])
+	else: env.Append( LIBS = ["tar"])
+	if str(env['portaudio']) == "1": env.Append( LIBS = [ "portaudio" ] )
+	if str(env['portmidi']) == "1":
+		env.Append( LIBS = [ "portmidi" ] )
+		env.Append( LIBS = [ "porttime" ] )
+	if str(env['lash']) == "1":
+	        env.ParseConfig('pkg-config --cflags --libs lash-1.0')
+
+	if sys.platform == "darwin":
+		env.Append( LIBS = ["z"] )
+
+	if sys.platform == "darwin" and str(env['coreaudio']) == "1":
+		env.Append( LINKFLAGS = ['-framework','ApplicationServices'])
+		env.Append( LINKFLAGS = ['-framework','AudioUnit'])
+		env.Append( LINKFLAGS = ['-framework','Coreaudio'])
+
+
+
+	#env.Decider is not known in older scons version
+	try:
+		env.Decider( "MD5-timestamp" )
+	except AttributeError:
+		env.SourceSignatures('MD5')
+
+	src = scanFiles( "extra/hydrogenPlayer", ['*.cpp', '*.cc', '*.c' ], [ 'moc_'] )
+#	src.append( "version.cpp" )
+
+	app = env.Program(target = 'hydrogenplayer', source = src )
+	env.Alias('programs', app)
+	env.Default('programs')
+
+	return app
+
+
 def get_jack_api_flags(xenv, pkg_ver):
     (major, minor, patch) = pkg_ver.rstrip().split('.')
     major = int(major)
@@ -527,5 +591,6 @@ version.close()
 
 libhyd = get_hydrogen_lib( opts )
 app = get_hydrogen_gui( libhyd , opts )
+appplayer = get_hydrogen_player( libhyd , opts )
 
 opts.Save("scache.conf",env)

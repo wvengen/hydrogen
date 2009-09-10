@@ -23,12 +23,12 @@
 #include "gui/src/HydrogenApp.h"
 #include "gui/src/InstrumentRack.h"
 #include "gui/src/SoundLibrary/SoundLibraryPanel.h"
+#include "playlist.h"
 
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/playlist.h>
 
 #include <vector>
 #include <cstdlib>

@@ -22,7 +22,6 @@
 #include "version.h"
 
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/playlist.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/smf/SMF.h>
 #include <hydrogen/Preferences.h>
@@ -42,6 +41,7 @@ using namespace H2Core;
 #include "HelpBrowser.h"
 #include "LadspaFXProperties.h"
 #include "SongPropertiesDialog.h"
+#include "PlaylistEditor/playlist.h"
 
 #include "Mixer/Mixer.h"
 #include "InstrumentEditor/InstrumentEditorPanel.h"
@@ -80,6 +80,8 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 	m_pQApp = app;
 
 	m_pQApp->processEvents();
+
+	Playlist::create_instance();
 
 	// Load default song
 	Song *song = NULL;

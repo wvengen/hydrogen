@@ -26,12 +26,12 @@
 #include "../InstrumentRack.h"
 #include "SoundLibrary/SoundLibraryPanel.h"
 #include "widgets/PixmapWidget.h"
+#include "playlist.h"
 
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/playlist.h>
 
 #include "../widgets/Button.h"
 

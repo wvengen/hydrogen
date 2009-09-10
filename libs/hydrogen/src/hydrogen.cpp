@@ -64,7 +64,6 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/sampler/Sampler.h>
 #include <hydrogen/midiMap.h>
-#include <hydrogen/playlist.h>
 
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
@@ -298,7 +297,6 @@ void audioEngine_init()
 	Effects::create_instance();
 #endif
 	AudioEngine::create_instance();
-	Playlist::create_instance();
 
 	EventQueue::get_instance()->push_event( EVENT_STATE, STATE_INITIALIZED );
 
