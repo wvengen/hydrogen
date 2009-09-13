@@ -367,6 +367,8 @@ def get_hydrogen_player( lib_hydrogen , opts ):
 	env.Alias('programs', app)
 	env.Default('programs')
 
+	env.Alias(target="install", source=env.Install(dir= env['DESTDIR'] + env['prefix'] + '/bin/', source="./hydrogenplayer"))
+
 	return app
 
 
