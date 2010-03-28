@@ -67,6 +67,7 @@
 #include <hydrogen/sampler/Sampler.h>
 #include <hydrogen/midiMap.h>
 #include <hydrogen/playlist.h>
+#include <hydrogen/midi_timers.h>
 
 #include "IO/OssDriver.h"
 #include "IO/FakeDriver.h"
@@ -1223,7 +1224,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			m_pPlayingPatterns->clear();
 			for (std::set<Pattern*>::const_iterator virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
 			    m_pPlayingPatterns->add(*virtualIter);
-			}//for
+			 }//for
 			
 			//if ( pPatternList ) {
 				//for ( unsigned i = 0; i < pPatternList->get_size(); ++i ) {
@@ -1847,6 +1848,8 @@ Hydrogen::~Hydrogen()
 	if ( m_audioEngineState == STATE_PLAYING ) {
 		audioEngine_stop();
 	}
+
+	delete m_pMidiClockTimer;
 	removeSong();
 	audioEngine_stopAudioDrivers();
 	audioEngine_destroy();
@@ -1874,6 +1877,21 @@ void Hydrogen::create_instance()
 	// AudioEngine::create_instance();
 	// Effects::create_instance();
 	// Playlist::create_instance();
+
+}
+
+void Hydrogen::createMidiClockTimer()
+{
+#ifdef H2CORE_HAVE_ALSA
+	//create a timer. if not used timer freq is 24 cycles / min
+	//this timer is (u)sleep() based and use less cpu if timer frequence is low.
+	m_pMidiClockTimer = new H2Core::HIIMBCTimer( 1 );
+
+	if( Preferences::get_instance()->get_sendMidiClock() == true ) {
+		getMidiClockTimer()->setNewTimeval( getSong()->__bpm );
+		getMidiClockTimer()->start();
+	}
+#endif // H2CORE_HAVE_ALSA
 }
 
 /// Start the internal sequencer
@@ -1881,6 +1899,11 @@ void Hydrogen::sequencer_play()
 {
 	getSong()->get_pattern_list()->set_to_old();
 	m_pAudioDriver->play();
+
+	//handle Midi Start
+	if( Preferences::get_instance()->get_sendMidiStartStop() == true){
+		getMidiOutput()->handleStart();
+	}
 }
 
 
@@ -1888,12 +1911,24 @@ void Hydrogen::sequencer_play()
 /// Stop the internal sequencer
 void Hydrogen::sequencer_stop()
 {
-    if( Hydrogen::get_instance()->getMidiOutput() != NULL ){
+	if( Hydrogen::get_instance()->getMidiOutput() != NULL ){
 		Hydrogen::get_instance()->getMidiOutput()->handleQueueAllNoteOff();
-    }
+	}
+	
+	m_pAudioDriver->stop();
+	Preferences::get_instance()->setRecordEvents(false);
 
-    m_pAudioDriver->stop();
-    Preferences::get_instance()->setRecordEvents(false);
+	//if sequencer will stopped we send a spp signal
+	if( Preferences::get_instance()->get_sendMidiSpp() == true){
+		int position = 0;
+		position = m_pAudioDriver->m_transport.m_nFrames / m_pAudioDriver->m_transport.m_nTickSize / 12;
+		getMidiOutput()->handleSongPosition( position );
+	}
+	//handle Midi Stop
+	if( Preferences::get_instance()->get_sendMidiStartStop() == true){
+		getMidiOutput()->handleStop();
+	}
+
 }
 
 
@@ -2830,6 +2865,12 @@ void Hydrogen::setPatternPos( int pos )
 		);
 
 	AudioEngine::get_instance()->unlock();
+
+	if( Preferences::get_instance()->get_sendMidiSpp() == true){
+		int position = 0;
+		position = m_pAudioDriver->m_transport.m_nFrames / m_pAudioDriver->m_transport.m_nTickSize / 12;
+		getMidiOutput()->handleSongPosition( position );
+	}
 }
 
 
@@ -2877,6 +2918,8 @@ void Hydrogen::onTapTempoAccelEvent()
 	}
 #endif
 }
+
+
 
 void Hydrogen::setTapTempo( float fInterval )
 {
@@ -2944,10 +2987,17 @@ void Hydrogen::setTapTempo( float fInterval )
 void Hydrogen::setBPM( float fBPM )
 {
 	if ( m_pAudioDriver && m_pSong ) {
+#ifdef H2CORE_HAVE_ALSA
+		if( Preferences::get_instance()->get_sendMidiClock() == true ) {
+			fBPM = round(fBPM);
+			getMidiClockTimer()->setNewTimeval( (int)fBPM );
+		}
+#endif // H2CORE_HAVE_ALSA
 		m_pAudioDriver->setBpm( fBPM );
 		m_pSong->__bpm = fBPM;
 		m_nNewBpmJTM = fBPM;
 //		audioEngine_process_checkBPMChanged();
+
 	}
 }
 
@@ -3404,6 +3454,144 @@ void Hydrogen::setTimelineBpm()
 		setBPM( bpm );
 	}//if
 }
+
+#ifdef H2CORE_HAVE_ALSA
+///receive midi spp 
+void Hydrogen::receiveSppAndCalculateHydrogenSongPosition( int position )
+{
+	long long totalsongframes = getTickForPosition( getSong()->get_pattern_group_vector()->size()-1 ) * m_pAudioDriver->m_transport.m_nTickSize;
+	
+	if( ( Preferences::get_instance()->get_receiveMidiSpp() == true )&& ( getSong()->get_mode() == Song::SONG_MODE ) ){
+		float fNewBeatTickSize = m_pAudioDriver->getSampleRate() * 60.0 /  m_pAudioDriver->m_transport.m_nBPM ;
+		long long positionInFrames = ( long long )( fNewBeatTickSize * (position/4) );
+		//ERRORLOG(QString("songlength %1 position %2").arg(totalsongframes).arg(positionInFrames));
+		if( totalsongframes > positionInFrames ){
+			setPatternPos( getpositionForFrames( positionInFrames ) );//set a ~ position only to adjust the h2 playhead
+			m_pAudioDriver->locate(positionInFrames);//set the exact song position
+		}
+	}
+}
+
+
+int Hydrogen::getpositionForFrames( long long positionFrames )
+{
+	std::vector<PatternList*> *pColumns = m_pSong->get_pattern_group_vector();
+	int pos = m_pSong->get_pattern_group_vector()->size();
+	long long totalFrames = 0;
+	long nPatternFrames;
+	Pattern *pPattern = NULL;
+	for ( int i = 0; i < pos; ++i ) {
+		PatternList *pColumn = ( *pColumns )[ i ];
+		pPattern = pColumn->get( 0 );
+		if ( pPattern ) {
+			nPatternFrames = pPattern->get_length() *  m_pAudioDriver->m_transport.m_nTickSize;
+		} else {
+			nPatternFrames = MAX_NOTES *  m_pAudioDriver->m_transport.m_nTickSize;
+		}
+
+		if( totalFrames + nPatternFrames > positionFrames){
+			return i;
+		}
+		totalFrames += nPatternFrames;
+
+	}
+	return 0;
+}
+
+///receive midi clock
+void Hydrogen::calculateIncomingMidiClockTempo()
+{
+	if( Preferences::get_instance()->get_receiveMidiClock() == true ){
+#ifndef WIN32
+		//divide midi clock input trigger to decrease fluctation bpms on higher bpm values
+		static int breakdown = 1;
+		int t = 1;
+		if( getSong()->__bpm > 120 ) t = 2;
+		if( getSong()->__bpm > 210 ) t = 4;
+		if( getSong()->__bpm > 360 ) t = 8;
+		if( getSong()->__bpm > 450 ) t = 24;	
+		if( breakdown >= t  ){
+			static timeval oldTimeVal;	
+			struct timeval now;
+			gettimeofday(&now, NULL);
+		
+			float fInterval =
+				(now.tv_sec - oldTimeVal.tv_sec) * 1000.0
+				+ (now.tv_usec - oldTimeVal.tv_usec) / 1000.0;
+		
+			oldTimeVal = now;
+		
+			if ( fInterval < 1000.0 ) {
+				setmMidiClockTempo( fInterval );
+			}
+			breakdown = 1;
+			return;
+		}
+		breakdown++;	
+#endif	
+	}
+}
+
+void Hydrogen::setmMidiClockTempo( float fInterval )
+{
+	static float fOldBpm1 = -1;
+	static float fOldBpm2 = -1;
+	static float fOldBpm3 = -1;
+	static float fOldBpm4 = -1;
+	static float fOldBpm5 = -1;
+	static float fOldBpm6 = -1;
+	static float fOldBpm7 = -1;
+
+	float bpmdevider = 24.0;
+	if(m_pSong->__bpm > 120 ) bpmdevider = 12.0;
+	if(m_pSong->__bpm > 210 ) bpmdevider = 6.0;
+	if(m_pSong->__bpm > 360 ) bpmdevider = 3.0;
+	if(m_pSong->__bpm > 450 ) bpmdevider = 1.0;
+	
+	float fBPM = 60000.0 / fInterval / bpmdevider;
+
+	if ( fabs( fOldBpm1 - fBPM ) > 20 ) {
+		fOldBpm1 = fBPM;
+		fOldBpm2 = fBPM;
+		fOldBpm3 = fBPM;
+		fOldBpm4 = fBPM;
+		fOldBpm5 = fBPM;
+		fOldBpm6 = fBPM;
+		fOldBpm7 = fBPM;
+	}
+
+	if ( fOldBpm1 == -1 ) {
+		fOldBpm1 = fBPM;
+		fOldBpm2 = fBPM;
+		fOldBpm3 = fBPM;
+		fOldBpm4 = fBPM;
+		fOldBpm5 = fBPM;
+		fOldBpm6 = fBPM;
+		fOldBpm7 = fBPM;
+	}
+
+	fBPM = ( fBPM + fOldBpm1 + fOldBpm2 + fOldBpm3 + 
+		 fOldBpm4 + fOldBpm5 + fOldBpm6 + fOldBpm7 ) / 8.0;
+
+	fOldBpm7 = fOldBpm6;
+	fOldBpm6 = fOldBpm5;
+	fOldBpm5 = fOldBpm4;
+	fOldBpm4 = fOldBpm3;
+	fOldBpm3 = fOldBpm2;
+	fOldBpm2 = fOldBpm1;
+	fOldBpm1 = fBPM;
+
+	AudioEngine::get_instance()->lock( RIGHT_HERE );
+
+	if((m_pSong->__bpm <= fBPM -1.0)||(m_pSong->__bpm >= fBPM +1.0)){
+		int r = roundf(fBPM);
+		setBPM( (int)(r) );
+	}
+
+	AudioEngine::get_instance()->unlock();
+}
+#endif // H2CORE_HAVE_ALSA
+
 
 };
 

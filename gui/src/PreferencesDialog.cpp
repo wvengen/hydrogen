@@ -31,6 +31,7 @@
 
 #include <QPixmap>
 #include <QFontDialog>
+
 #include "widgets/midiTable.h"
 
 #include <hydrogen/midiMap.h>
@@ -129,6 +130,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 
 
 	bufferSizeSpinBox->setValue( pPref->m_nBufferSize );
+
 	switch ( pPref->m_nSampleRate ) {
 		case 44100:
 			sampleRateComboBox->setCurrentIndex( 0 );
@@ -220,7 +222,15 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	else {
 		midiPortChannelComboBox->setCurrentIndex( pPref->m_nMidiChannelFilter + 1 );
 	}
-	
+
+	//midi sync tab
+	sendClockcheckBox->setChecked( pPref->get_sendMidiClock() );
+	sendStartStopcheckBox->setChecked( pPref->get_sendMidiStartStop() );
+	sendSPPcheckBox->setChecked( pPref->get_sendMidiSpp() );
+
+	receiveClockcheckBox->setChecked( pPref->get_receiveMidiClock() );
+	receiveStartStopcheckBox->setChecked( pPref->get_receiveMidiStartStop() );
+	receiveSPPcheckBox->setChecked( pPref->get_receiveMidiSpp() );
 
 	// General tab
 	restoreLastUsedSongCheckbox->setChecked( pPref->isRestoreLastSongEnabled() );
@@ -247,6 +257,9 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	rubberbandLineEdit->setText( pathtoRubberband );
 
 	m_bNeedDriverRestart = false;
+	clockCompensationSlider->setSliderPosition( Preferences::get_instance()->get_sendMidiClockCompensation() );
+	m_noldMidiClockSliderValue = Preferences::get_instance()->get_sendMidiClockCompensation();
+	connect( clockCompensationSlider, SIGNAL(  valueChanged( int) ), SLOT( updateSliderValue( int ) ) );	
 }
 
 
@@ -272,6 +285,7 @@ void PreferencesDialog::on_cancelBtn_clicked()
 		}
 
 	}
+	Preferences::get_instance()->set_sendMidiClockCompensation( m_noldMidiClockSliderValue );
 
 	reject();
 }
@@ -312,6 +326,25 @@ void PreferencesDialog::on_okBtn_clicked()
 	else {
 		ERRORLOG( "[okBtnClicked] Invalid audio driver" );
 	}
+
+	//midi sync
+	pPref->set_sendMidiClock( sendClockcheckBox->isChecked() );
+	pPref->set_sendMidiStartStop( sendStartStopcheckBox->isChecked() );
+	pPref->set_sendMidiSpp( sendSPPcheckBox->isChecked() );
+
+	pPref->set_receiveMidiClock( receiveClockcheckBox->isChecked() );
+	pPref->set_receiveMidiStartStop( receiveStartStopcheckBox->isChecked() );
+	pPref->set_receiveMidiSpp( receiveSPPcheckBox->isChecked() );
+
+#ifdef H2CORE_HAVE_ALSA
+	if( pPref->get_sendMidiClock() ){
+		Hydrogen::get_instance()->getMidiClockTimer()->setNewTimeval( Hydrogen::get_instance()->getSong()->__bpm );
+		Hydrogen::get_instance()->getMidiClockTimer()->start();
+	}else
+	{
+		Hydrogen::get_instance()->getMidiClockTimer()->stop();
+	}
+#endif // H2CORE_HAVE_ALSA
 
 	// JACK
 	pPref->m_bJackTrackOuts = trackOutsCheckBox->isChecked();
@@ -410,10 +443,29 @@ void PreferencesDialog::on_okBtn_clicked()
 	pPref->savePreferences();
 
 	
+
 	if (m_bNeedDriverRestart) {
 		int res = QMessageBox::information( this, "Hydrogen", tr( "Driver restart required.\n Restart driver?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 		if ( res == 0 ) {
-			Hydrogen::get_instance()->restartDrivers();	
+
+			if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
+				Hydrogen::get_instance()->sequencer_stop();
+			}
+
+			if( pPref->get_sendMidiClock() ){
+#ifdef H2CORE_HAVE_ALSA
+				Hydrogen::get_instance()->getMidiClockTimer()->stop();
+#endif // H2CORE_HAVE_ALSA
+			}
+
+			Hydrogen::get_instance()->restartDrivers();
+
+			if( pPref->get_sendMidiClock() ){
+#ifdef H2CORE_HAVE_ALSA
+				Hydrogen::get_instance()->getMidiClockTimer()->setNewTimeval( Hydrogen::get_instance()->getSong()->__bpm );
+				Hydrogen::get_instance()->getMidiClockTimer()->start();
+#endif // H2CORE_HAVE_ALSA
+			}
 		}
 	}
 	accept();
@@ -658,3 +710,10 @@ void PreferencesDialog::on_useLashCheckbox_clicked()
 	QMessageBox::information ( this, "Hydrogen", trUtf8 ( "Please restart hydrogen to enable/disable LASH support" ) );
 }
 
+void PreferencesDialog::updateSliderValue( int value)
+{
+	Preferences::get_instance()->set_sendMidiClockCompensation( value );
+#ifdef H2CORE_HAVE_ALSA
+	Hydrogen::get_instance()->getMidiClockTimer()->setNewTimeval( Hydrogen::get_instance()->getSong()->__bpm );
+#endif // H2CORE_HAVE_ALSA
+}

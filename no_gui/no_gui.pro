@@ -23,4 +23,5 @@ MOC_DIR = objs
 INCLUDEPATH += .
 
 SOURCES += main.cpp
+HEADERS += ../libs/hydrogen/include/hydrogen/boosttimer.h
 

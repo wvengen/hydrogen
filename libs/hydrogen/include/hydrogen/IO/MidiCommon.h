@@ -49,7 +49,8 @@ public:
 		CONTINUE,
 		STOP,
 		SONG_POS,
-		QUARTER_FRAME
+		QUARTER_FRAME,
+		MIDI_CLOCK
 	};
 
 	MidiMessageType m_type;

@@ -311,7 +311,7 @@ void MainForm::createMenuBar()
 	//~ Tools menu
 
         Logger *l = Logger::get_instance();
-        if ( l->get_log_level() == 15 ) {
+       if ( l->get_log_level() == 15 ) {
 		// DEBUG menu
 		QMenu *m_pDebugMenu = m_pMenubar->addMenu( trUtf8("De&bug") );
 		m_pDebugMenu->addAction( trUtf8( "Show &audio engine info" ), this, SLOT( action_debug_showAudioEngineInfo() ) );
@@ -763,10 +763,6 @@ void MainForm::action_file_openDemo()
 
 void MainForm::showPreferencesDialog()
 {
-	if ( (Hydrogen::get_instance()->getState() == STATE_PLAYING) ) {
-		Hydrogen::get_instance()->sequencer_stop();
-	}
-
 	h2app->showPreferencesDialog();
 }
 

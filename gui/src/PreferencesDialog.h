@@ -39,6 +39,7 @@ class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, publi
 		~PreferencesDialog();
 
 	private slots:
+		void updateSliderValue( int );
 		void on_okBtn_clicked();
 		void on_cancelBtn_clicked();
 		void on_selectApplicationFontBtn_clicked();
@@ -55,6 +56,7 @@ class PreferencesDialog : public QDialog, private Ui_PreferencesDialog_UI, publi
 		bool m_bNeedDriverRestart;
 
 		void updateDriverInfo();
+		int m_noldMidiClockSliderValue;
 };
 
 #endif

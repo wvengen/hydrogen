@@ -31,6 +31,7 @@
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/IO/MidiOutput.h>
 #include <hydrogen/SoundLibrary.h>
+#include <hydrogen/midi_timers.h>
 #include <cassert>
 
 // Engine states  (It's ok to use ==, <, and > when testing)
@@ -214,6 +215,16 @@ public:
 	void sortTimelineVector();
 	void sortTimelineTagVector();
 
+#ifdef H2CORE_HAVE_ALSA
+	///midi spp
+	void receiveSppAndCalculateHydrogenSongPosition( int position);
+	///midi clock
+	void calculateIncomingMidiClockTempo();
+#endif // H2CORE_HAVE_ALSA
+
+	void createMidiClockTimer();
+	H2Core::HIIMBCTimer* getMidiClockTimer(){ return m_pMidiClockTimer;	}
+
 	struct HVeloVector
 	{
 		int m_hxframe;
@@ -301,6 +312,13 @@ private:
 	Hydrogen();
 
 	void __kill_instruments();
+
+#ifdef H2CORE_HAVE_ALSA
+	int getpositionForFrames( long long positionFrames );
+	void setmMidiClockTempo( float fInterval );
+#endif // H2CORE_HAVE_ALSA
+
+	H2Core::HIIMBCTimer *m_pMidiClockTimer;
 
 };
 

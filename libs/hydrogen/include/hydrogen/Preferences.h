@@ -539,6 +539,63 @@ public:
 	    return maxBars;
 	}
 
+	///midi-clock, spp, start/stop, mmc
+	//clock
+	void set_receiveMidiClock( bool b ){
+		m_breceiveMidiClock = b;
+	}
+	
+	bool get_receiveMidiClock(){
+		return m_breceiveMidiClock;
+	}
+
+	void set_sendMidiClock( bool b ){
+		m_bsendMidiClock = b;
+	}
+	
+	bool get_sendMidiClock(){
+		return m_bsendMidiClock;
+	}
+	void set_sendMidiClockCompensation( int b ){
+		m_nclockCompensationValue = b;
+	}
+	
+	int get_sendMidiClockCompensation(){
+		return m_nclockCompensationValue;
+	}
+	//spp
+	void set_receiveMidiSpp( bool b ){
+		m_breceiveMidiSpp = b;
+	}
+	
+	bool get_receiveMidiSpp(){
+		return m_breceiveMidiSpp;
+	}
+
+	void set_sendMidiSpp( bool b ){
+		m_bsendMidiSpp = b;
+	}
+	
+	bool get_sendMidiSpp(){
+		return m_bsendMidiSpp;
+	}
+	//start/stop
+	void set_receiveMidiStartStop( bool b ){
+		m_breceiveMidiStartStop = b;
+	}
+	
+	bool get_receiveMidiStartStop(){
+		return m_breceiveMidiStartStop;
+	}
+
+	void set_sendMidiStartStop( bool b ){
+		m_bsendMidiStartStop = b;
+	}
+	
+	bool get_sendMidiStartStop(){
+		return m_bsendMidiStartStop;
+	}
+
 private:
 	static Preferences *__instance;
 
@@ -568,7 +625,17 @@ private:
 	int punchOutPos;
 	QString m_sLastNews;
 	int maxBars;
-
+	///midi-clock, spp, start/stop, mmc
+	//clock
+	bool m_breceiveMidiClock;
+	bool m_bsendMidiClock;
+	int m_nclockCompensationValue;
+	//spp
+	bool m_breceiveMidiSpp;
+	bool m_bsendMidiSpp;
+	//start/stop
+	bool m_breceiveMidiStartStop;
+	bool m_bsendMidiStartStop;
 
 	//___ GUI properties ___
 	QString m_sQTStyle;

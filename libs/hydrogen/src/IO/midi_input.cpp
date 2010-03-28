@@ -49,80 +49,110 @@ MidiInput::~MidiInput()
 
 void MidiInput::handleMidiMessage( const MidiMessage& msg )
 {
-	EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
-
+	static int midiClockeventmidiactivity = 2;
 //	infoLog( "[handleMidiMessage]" );
 //	infoLog( "[handleMidiMessage] channel: " + to_string( msg.m_nChannel ) );
 //	infoLog( "[handleMidiMessage] val1: " + to_string( msg.m_nData1 ) );
 //	infoLog( "[handleMidiMessage] val2: " + to_string( msg.m_nData2 ) );
+	Hydrogen *pEngine = Hydrogen::get_instance();
+	Preferences *pRef = Preferences::get_instance();
 
 	switch ( msg.m_type ) {
 	case MidiMessage::SYSEX:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		handleSysexMessage( msg );
 		break;
 
 	case MidiMessage::NOTE_ON:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		handleNoteOnMessage( msg );
 		break;
 
 	case MidiMessage::NOTE_OFF:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		handleNoteOffMessage( msg );
 		break;
 
 	case MidiMessage::POLYPHONIC_KEY_PRESSURE:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		ERRORLOG( "POLYPHONIC_KEY_PRESSURE event not handled yet" );
 		break;
 
 	case MidiMessage::CONTROL_CHANGE:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		INFOLOG( QString( "[handleMidiMessage] CONTROL_CHANGE Parameter: %1, Value: %2").arg( msg.m_nData1 ).arg( msg.m_nData2 ) );
 		handleControlChangeMessage( msg );
 		break;
 
 	case MidiMessage::PROGRAM_CHANGE:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		INFOLOG( QString( "[handleMidiMessage] PROGRAM_CHANGE event, seting next pattern to %1" ).arg( msg.m_nData1 ) );
-		Hydrogen::get_instance()->sequencer_setNextPattern(msg.m_nData1, false, false);
+		pEngine->sequencer_setNextPattern(msg.m_nData1, false, false);
 		break;
 
 	case MidiMessage::CHANNEL_PRESSURE:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		ERRORLOG( "CHANNEL_PRESSURE event not handled yet" );
 		break;
 
 	case MidiMessage::PITCH_WHEEL:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		ERRORLOG( "PITCH_WHEEL event not handled yet" );
 		break;
 
 	case MidiMessage::SYSTEM_EXCLUSIVE:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		ERRORLOG( "SYSTEM_EXCLUSIVE event not handled yet" );
 		break;
 
 	case MidiMessage::START:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		INFOLOG( "START event" );
-		if ( Hydrogen::get_instance()->getState() != STATE_PLAYING ) {
-			Hydrogen::get_instance()->sequencer_play();
+		if ( ( pEngine->getState() != STATE_PLAYING ) && ( pRef->get_receiveMidiStartStop() == true ) ) {
+			pEngine->sequencer_play();
 		}
 		break;
 
 	case MidiMessage::CONTINUE:
-		ERRORLOG( "CONTINUE event not handled yet" );
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+		INFOLOG( "CONTINUE evenT" );
+		if ( ( pEngine->getState() != STATE_PLAYING ) && ( pRef->get_receiveMidiStartStop() == true ) ) {
+			pEngine->sequencer_play();
+		}
 		break;
 
 	case MidiMessage::STOP:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		INFOLOG( "STOP event" );
-		if ( Hydrogen::get_instance()->getState() == STATE_PLAYING ) {
-			Hydrogen::get_instance()->sequencer_stop();
+		if ( ( pEngine->getState() == STATE_PLAYING ) && ( pRef->get_receiveMidiStartStop() == true ) ) {
+			pEngine->sequencer_stop();
 		}
 		break;
 
 	case MidiMessage::SONG_POS:
-		ERRORLOG( "SONG_POS event not handled yet" );
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+		INFOLOG( QString("SONG_POS %1").arg(msg.m_nData1) );
+		pEngine->receiveSppAndCalculateHydrogenSongPosition( msg.m_nData1 );
 		break;
 
 	case MidiMessage::QUARTER_FRAME:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		WARNINGLOG( "QUARTER_FRAME event not handled yet" );
 		break;
 
 	case MidiMessage::UNKNOWN:
+		EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
 		ERRORLOG( "Unknown midi message" );
+		break;
+
+	case MidiMessage::MIDI_CLOCK:
+		INFOLOG( QString("MIDI_CLOCK") );
+		pEngine->calculateIncomingMidiClockTempo( );
+		midiClockeventmidiactivity--;
+		if( midiClockeventmidiactivity <= 1){
+			EventQueue::get_instance()->push_event( EVENT_MIDI_ACTIVITY, -1 );
+			midiClockeventmidiactivity = 25;
+		}
 		break;
 
 	default:

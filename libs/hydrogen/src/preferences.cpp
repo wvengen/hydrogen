@@ -232,6 +232,18 @@ Preferences::Preferences()
 	recordEvents = false;
 	m_sLastNews = QString("-");
 
+	///midi-clock, spp, start/stop, mmc properties
+	//clock
+	m_breceiveMidiClock = false;
+	m_bsendMidiClock = false;
+	m_nclockCompensationValue = 0;
+	//spp
+	m_breceiveMidiSpp = false;
+	m_bsendMidiSpp = false;
+	//start/stop
+	m_breceiveMidiStartStop = false;
+	m_bsendMidiStartStop = false;
+
 	//___ GUI properties ___
 	m_sQTStyle = "Plastique";
 	applicationFontFamily = "Lucida Grande";
@@ -397,6 +409,17 @@ void Preferences::loadPreferences( bool bGlobal )
 
 			hearNewNotes = LocalFileMng::readXmlBool( rootNode, "hearNewNotes", hearNewNotes );
 			quantizeEvents = LocalFileMng::readXmlBool( rootNode, "quantizeEvents", quantizeEvents );
+
+			//midi clock
+			m_breceiveMidiClock = LocalFileMng::readXmlBool( rootNode, "receiveMidiClock", m_breceiveMidiClock );
+			m_bsendMidiClock = LocalFileMng::readXmlBool( rootNode, "sendMidiClock", m_bsendMidiClock );
+			m_nclockCompensationValue = LocalFileMng::readXmlInt( rootNode, "midiClockCompensationValue", 0 );
+			//spp
+			m_breceiveMidiSpp = LocalFileMng::readXmlBool( rootNode, "receiveSpp", m_breceiveMidiSpp );
+			m_bsendMidiSpp = LocalFileMng::readXmlBool( rootNode, "sendSpp", m_bsendMidiSpp );
+			//start/stop
+			m_breceiveMidiStartStop = LocalFileMng::readXmlBool( rootNode, "receiveMidiStartStop", m_breceiveMidiStartStop );
+			m_bsendMidiStartStop = LocalFileMng::readXmlBool( rootNode, "sendMidiStartStop", m_bsendMidiStartStop );
 			
 			//rubberband
 			if( readPrefFileforotherplaces ){
@@ -755,6 +778,18 @@ void Preferences::savePreferences()
 	// key/midi event prefs
 	//LocalFileMng::writeXmlString( rootNode, "recordEvents", recordEvents ? "true": "false" );
 	LocalFileMng::writeXmlString( rootNode, "quantizeEvents", quantizeEvents ? "true": "false" );
+
+	//midi clock
+	LocalFileMng::writeXmlString( rootNode, "receiveMidiClock", m_breceiveMidiClock ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "sendMidiClock", m_bsendMidiClock ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "midiClockCompensationValue", QString::number( m_nclockCompensationValue ) );
+
+	//spp
+	LocalFileMng::writeXmlString( rootNode, "receiveSpp", m_breceiveMidiSpp ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "sendSpp", m_bsendMidiSpp ? "true": "false" );
+	//start/stop
+	LocalFileMng::writeXmlString( rootNode, "receiveMidiStartStop", m_breceiveMidiStartStop ? "true": "false" );
+	LocalFileMng::writeXmlString( rootNode, "sendMidiStartStop", m_bsendMidiStartStop ? "true": "false" );
 
 	//extern executables
 	if ( QFile( m_rubberBandCLIexecutable ).exists() == false ) {

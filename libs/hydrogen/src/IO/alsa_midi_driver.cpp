@@ -53,7 +53,7 @@ struct pollfd *pfd;
 int portId;
 int clientId;
 int outPortId;
-
+int clockPortId;
 
 void* alsaMidiDriver_thread( void* param )
 {
@@ -70,7 +70,6 @@ void* alsaMidiDriver_thread( void* param )
 		_ERRORLOG( QString( "Error opening ALSA sequencer: %1" ).arg( QString::fromLocal8Bit(snd_strerror(err)) ) );
 		pthread_exit( NULL );
 	}
-
 	snd_seq_set_client_name( seq_handle, "Hydrogen" );
 
 	if ( ( portId = snd_seq_create_simple_port( 	seq_handle,
@@ -86,6 +85,17 @@ void* alsaMidiDriver_thread( void* param )
 	
 	if ( ( outPortId = snd_seq_create_simple_port( 	seq_handle,
 	                "Hydrogen Midi-Out",
+	                SND_SEQ_PORT_CAP_READ |
+	                SND_SEQ_PORT_CAP_SUBS_READ,
+	                SND_SEQ_PORT_TYPE_APPLICATION
+	                                          )
+	     ) < 0 ) {
+		_ERRORLOG( "Error creating sequencer port." );
+		pthread_exit( NULL );
+	}
+
+	if ( ( clockPortId = snd_seq_create_simple_port( 	seq_handle,
+	                "Hydrogen Controll",
 	                SND_SEQ_PORT_CAP_READ |
 	                SND_SEQ_PORT_CAP_SUBS_READ,
 	                SND_SEQ_PORT_TYPE_APPLICATION
@@ -268,10 +278,12 @@ void AlsaMidiDriver::midi_action( snd_seq_t *seq_handle )
 
 			case SND_SEQ_EVENT_CLOCK:
 				//cout << "!!! Midi CLock" << endl;
+				msg.m_type = MidiMessage::MIDI_CLOCK;
 				break;
 
 			case SND_SEQ_EVENT_SONGPOS:
 				msg.m_type = MidiMessage::SONG_POS;
+				msg.m_nData1 = ev->data.control.value;
 				break;
 
 			case SND_SEQ_EVENT_START:
@@ -523,6 +535,76 @@ void AlsaMidiDriver::handleQueueAllNoteOff()
 		snd_seq_event_output(seq_handle, &ev);
 		snd_seq_drain_output(seq_handle);
 	}
+}
+
+
+void AlsaMidiDriver::handleBeatClock()
+{	
+	snd_seq_event_t ev;
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_source(&ev, clockPortId);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
+	ev.type = SND_SEQ_EVENT_CLOCK;
+	int error = snd_seq_event_output_direct(seq_handle, &ev);
+	if (error < 0)
+		ERRORLOG( QString("MidiAlsaDevice::putClock(): alsa midi write error: %1").arg(error) );
+}	
+
+
+void AlsaMidiDriver::handleSongPosition( int pos )
+{
+	snd_seq_event_t ev;
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_source(&ev, clockPortId);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
+	ev.data.control.value = pos;
+	ev.type = SND_SEQ_EVENT_SONGPOS;
+	int error = snd_seq_event_output_direct(seq_handle, &ev);
+	if (error < 0)
+		ERRORLOG( QString("handlePosition: alsa midi write error: %1").arg(error) );
+}
+
+void AlsaMidiDriver::handleStart()
+{
+	snd_seq_event_t ev;
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_source(&ev, clockPortId);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
+	ev.type    = SND_SEQ_EVENT_START;
+	int error = snd_seq_event_output_direct(seq_handle, &ev);
+	if (error < 0)
+		ERRORLOG( QString("handleStart: alsa midi write error: %1").arg(error) );
+}
+
+
+void AlsaMidiDriver::handleContinue()
+{
+	snd_seq_event_t ev;
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_source(&ev, clockPortId);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
+	ev.type    = SND_SEQ_EVENT_CONTINUE;
+	int error = snd_seq_event_output_direct(seq_handle, &ev);
+	if (error < 0)
+		ERRORLOG( QString("handleContinue: alsa midi write error: %1").arg(error) );
+}
+
+
+void AlsaMidiDriver::handleStop()
+{
+	snd_seq_event_t ev;
+	snd_seq_ev_clear(&ev);
+	snd_seq_ev_set_source(&ev, clockPortId);
+	snd_seq_ev_set_subs(&ev);
+	snd_seq_ev_set_direct(&ev);
+	ev.type    = SND_SEQ_EVENT_STOP;
+	int error = snd_seq_event_output_direct(seq_handle, &ev);
+	if (error < 0)
+		ERRORLOG( QString("handleStop: alsa midi write error: %1").arg(error) );
 }
 
 };

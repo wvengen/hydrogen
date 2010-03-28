@@ -48,6 +48,7 @@
 #include <hydrogen/event_queue.h>
 #include <hydrogen/fx/LadspaFX.h>
 #include <hydrogen/Preferences.h>
+#include <hydrogen/midi_timers.h>
 //#include <hydrogen/sample.h>
 
 #include <QtGui>
@@ -116,6 +117,9 @@ HydrogenApp::HydrogenApp( MainForm *pMainForm, Song *pFirstSong )
 //	m_pSampleEditor = new SampleEditor( 0 );
 	
 	showInfoSplash();	// First time information
+#ifdef H2CORE_HAVE_ALSA
+	Hydrogen::get_instance()->createMidiClockTimer();
+#endif // H2CORE_HAVE_ALSA
 }
 
 

@@ -45,6 +45,11 @@ public:
 	virtual void handleQueueNote(Note* pNote) = 0;
 	virtual void handleQueueNoteOff( int channel, int key, int velocity ) = 0;
 	virtual void handleQueueAllNoteOff() = 0;
+	virtual void handleBeatClock() = 0;
+	virtual void handleSongPosition( int pos ) = 0;
+	virtual void handleStart() = 0;
+	virtual void handleContinue() = 0;
+	virtual void handleStop() = 0;
 	
 //protected:
 //	std::vector<MidiMessage> m_pendingMessages;
