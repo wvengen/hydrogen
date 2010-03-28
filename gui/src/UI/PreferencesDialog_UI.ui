@@ -831,7 +831,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>11</x>
@@ -871,7 +871,7 @@
        <item>
         <widget class="QSlider" name="clockCompensationSlider">
          <property name="minimum">
-          <number>1000</number>
+          <number>10000</number>
          </property>
          <property name="maximum">
           <number>50000</number>
