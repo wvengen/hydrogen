@@ -4,7 +4,7 @@ if [ -z $GIT_BASE ]; then echo "GIT_BASE should be set" exit 1; fi
 
 PRJ=hydrogen
 SVN_URL=http://svn.assembla.com/svn/hydrogen
-BRANCHES_TO_TRACK="trunk undo"
+BRANCHES_TO_TRACK="trunk undo jeremyz"
 
 LOCAL_REPO=local
 LOCAL_DIR=${GIT_BASE}/${PRJ}
@@ -72,7 +72,8 @@ function push_to_clone() {
     echo -e "** cd ${SRC}${SVN_CLONE_DIR}${RESET}" && cd ${SVN_CLONE_DIR} || error
     echo -e "** checkout ${SBC}${SVN_CLONE_B}${RESET}" && git checkout ${SVN_CLONE_B} || error
     echo -e "** fetch ${LRC}${LOCAL_REPO}${RESET}" && git fetch ${LOCAL_REPO} || error
-    echo -e "** merge ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET} within ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}" && git merge ${LOCAL_REPO}/${LOCAL_B} || error
+    echo -e "** rebase ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET} within ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}" && git rebase ${LOCAL_REPO}/${LOCAL_B} || error
+    #git log --format="%H %an %s" $SVN_HEAD..$LOCAL_HEAD
 }
 
 function dcommit() {
@@ -90,11 +91,12 @@ fi
 
 cd ${LOCAL_DIR}
 LOCAL_B=$(git branch |grep '*' | gawk '{print $2;}') || error
-echo -e "** ${LRC}${LOCAL_REPO}${RESET} current branch is ${LBC}${LOCAL_B}${RESET}"
+LOCAL_HEAD=$(git show --format="%H" HEAD | head -n 1 | gawk '{print $1 }') || error
+echo -e "** ${LRC}${LOCAL_REPO}${RESET} current branch is ${LBC}${LOCAL_B}${RESET} head ${RED}${LOCAL_HEAD}${RESET}"
 cd ${SVN_CLONE_DIR}
 SVN_CLONE_B=${LOCAL_B}_svn
-NONE=$(git branch |grep "${LOCAL_B}_svn" 2>/dev/null ) || error
-echo -e "** ${LRC}${SVN_CLONE_REPO}${RESET} corresponding branch is ${LBC}${SVN_CLONE_B}${RESET}"
+SVN_HEAD=$(git show --format="%H" HEAD | head -n 1 | gawk '{print $1 }') || error
+echo -e "** ${LRC}${SVN_CLONE_REPO}${RESET} corresponding branch is ${LBC}${SVN_CLONE_B}${RESET} head ${RED}${SVN_HEAD}${RESET}"
 cd ${LOCAL_DIR}
 
 while [ 1 ]; do
