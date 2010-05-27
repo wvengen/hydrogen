@@ -32,33 +32,92 @@
 namespace H2Core
 {
 
+/**
+\ingroup H2Core
+\brief	XMLNode is a subclass of QDomNode with read and write values methods
+*/
 class XMLNode : public Object, public QDomNode
 {
     H2_OBJECT
     public:
+        /** \brief basic constructor */
         XMLNode( );
+        /** \brief to wrap a QDomNode */
         XMLNode( QDomNode node );
 
+        /** \brief reads an integer stored into a child node
+         * \param node the name of the child node to read into
+         * \param default_value the value returned if something goes wrong
+         * \param inexistent_ok if set to false output a DEBUG log line if the node dosen't exists
+         * \param empty_ok if set to false output a DEBUG log lline if the child node is empty
+         * \return the value */
         int read_int( const QString& node, int default_value, bool inexistent_ok=true, bool empty_ok=true );
+        /** \brief reads a boolean stored into a child node
+         * \param node the name of the child node to read into
+         * \param default_value the value returned if something goes wrong
+         * \param inexistent_ok if set to false output a DEBUG log line if the node dosen't exists
+         * \param empty_ok if set to false output a DEBUG log lline if the child node is empty
+         * \return the value */
         bool read_bool( const QString& node, bool default_value, bool inexistent_ok=true, bool empty_ok=true );
+        /** \brief reads a float stored into a child node
+         * \param node the name of the child node to read into
+         * \param default_value the value returned if something goes wrong
+         * \param inexistent_ok if set to false output a DEBUG log line if the node dosen't exists
+         * \param empty_ok if set to false output a DEBUG log lline if the child node is empty
+         * \return the value */
         float read_float( const QString& node, float default_value, bool inexistent_ok=true, bool empty_ok=true );
+        /** \brief reads a string stored into a child node
+         * \param node the name of the child node to read into
+         * \param default_value the value returned if something goes wrong
+         * \param inexistent_ok if set to false output a DEBUG log line if the node dosen't exists
+         * \param empty_ok if set to false output a DEBUG log lline if the child node is empty
+         * \return the value */
         QString read_string( const QString& node, const QString& default_value, bool inexistent_ok=true, bool empty_ok=true );
         
+        /** \brief write an integer into a child node
+         * \param node the name of the child node to create
+         * \param value the value to write */
         void write_int( const QString& node, const int value );
+        /** \brief write a boolean into a child node
+         * \param node the name of the child node to create
+         * \param value the value to write */
         void write_bool( const QString& node, const bool value );
+        /** \brief write a float into a child node
+         * \param node the name of the child node to create
+         * \param value the value to write */
         void write_float( const QString& node, const float value );
+        /** \brief write a string into a child node
+         * \param node the name of the child node to create
+         * \param value the value to write */
         void write_string( const QString& node, const QString& value );
     private:
+        /** \brief reads a string stored into a child node
+         * \param node the name of the child node to read into
+         * \param inexistent_ok if set to false output a DEBUG log line if the node dosen't exists
+         * \param empty_ok if set to false output a DEBUG log lline if the child node is empty
+         * \return the read text */
         QString read_child_node( const QString& node, bool inexistent_ok, bool empty_ok );
+        /** \brief write a string into a child node
+         * \param node the name of the child node to create
+         * \param text the text to write */
         void write_child_node( const QString& node, const QString& text );
 };
 
+/**
+\ingroup H2Core
+\brief	XMLDoc is a subclass of QDomDocument with read and write methods
+*/
 class XMLDoc : public Object, public QDomDocument
 {
     H2_OBJECT
     public:
+        /** \brief basic constructor */
         XMLDoc( );
+        /** \brief read the content of an xml file
+         * \return true on success */
         bool read( const QString& filename );
+        /** \brief write itself into a file
+         * \return true an success */
         bool write( const QString& filename );
 };
 

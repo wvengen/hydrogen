@@ -43,6 +43,7 @@ class Filesystem : public Object
 {
     H2_OBJECT
     public:
+        /** \brief flags available for Filesystem::check_permissions */
 	    typedef enum _perms {
             is_dir =0x01,
             is_file=0x02,
@@ -50,6 +51,7 @@ class Filesystem : public Object
             is_writable=0x08,
             is_executable=0x10
         } file_perms;
+
         /** \brief check user and system filesystem usability
          * \param logger is a pointer to the logger instance which will be used
          * \return true on success
