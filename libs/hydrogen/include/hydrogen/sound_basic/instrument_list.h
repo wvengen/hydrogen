@@ -94,12 +94,12 @@ class InstrumentList : public Object
 	    void move( int idx_a, int idx_b );
 
         /*
-         * \brief save the intrument within the given XMLNode
+         * \brief save the intrument list within the given XMLNode
          * \param node the XMLNode to feed
          */
         void save_to( XMLNode* node );
         /**
-         * \brief load an instruemtn from an XMLNode
+         * \brief load an instrument list from an XMLNode
          * \param node the XMLDode to read from
          * \return a new InstrumentList instance
          */
