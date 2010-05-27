@@ -54,7 +54,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/drumkit.h>
+#include <hydrogen/sound_basic/drumkit.h>
 
 using namespace H2Core;
 
