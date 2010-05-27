@@ -570,15 +570,16 @@ void SoundLibraryPanel::change_background_color()
 
 void SoundLibraryPanel::on_drumkitDeleteAction()
 {
-	QString sSoundLibrary = __sound_library_tree->currentItem()->text( 0 );
+    QTreeWidgetItem* item = __sound_library_tree->currentItem();
 
-	//if we delete the current loaded drumkit we can get truble with some empty pointers
-	if ( sSoundLibrary == Hydrogen::get_instance()->getCurrentDrumkitname() ){
+    //if we delete the current loaded drumkit we can get truble with some empty pointers
+    // TODO this check is really unsafe
+    if ( item->text(0) == Hydrogen::get_instance()->getCurrentDrumkitname() ){
 		QMessageBox::warning( this, "Hydrogen", QString( "You try to delet the current loaded drumkit.\nThis is not possible!") );
 		return;
 	}
 
-    if( Filesystem::sys_drumkit_exists( sSoundLibrary ) ) {
+    if( item->parent() == __system_drumkits_item ) {
 		QMessageBox::warning( this, "Hydrogen", QString( "A system drumkit can't be deleted.") );
 		return;
     }
@@ -589,7 +590,7 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	}
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	bool success = Drumkit::removeDrumkit( sSoundLibrary );
+	bool success = Drumkit::removeDrumkit( item->text(0) );
 	test_expandedItems();
 	updateDrumkitList();
 	QApplication::restoreOverrideCursor();
