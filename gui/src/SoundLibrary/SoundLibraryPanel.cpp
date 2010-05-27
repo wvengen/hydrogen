@@ -188,7 +188,7 @@ void SoundLibraryPanel::updateDrumkitList()
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
 			InstrumentList *pInstrList = pInfo->getInstrumentList();
-			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
+			for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 				Instrument *pInstr = pInstrList->get( nInstr );
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
 				pInstrumentItem->setText( 0, QString( "[%1] " ).arg( nInstr + 1 ) + pInstr->get_name() );
@@ -211,7 +211,7 @@ void SoundLibraryPanel::updateDrumkitList()
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
 			InstrumentList *pInstrList = pInfo->getInstrumentList();
-			for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
+			for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 				Instrument *pInstr = pInstrList->get( nInstr );
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
 				pInstrumentItem->setText( 0, QString( "[%1] " ).arg( nInstr + 1 ) + pInstr->get_name() );

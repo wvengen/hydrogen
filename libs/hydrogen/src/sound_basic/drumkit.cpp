@@ -22,12 +22,14 @@
 
 #include <hydrogen/sound_basic/drumkit.h>
 
-#include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/sound_basic/instrument_list.h>
 #include <hydrogen/instrument.h>
 
-#include <hydrogen/helpers/filesystem.h>
+#include <hydrogen/adsr.h>
+#include <hydrogen/sample.h>
+
 #include <hydrogen/helpers/xml.h>
+#include <hydrogen/helpers/filesystem.h>
 
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/h2_exception.h>
@@ -91,7 +93,7 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
     } else {
         InstrumentList *instruments = InstrumentList::load_from( &instruments_node );
         // TODO next line should disapear
-        for(int i=0; i<instruments->get_size(); i++) instruments->get(i)->set_drumkit_name( drumkit_name );
+        for(int i=0; i<instruments->size(); i++) (*instruments)[i]->set_drumkit_name( drumkit_name );    // TODO why do I need an explicite type conversion
         drumkit->setInstrumentList( instruments );
     }
     drumkit->dump();
@@ -127,8 +129,8 @@ bool Drumkit::save( const QString& name, const QString& author, const QString& i
     if(ret) {   
         // Copy sample files
         InstrumentList *instruments = drumkit->getInstrumentList();
-        for( int i=0; i<instruments->get_size(); i++) {
-            Instrument* instrument = instruments->get(i);
+        for( int i=0; i<instruments->size(); i++) {
+            Instrument* instrument = (*instruments)[i];
             for ( int n = 0; n < MAX_LAYERS; n++ ) {
                 InstrumentLayer* layer = instrument->get_layer(n);
                 if(layer) {
@@ -186,15 +188,15 @@ void Drumkit::dump() {
 	DEBUGLOG( " |- Author = " + __author );
 	DEBUGLOG( " |- Info = " + __info );
 	DEBUGLOG( " |- Instrument list" );
-	for ( int i=0; i<__instruments->get_size(); i++ ) {
-		Instrument *instr = __instruments->get( i );
+	for ( int i=0; i<__instruments->size(); i++ ) {
+		Instrument* instrument = (*__instruments)[i];          // TODO why do I need an excplicit type conversion
 		DEBUGLOG( QString("  |- (%1 of %2) Name = %3")
 			 .arg( i )
-			 .arg( __instruments->get_size() )
-			 .arg( instr->get_name() )
+			 .arg( __instruments->size() )
+			 .arg( instrument->get_name() )
 			);
 		for ( int j=0; j<MAX_LAYERS; j++ ) {
-			InstrumentLayer *layer = instr->get_layer( j );
+			InstrumentLayer *layer = instrument->get_layer( j );
 			if ( layer ) {
 				Sample *sample = layer->get_sample();
 				if ( sample ) {

@@ -164,7 +164,7 @@ void SampleEditor::getAllFrameInfos()
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
 		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-		if ( nInstr >= static_cast<int>(pInstrList->get_size()) ) {
+		if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 			nInstr = -1;
 		}
 
@@ -300,7 +300,7 @@ void SampleEditor::openDisplays()
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
 		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-		if ( nInstr >= static_cast<int>(pInstrList->get_size()) ) {
+		if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 			nInstr = -1;
 		}
 
@@ -398,7 +398,7 @@ void SampleEditor::createNewLayer()
 		if (pSong != NULL) {
 			InstrumentList *pInstrList = pSong->get_instrument_list();
 			int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-			if ( nInstr >= static_cast<int>(pInstrList->get_size()) ) {
+			if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 				nInstr = -1;
 			}
 	

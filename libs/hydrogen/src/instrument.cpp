@@ -119,7 +119,7 @@ Instrument::~Instrument()
 	__adsr = NULL;
 }
 
-Instrument* Instrument::load_from( XMLNode *node ) {
+Instrument* Instrument::load_from( XMLNode* node ) {
     QString id = node->read_string( "id", "" );
     if ( id.isEmpty() ) return 0;
     Instrument *instrument = new Instrument( id, node->read_string( "name", "" ), 0 );
@@ -314,144 +314,27 @@ void Instrument::load_from_name(
     bool is_live
 )
 {
-	Instrument * pInstr = NULL;
-	
 	// find the drumkit
 	 QString dir = Filesystem::drumkit_path( drumkit_name );
 	if ( dir.isEmpty() ) return;
-	Drumkit *pDrumkitInfo = Drumkit::load( dir );
-	assert( pDrumkitInfo );
+	Drumkit *drumkit = Drumkit::load( dir );
+	assert( drumkit );
 
 	// find the instrument
-	InstrumentList *pInstrList = pDrumkitInfo->getInstrumentList();
-	for ( unsigned nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
-		pInstr = pInstrList->get( nInstr );
-		if ( pInstr->get_name() == instrument_name ) {
+    Instrument *instrument = 0;
+	InstrumentList *instruments = drumkit->getInstrumentList();
+	for ( int i = 0; i < instruments->size(); i++ ) {
+		if ( (*instruments)[i]->get_name() == instrument_name ) {
+		    instrument = (*instruments)[ 1 ];
 			break;
 		}
 	}
 	
-	if ( pInstr != NULL ) {
-		load_from_placeholder( pInstr, is_live );
+	if ( instrument != 0 ) {
+		load_from_placeholder( instrument, is_live );
 	}
-	delete pDrumkitInfo;
+	delete drumkit;
 }
-
-
-
-// ::::
-
-const char* InstrumentList::__class_name = "InstrumentList";
-
-InstrumentList::InstrumentList()
-		: Object( __class_name )
-{
-//	infoLog("INIT");
-}
-
-InstrumentList::InstrumentList( InstrumentList *other) : Object( __class_name ) {
-    for ( int i=0; i<other->get_size(); i++ ) {
-		add( new Instrument( other->get( i ) ) );
-	}
-}
-
-
-InstrumentList::~InstrumentList()
-{
-//	infoLog("DESTROY");
-	for ( unsigned int i = 0; i < m_list.size(); ++i ) {
-		delete m_list[i];
-	}
-}
-
-InstrumentList* InstrumentList::load_from( XMLNode *node ) {
-    XMLNode instrument_node = node->firstChildElement( "instrument" );
-    InstrumentList *instruments = new InstrumentList();
-    int count = 0;
-    while ( !instrument_node.isNull() ) {
-        count++;
-        if ( count > MAX_INSTRUMENTS ) {
-            ERRORLOG( QString("instrument count >= %2, stop reading instruments").arg(MAX_INSTRUMENTS) );
-            break;
-        }
-        Instrument* instrument = Instrument::load_from( &instrument_node );
-        if(instrument) {
-            instruments->add( instrument );
-        } else {
-            ERRORLOG( QString("Empty ID for instrument %1. The drumkit is corrupted. Skipping instrument").arg(count) );
-            count--;
-        }
-        instrument_node = instrument_node.nextSiblingElement( "instrument" );
-    }
-    return instruments;
-}
-
-void InstrumentList::save_to( XMLNode* node ) {
-    for ( int i = 0; i < get_size(); i++ ) {
-        XMLNode instrument_node = XMLDoc().createElement( "instrument" );
-        get(i)->save_to( &instrument_node );
-        node->appendChild( instrument_node );
-    }
-}
-
-void InstrumentList::add( Instrument* newInstrument )
-{
-	m_list.push_back( newInstrument );
-	m_posmap[newInstrument] = m_list.size() - 1;
-}
-
-
-
-Instrument* InstrumentList::get( unsigned int pos )
-{
-	if ( pos >= m_list.size() ) {
-		ERRORLOG( QString( "pos > list.size(). pos = %1" ).arg( pos ) );
-		return NULL;
-	}
-	/*	else if ( pos < 0 ) {
-			ERRORLOG( "pos < 0. pos = " + to_string(pos) );
-			return NULL;
-		}*/
-	return m_list[pos];
-}
-
-
-
-/// Returns index of instrument in list, if instrument not found, returns -1
-int InstrumentList::get_pos( Instrument *pInstr )
-{
-	if ( m_posmap.find( pInstr ) == m_posmap.end() )
-		return -1;
-	return m_posmap[ pInstr ];
-}
-
-
-
-unsigned int InstrumentList::get_size()
-{
-	return m_list.size();
-}
-
-
-void InstrumentList::replace( Instrument* pNewInstr, unsigned nPos )
-{
-	if ( nPos >= m_list.size() ) {
-		ERRORLOG( QString( "Instrument index out of bounds in InstrumentList::replace. pos >= list.size() - %1 > %2" ).arg( nPos ).arg( m_list.size() ) );
-		return;
-	}
-	m_list.insert( m_list.begin() + nPos, pNewInstr );	// insert the new Instrument
-	// remove the old Instrument
-	m_list.erase( m_list.begin() + nPos + 1 );
-}
-
-
-void InstrumentList::del( int pos )
-{
-	assert( pos < ( int )m_list.size() );
-	assert( pos >= 0 );
-	m_list.erase( m_list.begin() + pos );
-}
-
 
 const char* InstrumentLayer::__class_name = "InstrumentLayer";
 
@@ -477,7 +360,7 @@ InstrumentLayer::InstrumentLayer( InstrumentLayer *other )
 {
 }
 
-InstrumentLayer* InstrumentLayer::load_from( XMLNode *node ) {
+InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {
     Sample* sample = new Sample( 0, node->read_string( "filename", "" ), 0 );
     InstrumentLayer* layer = new InstrumentLayer( sample );
     layer->set_start_velocity( node->read_float( "min", 0.0 ) );

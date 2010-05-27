@@ -411,7 +411,7 @@ int Sampler::__render_note_no_resample(
 	int nInitialSamplePos = ( int )pNote->m_fSamplePosition;
 	int nSamplePos = nInitialSamplePos;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( pNote->get_instrument() );
+	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
 
 	// filter
 	bool bUseLPF = pNote->get_instrument()->is_filter_active();
@@ -578,7 +578,7 @@ int Sampler::__render_note_resample(
 	float fInitialSamplePos = pNote->m_fSamplePosition;
 	double fSamplePos = pNote->m_fSamplePosition;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->get_pos( pNote->get_instrument() );
+	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
 
 	// filter
 	bool bUseLPF = pNote->get_instrument()->is_filter_active();

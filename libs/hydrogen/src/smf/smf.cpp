@@ -24,6 +24,7 @@
 #include <hydrogen/Pattern.h>
 #include <hydrogen/note.h>
 #include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument_list.h>
 
 #include <fstream>
 
@@ -267,8 +268,7 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 					if ( pNote ) {
 						int nVelocity =
 							(int)( 127.0 * pNote->get_velocity() );
-						int nInstr =
-							iList->get_pos(pNote->get_instrument());
+						int nInstr = iList->index(pNote->get_instrument());
 						int nPitch = 36 + nInstr;
 						eventList.push_back(
 							new SMFNoteOnEvent(

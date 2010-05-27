@@ -403,7 +403,7 @@ void PianoRollEditor::drawNote( Note *pNote, QPainter *pPainter )
 
 	int nInstrument = -1;
 	InstrumentList * pInstrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
-	for ( uint nInstr = 0; nInstr < pInstrList->get_size(); ++nInstr ) {
+	for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 		Instrument *pInstr = pInstrList->get( nInstr );
 		if ( pInstr == pNote->get_instrument() ) {
  			nInstrument = nInstr;
@@ -1118,7 +1118,7 @@ void PianoRollEditor::editNoteLenghtAction( int nColumn,  int nRealColumn,  int 
 
 	Note *pDraggedNote;
 	Song *pSong = pEngine->getSong();
-	int nInstruments = pSong->get_instrument_list()->get_size();
+	int nInstruments = pSong->get_instrument_list()->size();
 
 	Instrument *pSelectedInstrument = pSong->get_instrument_list()->get( nSelectedInstrumentnumber );
 
@@ -1222,7 +1222,7 @@ void PianoRollEditor::editNotePropertiesAction( int nColumn,
 
 	Note *pDraggedNote;
 	Song *pSong = pEngine->getSong();
-	int nInstruments = pSong->get_instrument_list()->get_size();
+	int nInstruments = pSong->get_instrument_list()->size();
 
 	Instrument *pSelectedInstrument = pSong->get_instrument_list()->get( selectedInstrumentnumber );
 

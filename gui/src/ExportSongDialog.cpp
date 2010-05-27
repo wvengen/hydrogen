@@ -151,7 +151,7 @@ void ExportSongDialog::on_okBtn_clicked()
 void ExportSongDialog::exportTracks()
 {
 	Song *pSong = Hydrogen::get_instance()->getSong();
-	if( m_ninstrument <= pSong->get_instrument_list()->get_size() -1 ){
+	if( m_ninstrument <= pSong->get_instrument_list()->size() -1 ){
 
 		bool instrumentexists = false;
 		//if a instrument contains no notes we jump to the next instrument
@@ -171,7 +171,7 @@ void ExportSongDialog::exportTracks()
 		}
 
 		if( !instrumentexists ){
-			if( m_ninstrument == Hydrogen::get_instance()->getSong()->get_instrument_list()->get_size() -1 ){
+			if( m_ninstrument == Hydrogen::get_instance()->getSong()->get_instrument_list()->size() -1 ){
 				m_bExportTrackouts = false;//
 				HydrogenApp::get_instance()->getMixer()->soloClicked( m_ninstrument );//solo instrument. this will disable all other instrument-solos
 				HydrogenApp::get_instance()->getMixer()->soloClicked( m_ninstrument );//unsolo this instrument because exporting is finished
@@ -205,7 +205,7 @@ void ExportSongDialog::exportTracks()
 		m_bExporting = false;
 		HydrogenApp::get_instance()->getMixer()->soloClicked( m_ninstrument );
 		Hydrogen::get_instance()->startExportSong( filename, sampleRateCombo->currentText().toInt(), sampleDepthCombo->currentText().toInt() );
-		if( m_ninstrument == Hydrogen::get_instance()->getSong()->get_instrument_list()->get_size() -1 ){
+		if( m_ninstrument == Hydrogen::get_instance()->getSong()->get_instrument_list()->size() -1 ){
 			m_bExportTrackouts = false;//
 			HydrogenApp::get_instance()->getMixer()->soloClicked( m_ninstrument );
 			m_ninstrument = 0;
