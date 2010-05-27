@@ -28,6 +28,7 @@
 #include <hydrogen/globals.h>
 #include <hydrogen/Object.h>
 #include <hydrogen/helpers/xml.h>
+#include <hydrogen/sound_basic/instrument_layer.h>
 #include <cassert>
 
 namespace H2Core
@@ -35,65 +36,6 @@ namespace H2Core
 
 class ADSR;
 class Sample;
-
-/**
-
-\brief A layer...
-
-*/
-class InstrumentLayer : public Object
-{
-    H2_OBJECT
-public:
-	InstrumentLayer( Sample *sample );
-    InstrumentLayer( InstrumentLayer *other );
-    static InstrumentLayer* load_from( XMLNode *node );
-    void save_to( XMLNode* node );
-	~InstrumentLayer();
-
-	void set_start_velocity( float vel ) {
-		__start_velocity = vel;
-	}
-	float get_start_velocity() {
-		return __start_velocity;
-	}
-
-	void set_end_velocity( float vel ) {
-		__end_velocity = vel;
-	}
-	float get_end_velocity() {
-		return __end_velocity;
-	}
-
-	void set_pitch( float pitch ) {
-		__pitch = pitch;
-	}
-	float get_pitch() {
-		return __pitch;
-	}
-
-	void set_gain( float gain ) {
-		__gain = gain;
-	}
-	float get_gain() {
-		return __gain;
-	}
-
-	void set_sample( Sample* sample ) {
-		__sample = sample;
-	}
-	Sample* get_sample() {
-		return __sample;
-	}
-
-private:
-	float __start_velocity;		///< Start velocity
-	float __end_velocity;		///< End velocity
-	float __pitch;
-	float __gain;
-	Sample *__sample;
-};
-
 
 
 /**
