@@ -79,7 +79,7 @@ class InstrumentList : public Object
          * \param instrument a pointer to the instrument to add
          * \return -1 if not found
          */
-	    int index( Instrument* inst );
+	    int index( Instrument* instrument );
         /**
          * \brief swap the instruments of two different indexes
          * \param idx_a the first index
