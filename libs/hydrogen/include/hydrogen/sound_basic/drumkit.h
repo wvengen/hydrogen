@@ -82,8 +82,15 @@ class Drumkit : public Object {
         QString __info;                 ///< drumkit free text
         QString __license;              ///< drumkit license description
         InstrumentList *__instruments;  ///< the list of instruments
-        /// xml related save operations
+        /*
+         * \brief save the drumkit within the given XMLNode
+         * \param node the XMLNode to feed
+         */
         void save_to( XMLNode* node );
+        /**
+         * \brief load a drumkit from an XMLNode
+         * \param node the XMLDode to read from
+         */
         static Drumkit* load_from( XMLNode* node );
 };
 
