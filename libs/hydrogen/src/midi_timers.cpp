@@ -79,7 +79,7 @@ HIIMBCTimer::HIIMBCTimer( int bpm )
 
 HIIMBCTimer::~HIIMBCTimer()
 {
-	INFOLOG( "DESTROY" );
+        ERRORLOG( "DESTROY" );
 	pthread_timer_living = false;
 	pthread_join( timerThread, NULL );
 
@@ -113,7 +113,8 @@ void HIIMBCTimer::setNewTimeval( int bpm )//public
 void HIIMBCTimer::doThings()
 {
 #ifdef H2CORE_HAVE_ALSA
-	Hydrogen::get_instance()->getMidiOutput()->handleBeatClock();
+        if( Hydrogen::get_instance()->m_bExportsong == false )
+            Hydrogen::get_instance()->getMidiOutput()->handleBeatClock();
 #endif // H2CORE_HAVE_ALSA
 }
 

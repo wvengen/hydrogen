@@ -77,9 +77,11 @@ using namespace H2Core;
 
 int MainForm::sigusr1Fd[2];
 
+const char* MainForm::__class_name = "MainForm";
+
 MainForm::MainForm( QApplication *app, const QString& songFilename )
  : QMainWindow( 0, 0 )
- , Object( "MainForm" )
+ , Object( __class_name )
 {
 	setMinimumSize( QSize( 1000, 600 ) );
 	setWindowIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
@@ -903,6 +905,7 @@ void MainForm::action_file_export() {
 		Hydrogen::get_instance()->sequencer_stop();
 	}
 
+        Hydrogen::get_instance()->stopMidiClockTimer();
 	ExportSongDialog *dialog = new ExportSongDialog(this);
 	dialog->exec();
 	delete dialog;
@@ -1395,7 +1398,7 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 void MainForm::action_debug_printObjects()
 {
 	INFOLOG( "[action_debug_printObjects]" );
-	Object::print_object_map();
+	Object::write_objects_map_to_cerr();
 }
 
 

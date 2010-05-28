@@ -56,9 +56,10 @@ void Preferences::create_instance()
 	}
 }
 
+const char* Preferences::__class_name = "Preferences";
 
 Preferences::Preferences()
-		: Object( "Preferences" )
+		: Object( __class_name )
 		, demoPath( QString( DataPath::get_data_path() ) + "/demo_songs/" )
 		, m_sLastNews( "" )
 {
@@ -1296,9 +1297,10 @@ void Preferences::readUIStyle( QDomNode parent )
 
 
 
+const char* WindowProperties::__class_name = "WindowProperties";
 
 WindowProperties::WindowProperties()
-		: Object( "WindowProperties" )
+		: Object( __class_name )
 {
 //	infoLog( "INIT" );
 	x = 0;
@@ -1321,9 +1323,10 @@ WindowProperties::~WindowProperties()
 // :::::::::::::::::::::::::::::::
 
 
+const char* UIStyle::__class_name = "UIStyle";
 
 UIStyle::UIStyle()
-		: Object( "UIStyle" )
+		: Object( __class_name )
 {
 //	infoLog( "INIT" );
 }
@@ -1333,9 +1336,10 @@ UIStyle::UIStyle()
 // ::::::::::::::::::::::::::::::::::::::
 
 
+const char* H2RGBColor::__class_name = "H2RGBColor";
 
 H2RGBColor::H2RGBColor( int r, int g, int b )
-		: Object( "H2RGBColor" )
+		: Object( __class_name )
 		, m_red( r )
 		, m_green( g )
 		, m_blue( b )
@@ -1354,9 +1358,8 @@ H2RGBColor::~H2RGBColor()
 }
 
 
-
 H2RGBColor::H2RGBColor( const QString& sColor )
-		: Object( "H2RGBColor" )
+		: Object( __class_name )
 {
 //	infoLog( "INIT " + sColor );
 	QString temp = sColor;

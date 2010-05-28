@@ -79,8 +79,8 @@ static void midiProc ( const MIDIPacketList * pktlist,
 			msg.m_nChannel = nEventType - 240;
 			msg.m_type = MidiMessage::SYSTEM_EXCLUSIVE;
 		} else {
-			_ERRORLOG( QString( "Unhandled midi message type: %1" ).arg( nEventType ) );
-			_INFOLOG( "MIDI msg: " );
+			___ERRORLOG( QString( "Unhandled midi message type: %1" ).arg( nEventType ) );
+			___INFOLOG( "MIDI msg: " );
 			// instance->errorLog( "Unhandled midi message type: " + to_string( nEventType ) );
 			// instance->infoLog( "MIDI msg: " );
 		}
@@ -93,9 +93,10 @@ static void midiProc ( const MIDIPacketList * pktlist,
 }
 
 
+const char* CoreMidiDriver::__class_name = "CoreMidiDriver";
 
 CoreMidiDriver::CoreMidiDriver()
-		: MidiInput( "CoreMidiDriver" ) ,MidiOutput("CoremidiDriver"), Object( "CoreMidiDriver" )
+		: MidiInput( __class_name ) ,MidiOutput( __class_name ), Object( __class_name )
 		, m_bRunning( false )
 {
 	INFOLOG( "INIT" );

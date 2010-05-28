@@ -41,9 +41,11 @@
 
 using namespace H2Core;
 
+const char* ExportSongDialog::__class_name = "ExportSongDialog";
+
 ExportSongDialog::ExportSongDialog(QWidget* parent)
  : QDialog(parent)
- , Object( "ExportSongDialog" )
+ , Object( __class_name )
  , m_bExporting( false )
 {
 	setupUi( this );
@@ -218,6 +220,7 @@ void ExportSongDialog::on_closeBtn_clicked()
 {
 	Hydrogen::get_instance()->stopExportSong();
 	m_bExporting = false;
+        Hydrogen::get_instance()->createMidiClockTimer();
 	accept();
 
 }
@@ -366,7 +369,7 @@ void ExportSongDialog::on_exportNameTxt_textChanged( const QString& )
 void ExportSongDialog::progressEvent( int nValue )
 {
         m_pProgressBar->setValue( nValue );
-	if ( nValue == 100 ) {
+        if ( nValue == 100 ) {
 		m_bExporting = false;
 		QFile check( exportNameTxt->text() );
 		if ( ! check.exists() ) {

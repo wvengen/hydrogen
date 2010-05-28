@@ -51,6 +51,7 @@ namespace H2Core
 ///
 class Hydrogen : public Object
 {
+    H2_OBJECT
 public:
 	/// Return the Hydrogen instance
 	static void create_instance();  // Also creates other instances, like AudioEngine
@@ -222,8 +223,10 @@ public:
 	void calculateIncomingMidiClockTempo();
 #endif // H2CORE_HAVE_ALSA
 
+        bool m_bExportsong;
 	void createMidiClockTimer();
 	H2Core::HIIMBCTimer* getMidiClockTimer(){ return m_pMidiClockTimer;	}
+        void stopMidiClockTimer();
 
 	struct HVeloVector
 	{

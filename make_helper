@@ -6,6 +6,8 @@ VERBOSE=${VERBOSE:-0}
 CMAKE_OPTIONS="-DWANT_DEBUG=1 -DWANT_JACK=1 -DWANT_ALSA=1 -DWANT_LIBARCHIVE=1"
 CMAKE_OPTIONS="${CMAKE_OPTIONS} -DWANT_OSS=1 -DWANT_PORTAUDIO=1 -DWANT_PORTMIDI=1 -DWANT_LASH=1 -DWANT_LRDF=1 -DWANT_FLAC=1"
 CMAKE_OPTIONS_="${CMAKE_OPTIONS} -DWANT_COREAUDIO=1 -DWANT_COREMIDI=1"
+MAKE_OPTS="-j 2"
+H2FLAGS="-V0x7"
 
 find . -name '*~' -exec rm '{}' \;
 rm libs/hydrogen/include/hydrogen/config.h 2>/dev/null
@@ -25,7 +27,11 @@ function scons_rm() {
 }
 
 function scons_make() {
-    echo -e " * scons make\n" && scons
+    echo -e " * scons make\n" && scons || exit 1
+}
+
+function scons_doc() {
+    echo -e " * sorry, no can do\n"
 }
 
 function scons_graph() {
@@ -34,6 +40,10 @@ function scons_graph() {
 
 function scons_help() {
     echo -e " * scons make\n" && scons
+}
+
+function scsons_exec() {
+    echo -e " * execute hydrogen\n" && ./hydrogen $H2FLAGS
 }
 
 function cmake_clean() {
@@ -54,9 +64,9 @@ function cmake_make() {
         cmake ${CMAKE_OPTIONS} ..
     fi
     if [ $VERBOSE -eq 1 ]; then
-        VERBOSE=1 make
+        VERBOSE=1 make $MAKE_OPTS || exit 1
     else
-        make
+        make $MAKE_OPTS || exit 1
     fi
 }
 
@@ -68,6 +78,12 @@ function cmake_graph() {
     cd build && cmake --graphviz=cmake.dot .. && dot -Tpng -o cmake_dep.png cmake.dot
 }
 
+function cmake_doc() {
+    if [ -d build ]; then
+        cd build && make doc
+    fi
+}
+
 function cmake_help() {
     echo -e " * cmake help\n"
     if [ ! -d build ]; then
@@ -76,6 +92,9 @@ function cmake_help() {
     cd build && cmake -L ..
 }
 
+function cmake_exec() {
+    echo -e " * execute hydrogen\n" && ./gui/hydrogen $H2FLAGS
+}
 
 echo -e "used builder : ${BUILDER}"
 if [ $# -eq 0 ]; then
@@ -84,8 +103,10 @@ if [ $# -eq 0 ]; then
     echo "   r or rm     => all built, temp and cache files"
     echo "   c or clean  => remove cache files"
     echo "   m or make   => launch the build process"
+    echo "   d or doc    => build html documentation"
     echo "   g or graph  => draw a dependecies graph"
     echo "   h or help   => show the build options"
+    echo "   x or exec   => execute hydrogen"
     exit 1
 fi
 
@@ -115,8 +136,11 @@ for arg in $@; do
         "graph")
             cmd="${BUILDER}_${arg}"
             ;;
-        "graph")
-            cmd="${BUILDER}_${arg}"
+        "d")
+            cmd="${BUILDER}_doc"
+            ;;
+        "doc")
+            cmd="${BUILDER}_${doc}"
             ;;
         "h")
             cmd="${BUILDER}_help"
@@ -124,10 +148,18 @@ for arg in $@; do
         "help")
             cmd="${BUILDER}_${arg}"
             ;;
+        "x")
+            cmd="${BUILDER}_exec"
+            ;;
+        "exec")
+            cmd="${BUILDER}_${arg}"
+            ;;
         *)
          echo "unknown command ${arg}" && exit 1
      esac
      $cmd
 done
+
+mv gui/hydrogen ../hydrogen
 #grep -l -R SUPPORT gui/ | xargs sed -i -e 's/ \(.*\)_SUPPORT/ HYDROGEN_\1_SUPPORT/'
 #grep -l -R 'include "config.h"' gui/ | xargs sed -i -e '/include "config.h"help

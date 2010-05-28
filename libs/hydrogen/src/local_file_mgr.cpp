@@ -57,8 +57,10 @@
 namespace H2Core
 {
 
+const char* LocalFileMng::__class_name = "LocalFileMng";
+
 LocalFileMng::LocalFileMng()
-		: Object( "LocalFileMng" )
+		: Object( __class_name )
 {
 //	infoLog("INIT");
 }
@@ -298,7 +300,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 	QFile file( sPatternXmlFilename );
 	if ( !file.open(QIODevice::WriteOnly) )
-		return NULL;
+		return 0;
 
 	QTextStream TextStream( &file );
 	doc.save( TextStream, 1 );
@@ -799,7 +801,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	INFOLOG( "[saveDrumkit]" );
 	info->dump();	// debug
 
-	QVector<QString> tempVector(16);
+        QVector<QString> tempVector( MAX_LAYERS );
 
 	QString sDrumkitDir = Preferences::get_instance()->getDataDirectory() + "drumkits/" + info->getName();
 
@@ -918,7 +920,7 @@ int LocalFileMng::saveDrumkit( Drumkit *info )
 	
 	QFile file( sDrumkitXmlFilename );
 	if ( !file.open(QIODevice::WriteOnly) )
-		return NULL;
+		return 0;
 
 	QTextStream TextStream( &file );
 	doc.save( TextStream, 1 );
@@ -964,7 +966,7 @@ int LocalFileMng::savePlayList( const std::string& patternname)
 	QString filename = QString( patternname.c_str() );
 	QFile file(filename);
 	if ( !file.open(QIODevice::WriteOnly) )
-		return NULL;
+		return 0;
 
 	QTextStream TextStream( &file );
 	doc.save( TextStream, 1 );
@@ -983,7 +985,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 	std::ifstream verify( playlistInfoFile.c_str() , std::ios::in | std::ios::binary );
 	if ( verify == NULL ) {
 		//ERRORLOG( "Load Playlist: Data file " + playlistInfoFile + " not found." );
-		return NULL;
+		return 0;
 	}
 
 	QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
@@ -993,7 +995,7 @@ int LocalFileMng::loadPlayList( const std::string& patternname)
 	QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
 	if ( rootNode.isNull() ) {
 		ERRORLOG( "Error reading playlist: playlist node not found" );
-		return NULL;
+		return 0;
 	}
 	QDomNode playlistNode = rootNode.firstChildElement( "Songs" );
 
@@ -1308,7 +1310,7 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 
 	QFile file(filename);
 	if ( !file.open(QIODevice::WriteOnly) )
-		return NULL;
+		return 0;
 
 	QTextStream TextStream( &file );
 	doc.save( TextStream, 1 );
@@ -1323,9 +1325,10 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 //	Implementation of SongWriter class
 //-----------------------------------------------------------------------------
 
+const char* SongWriter::__class_name = "SongWriter";
 
 SongWriter::SongWriter()
-		: Object( "SongWriter" )
+		: Object( __class_name )
 {
 //	infoLog("init");
 }

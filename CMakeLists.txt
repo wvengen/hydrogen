@@ -99,7 +99,8 @@ INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
 INCLUDE(FindZLIB)
 INCLUDE(FindThreads)
-COMPILE_HELPER(SSCANF ${CMAKE_SOURCE_DIR}/cmake/test_sscanf.c )
+COMPILE_HELPER(SSCANF ${CMAKE_SOURCE_DIR}/cmake/sscanf sscanf )
+COMPILE_HELPER(RTCLOCK ${CMAKE_SOURCE_DIR}/cmake/rtclock rtclock )
 CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILES(sys/stat.h HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILES(libtar.h HAVE_LIBTAR_H)
@@ -141,6 +142,11 @@ SET(QT_USE_QTNETWORK true)
 SET(QT_USE_QTXML true)
 FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
 
+# DOXYGEN
+SET(ENABLE_LATEX false)
+SET(DOXYFILE_HTML_DIR   "${CMAKE_BINARY_DIR}/html" )
+SET(DOXYFILE_LATEX_DIR  "${CMAKE_BINARY_DIR}/latex" )
+include(doxygen OPTIONAL)
 #
 # COMPUTE H2CORE_HAVE_xxx xxx_STATUS_REPORT
 #
@@ -196,6 +202,14 @@ MESSAGE(
 "* WAVE                         : builtin\n"
 "* FLAC                         : ${FLAC_STATUS}\n"
 )
+IF(WANT_DEBUG)
+    MESSAGE(
+    "Debug capabilities\n"
+    "-----------------------------------------\n"
+    "* realtime clock           : ${HAVE_RTCLOCK}\n"
+    "* working sscanf           : ${HAVE_SSCANF}\n"
+    )
+ENDIF()
 
 MESSAGE(
 "\n"
@@ -295,15 +309,6 @@ INCLUDE(CPack)
 # CUSTOM TARGETS
 #
 ADD_CUSTOM_TARGET(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
-
-SET(DOXYGEN_OUTPUT "html")
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/Doxyfile.in" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY )
-ADD_CUSTOM_COMMAND(
-    OUTPUT ${CMAKE_BINARY_DIR}/${DOXYGEN_OUTPUT}/index.html
-    COMMAND doxygen ${CMAKE_BINARY_DIR}/Doxyfile
-    DEPENDS ${CMAKE_BINARY_DIR}/Doxyfile
-)
-ADD_CUSTOM_TARGET(doxygen DEPENDS ${CMAKE_BINARY_DIR}/${DOXYGEN_OUTPUT}/index.html)
 
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/uninstall.cmake.in" "${CMAKE_BINARY_DIR}/uninstall.cmake" IMMEDIATE @ONLY)
 ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_BINARY_DIR}/uninstall.cmake")
