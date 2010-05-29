@@ -47,7 +47,7 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/helpers/filesystem.h>
 #include <hydrogen/Preferences.h>

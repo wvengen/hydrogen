@@ -32,7 +32,7 @@
 
 #include <hydrogen/note.h>
 #include <hydrogen/Pattern.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/IO/AudioOutput.h>

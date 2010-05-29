@@ -21,7 +21,7 @@
  */
 
 #include <hydrogen/note.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 
 #include <cassert>
 #include <cstdlib>

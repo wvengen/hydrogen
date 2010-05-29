@@ -23,7 +23,7 @@
 #include <hydrogen/smf/SMF.h>
 #include <hydrogen/Pattern.h>
 #include <hydrogen/note.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/sound_basic/instrument_list.h>
 
 #include <fstream>

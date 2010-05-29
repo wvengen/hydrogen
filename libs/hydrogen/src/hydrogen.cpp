@@ -47,7 +47,7 @@
 #include <hydrogen/adsr.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/audio_engine.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Pattern.h>
@@ -2638,7 +2638,7 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		
 		// creo i nuovi layer in base al nuovo strumento
 		// Moved code from here right into the Instrument class - Jakob Lund.
-		pInstr->load_from_placeholder( pNewInstr );
+		pInstr->load_from( pNewInstr );
 	}
 
 

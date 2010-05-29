@@ -22,7 +22,7 @@
 
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/instrument.h>
+#include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/Pattern.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
