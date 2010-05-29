@@ -60,6 +60,8 @@ function fetch_svn(){
     for branch in $BRANCHES; do
         echo -e "** rebase ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${branch}${RESET}" && git checkout $branch && git svn rebase || error
     done
+    echo -e "** cd ${SRC}${LOCAL_DIR}${RESET}" && cd ${LOCAL_DIR} || error
+    echo -e "** fetch ${SRC}${SVN_CLONE_REPO}${RESET}" && git fetch ${SVN_CLONE_REPO} || error
 }
 
 function pull_from_clone() {
@@ -74,12 +76,15 @@ function push_to_clone() {
     echo -e "** fetch ${LRC}${LOCAL_REPO}${RESET}" && git fetch ${LOCAL_REPO} || error
     echo -e "** rebase ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET} within ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}" && git rebase ${LOCAL_REPO}/${LOCAL_B} || error
     #git log --format="%H %an %s" $SVN_HEAD..$LOCAL_HEAD
+    echo -e "** cd ${SRC}${LOCAL_DIR}${RESET}" && cd ${LOCAL_DIR} || error
+    echo -e "** fetch ${SRC}${SVN_CLONE_REPO}${RESET}" && git fetch ${SVN_CLONE_REPO} || error
 }
 
 function dcommit() {
     echo -e "** cd ${SRC}${SVN_CLONE_DIR}${RESET}" && cd ${SVN_CLONE_DIR} || error
     echo -e "** checkout ${SBC}${SVN_CLONE_B}${RESET}" && git checkout ${SVN_CLONE_B} || error
-    echo -e "** push ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} to ${URL_COLOR}${SVN_URL}${RESET}" && git svn dcommit
+    echo -e "** rebase ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${branch}${RESET}" && git svn rebase || error
+    echo -e "** dcommit ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} to ${URL_COLOR}${SVN_URL}${RESET}" && git svn dcommit
 }
 
 if [ ! -d ${SVN_CLONE_DIR} ]; then
