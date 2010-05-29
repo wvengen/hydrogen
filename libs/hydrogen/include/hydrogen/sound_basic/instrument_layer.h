@@ -42,10 +42,19 @@ class InstrumentLayer : public Object
 {
     H2_OBJECT
     public:
-        /** \brief constructor */
-        InstrumentLayer( Sample *sample );
-        /** \brief copy constructor */
-        InstrumentLayer( InstrumentLayer *other );
+        /** \brief constructor
+         * \param sample the sample to use
+         * */
+        InstrumentLayer( Sample* sample );
+        /** \brief copy constructor, will be initialized with an empty sample
+         * \param other the instrument layer to copy from
+         */
+        InstrumentLayer( InstrumentLayer* other );
+        /** \brief copy constructor
+         * \param other the instrument layer to copy from
+         * \param sample the sample to use
+         */
+        InstrumentLayer( InstrumentLayer* other, Sample* sample );
         /** \brief destructor */
         ~InstrumentLayer();
 
@@ -79,7 +88,7 @@ class InstrumentLayer : public Object
          * \param node the XMLDode to read from
          * \return a new InstrumentLayer instance
          */
-        static InstrumentLayer* load_from( XMLNode *node );
+        static InstrumentLayer* load_from( XMLNode* node );
 
     private:
         float __gain;               ///< ratio between the input sample and the output signal, 1.0 by default

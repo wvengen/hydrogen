@@ -27,7 +27,7 @@ namespace H2Core
 
 const char* InstrumentLayer::__class_name = "InstrumentLayer";
 
-InstrumentLayer::InstrumentLayer( Sample *sample )
+InstrumentLayer::InstrumentLayer( Sample* sample )
     : Object( __class_name )
     , __start_velocity( 0.0 )
     , __end_velocity( 1.0 )
@@ -37,14 +37,23 @@ InstrumentLayer::InstrumentLayer( Sample *sample )
 {
 }
 
-
-InstrumentLayer::InstrumentLayer( InstrumentLayer *other )
+InstrumentLayer::InstrumentLayer( InstrumentLayer* other )
     : Object( __class_name )
     , __start_velocity( other->get_start_velocity() )
     , __end_velocity( other->get_end_velocity() )
     , __pitch( other->get_pitch() )
     , __gain( other->get_gain() )
     , __sample( new Sample( 0, other->get_sample()->get_filename(), 0 ) )       // is not a real sample, it contains only the filename information
+{
+}
+
+InstrumentLayer::InstrumentLayer( InstrumentLayer* other, Sample* sample )
+    : Object( __class_name )
+    , __start_velocity( other->get_start_velocity() )
+    , __end_velocity( other->get_end_velocity() )
+    , __pitch( other->get_pitch() )
+    , __gain( other->get_gain() )
+    , __sample( sample )
 {
 }
 
