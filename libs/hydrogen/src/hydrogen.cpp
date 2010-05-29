@@ -2638,7 +2638,7 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		
 		// creo i nuovi layer in base al nuovo strumento
 		// Moved code from here right into the Instrument class - Jakob Lund.
-		pInstr->load_from( pNewInstr );
+		pInstr->load_from( drumkitInfo, pNewInstr );
 	}
 
 

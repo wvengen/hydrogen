@@ -1213,11 +1213,11 @@ void SongEditorPatternList::patternPopup_save()
 	QString patternname = pat->get_name();
 
 	LocalFileMng fileMng;
-	int err = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 1 );
+	int err = fileMng.savePattern( song , engine->getCurrentDrumkitname(), nSelectedPattern, patternname, patternname, 1 );
 	if ( err == 1 ) {
 		int res = QMessageBox::information( this, "Hydrogen", tr( "The pattern-file exists. \nOverwrite the existing pattern?"), tr("&Ok"), tr("&Cancel"), 0, 1 );
 		if ( res == 0 ) {
-			int err2 = fileMng.savePattern( song , nSelectedPattern, patternname, patternname, 3 );
+			int err2 = fileMng.savePattern( song , engine->getCurrentDrumkitname(), nSelectedPattern, patternname, patternname, 3 );
 			if( err2 == 1){
 				_ERRORLOG( "Error saving the pattern" );
 				return;
@@ -1338,7 +1338,7 @@ void SongEditorPatternList::deletePatternFromList( QString patternFilename, QStr
 
 	QString patternname = pat->get_name();
 	int err =1;
-	err = fileMng.savePattern( song , patternPosition, patternFilename, patternname, 4 );
+	err = fileMng.savePattern( song , pEngine->getCurrentDrumkitname(), patternPosition, patternFilename, patternname, 4 );
 
 #ifdef WIN32
 	Sleep ( 10 );
@@ -1463,7 +1463,7 @@ void SongEditorPatternList::patternPopup_copy()
 		QString patternFilename = Preferences::get_instance()->getTmpDirectory() +QString("%1").arg(thetime)+ QString( "PAT.xml" );
 		LocalFileMng fileMng;
 		int err =1;
-		err = fileMng.savePattern( pSong , pPatternList->get_size() -1 , patternFilename, pNewPattern->get_name(), 4 );
+		err = fileMng.savePattern( pSong , pEngine->getCurrentDrumkitname(), pPatternList->get_size() -1 , patternFilename, pNewPattern->get_name(), 4 );
 
 		SE_copyPatternAction *action = new SE_copyPatternAction( patternFilename , pPatternList->get_size() );
 		HydrogenApp::get_instance()->m_undoStack->push( action );

@@ -59,7 +59,6 @@ Instrument::Instrument( const int id, const QString& name, ADSR* adsr )
     , __muted( false )
     , __mute_group( -1 )
     , __queued( 0 )
-    , __drumkit_name( "" )
 {
     for ( int i=0; i<MAX_FX; i++ ) __fx_level[i] = 0.0;
 	for ( int i=0; i<MAX_LAYERS; i++ ) __layers[i] = NULL;
@@ -88,7 +87,6 @@ Instrument::Instrument( Instrument *other )
     , __muted( other->is_muted() )
     , __mute_group( other->get_mute_group() )
     , __queued( 0 )
-    , __drumkit_name( "" )
 {
     for ( int i=0; i<MAX_FX; i++ ) __fx_level[i] = other->get_fx_level(i);
 
@@ -119,7 +117,7 @@ Instrument* Instrument::load_instrument( const QString& drumkit_name, const QStr
     return i;
 }
 
-void Instrument::load_from( Instrument* instrument, bool is_live ) {
+void Instrument::load_from( Drumkit* drumkit, Instrument* instrument, bool is_live ) {
 	for ( int i=0; i<MAX_LAYERS; i++ ) {
 		InstrumentLayer *src_layer = instrument->get_layer(i);
 		InstrumentLayer *my_layer = this->get_layer(i);
@@ -130,8 +128,7 @@ void Instrument::load_from( Instrument* instrument, bool is_live ) {
 			if ( is_live )
 				AudioEngine::get_instance()->unlock();
 		} else {
-            // TODO could be avoided if an instrument had a pointer to his drumkit
-	        QString sample_path = Filesystem::drumkit_path( instrument->get_drumkit_name() ) + "/" + src_layer->get_sample()->get_filename();
+	        QString sample_path =  drumkit->getPath() + "/" + src_layer->get_sample()->get_filename();
 			Sample *sample = Sample::load( sample_path );
 			if (sample==0) {
 				_ERRORLOG( QString("Error loading sample %1. Creating a new empty layer.").arg(sample_path));
@@ -165,7 +162,6 @@ void Instrument::load_from( Instrument* instrument, bool is_live ) {
 	this->set_random_pitch_factor( instrument->get_random_pitch_factor() );
 	this->set_muted( instrument->is_muted() );
 	this->set_mute_group( instrument->get_mute_group() );
-	this->set_drumkit_name( instrument->get_drumkit_name() );
 	if ( is_live )
 		AudioEngine::get_instance()->unlock();
 }
@@ -177,7 +173,7 @@ void Instrument::load_from( const QString& drumkit_name, const QString& instrume
     assert( drumkit );
     Instrument *instrument = drumkit->getInstrumentList()->find( instrument_name );
     if ( instrument!=0 ) {
-        load_from( instrument, is_live );
+        load_from( drumkit, instrument, is_live );
     }
     delete drumkit;
 }

@@ -677,8 +677,6 @@ void InstrumentEditor::loadLayer()
 				setAutoVelocity();
 			}
 	
-			pInstr->set_drumkit_name( "" );   // external sample, no drumkit info
-	
 			AudioEngine::get_instance()->unlock();
 
 		}

@@ -32,6 +32,8 @@
 namespace H2Core
 {
 
+class Drumkit;
+
 /**
 \brief Instrument class
 */
@@ -67,10 +69,11 @@ class Instrument : public Object
          */
         void load_from( const QString& drumkit_name, const QString& instrument_name, bool is_live = true );
         /** \brief loads instrument from a given instrument into a `live` Instrument object.
+         * \param drumkit the drumkit the instrument belongs to
          * \param instrument to load samples and members from
          * \param is_live is it performed while playing
          */
-        void load_from( Instrument* instrument, bool is_live = true );
+        void load_from( Drumkit* drumkit, Instrument* instrument, bool is_live = true );
 
         /*
          * \brief save the intrument within the given XMLNode
@@ -196,9 +199,6 @@ class Instrument : public Object
         void set_stop_note( bool stopnotes )        { __stop_notes = stopnotes; }
         /** \brief get the stop notes of the instrument */
         bool is_stop_notes()                        { return __stop_notes; }
-        // TODO remove
-        void set_drumkit_name( const QString& name ) { __drumkit_name = name; }
-        const QString& get_drumkit_name() { return __drumkit_name; }
 
     private:
         int __id;			                        ///< instrument id, should be unique
@@ -223,8 +223,6 @@ class Instrument : public Object
         int __mute_group;		                    ///< mute group of the instrument
         /** \brief count the number of notes queued within Sampler::__playing_notes_queue or std::priority_queue m_songNoteQueue; */
         int __queued;
-        // TODO should be removed !!!!!!
-        QString __drumkit_name;		                ///< drumkit name
         float __fx_level[MAX_FX];	                ///< Ladspa FX level array
         InstrumentLayer* __layers[MAX_LAYERS];      ///< InstrumentLayer array
 };

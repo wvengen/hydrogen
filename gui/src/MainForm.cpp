@@ -617,7 +617,7 @@ void MainForm::action_file_export_pattern_as()
 			realname.replace( ".h2pattern", "" );
 		pat->set_name(realname);
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
-		int err = fileMng.savePattern ( song , selectedpattern, patternname, realname, 2 );
+		int err = fileMng.savePattern ( song , engine->getCurrentDrumkitname(), selectedpattern, patternname, realname, 2 );
 		if ( err != 0 )
 		{
 			QMessageBox::warning( this, "Hydrogen", trUtf8("Could not export pattern.") );

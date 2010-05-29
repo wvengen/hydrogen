@@ -207,7 +207,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 }
 
 
-int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString& patternname, const QString& realpatternname, int mode)
+int LocalFileMng::savePattern( Song *song , const QString& drumkit_name, int selectedpattern , const QString& patternname, const QString& realpatternname, int mode)
 {
 	//int mode = 1 save, int mode = 2 save as
 	// INSTRUMENT NODE
@@ -217,7 +217,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 
 	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
 
-	QString sPatternDir = Preferences::get_instance()->getDataDirectory() + "patterns/" +  instr->get_drumkit_name();
+	QString sPatternDir = Preferences::get_instance()->getDataDirectory() + "patterns/" +  drumkit_name;
 
 	INFOLOG( "[savePattern]" + sPatternDir );
 
@@ -260,7 +260,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 	QDomNode rootNode = doc.createElement( "drumkit_pattern" );
 	//LIB_ID just in work to get better usability
 	//writeXmlString( &rootNode, "LIB_ID", "in_work" );
-	writeXmlString( rootNode, "pattern_for_drumkit", instr->get_drumkit_name() );
+	writeXmlString( rootNode, "pattern_for_drumkit", drumkit_name );
 
 
 	// pattern
@@ -980,7 +980,6 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		QDomNode instrumentNode = doc.createElement( "instrument" );
 
 		LocalFileMng::writeXmlString( instrumentNode, "id", QString("%1").arg(instr->get_id()) );
-		LocalFileMng::writeXmlString( instrumentNode, "drumkit", instr->get_drumkit_name() );
 		LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
 		LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
 		LocalFileMng::writeXmlBool( instrumentNode, "isMuted", instr->is_muted() );
@@ -1028,12 +1027,6 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			float sRubberDivider = pSample->get_rubber_divider();
 			int sRubberbandCsettings = pSample->get_rubber_C_settings();
 			float sRubberPitch = pSample->get_rubber_pitch();
-
-			if ( !instr->get_drumkit_name().isEmpty() ) {
-				// se e' specificato un drumkit, considero solo il nome del file senza il path
-				int nPos = sFilename.lastIndexOf( "/" );
-				sFilename = sFilename.mid( nPos + 1, sFilename.length() );
-			}
 
 			QDomNode layerNode = doc.createElement( "layer" );
 			LocalFileMng::writeXmlString( layerNode, "filename", sFilename );

@@ -91,10 +91,7 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
         WARNINGLOG( "instrumentList node not found" );
         drumkit->setInstrumentList( new InstrumentList() );
     } else {
-        InstrumentList *instruments = InstrumentList::load_from( &instruments_node );
-        // TODO next line should disapear
-        for(int i=0; i<instruments->size(); i++) (*instruments)[i]->set_drumkit_name( drumkit_name );    // TODO why do I need an explicite type conversion
-        drumkit->setInstrumentList( instruments );
+        drumkit->setInstrumentList( InstrumentList::load_from( &instruments_node ) );
     }
     drumkit->dump();
     return drumkit;

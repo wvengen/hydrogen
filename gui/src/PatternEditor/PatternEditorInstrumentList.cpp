@@ -377,7 +377,7 @@ void InstrumentLine::functionDeleteInstrument()
 	PatternList *patList = song->get_pattern_list();
 
 	QString instrumentName =  pSelectedInstrument->get_name();
-	QString drumkitName = pSelectedInstrument->get_drumkit_name();
+	QString drumkitName = H->getCurrentDrumkitname();
 
 	for ( int i = 0; i < patList->get_size(); i++ ) {
 		H2Core::Pattern *pPattern = song->get_pattern_list()->get(i);
