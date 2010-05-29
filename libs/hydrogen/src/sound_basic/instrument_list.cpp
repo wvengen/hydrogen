@@ -103,11 +103,16 @@ Instrument* InstrumentList::get( int idx ) {
 	return __instruments[idx];
 }
 
-/// Returns index of instrument in list, if instrument not found, returns -1
 int InstrumentList::index( Instrument* instr ) {
     for(int i=0; i<__instruments.size(); i++)
         if (__instruments[i]==instr) return i;
     return -1;
+}
+
+Instrument*  InstrumentList::find( const QString& name ) {
+    for(int i=0; i<__instruments.size(); i++)
+        if (__instruments[i]->get_name()==name) return __instruments[i];
+    return 0;
 }
 
 void InstrumentList::del( int idx ) {

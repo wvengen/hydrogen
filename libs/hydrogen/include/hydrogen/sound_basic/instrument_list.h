@@ -75,11 +75,17 @@ class InstrumentList : public Object
          */
 	    void del( int idx );
         /**
-         * \brief get the index of an instrument whitin the instruments
+         * \brief get the index of an instrument within the instruments
          * \param instrument a pointer to the instrument to add
          * \return -1 if not found
          */
 	    int index( Instrument* instrument );
+        /**
+         * \brief find an instrument within the instruments
+         * \param name the name of the instrument to find
+         * \return 0 if not found
+         */
+	    Instrument* find( const QString& name );
         /**
          * \brief swap the instruments of two different indexes
          * \param idx_a the first index
