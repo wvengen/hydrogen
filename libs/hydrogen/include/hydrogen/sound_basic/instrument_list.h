@@ -82,6 +82,12 @@ class InstrumentList : public Object
 	    int index( Instrument* instrument );
         /**
          * \brief find an instrument within the instruments
+         * \param id the id of the instrument to find
+         * \return 0 if not found
+         */
+	    Instrument* find( const int i );
+        /**
+         * \brief find an instrument within the instruments
          * \param name the name of the instrument to find
          * \return 0 if not found
          */

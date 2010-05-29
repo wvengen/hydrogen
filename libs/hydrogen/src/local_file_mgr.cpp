@@ -174,7 +174,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
 			QString nNoteOff = LocalFileMng::readXmlString( noteNode, "note_off", "false", false, false );
 
-			QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
+			int instrId = LocalFileMng::readXmlInt( noteNode, "instrument", EMPTY_INSTR_ID );
 
 			Instrument *instrRef = NULL;
 			// search instrument by ref
@@ -286,7 +286,7 @@ int LocalFileMng::savePattern( Song *song , int selectedpattern , const QString&
 			writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );
 
 			writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
-			writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
+			writeXmlString( noteNode, "instrument", QString("%1").arg(pNote->get_instrument()->get_id()) );
 			noteListNode.appendChild( noteNode );
 		}
 		patternNode.appendChild( noteListNode );
@@ -979,7 +979,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 		QDomNode instrumentNode = doc.createElement( "instrument" );
 
-		LocalFileMng::writeXmlString( instrumentNode, "id", instr->get_id() );
+		LocalFileMng::writeXmlString( instrumentNode, "id", QString("%1").arg(instr->get_id()) );
 		LocalFileMng::writeXmlString( instrumentNode, "drumkit", instr->get_drumkit_name() );
 		LocalFileMng::writeXmlString( instrumentNode, "name", instr->get_name() );
 		LocalFileMng::writeXmlString( instrumentNode, "volume", QString("%1").arg( instr->get_volume() ) );
@@ -1105,7 +1105,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			LocalFileMng::writeXmlString( noteNode, "key", Note::keyToString( pNote->m_noteKey ) );//Note::keyToString returns a valid QString
 
 			LocalFileMng::writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
-			LocalFileMng::writeXmlString( noteNode, "instrument", pNote->get_instrument()->get_id() );
+			LocalFileMng::writeXmlString( noteNode, "instrument", QString("%1").arg(pNote->get_instrument()->get_id()) );
 
 			QString noteoff = "false"; 
 			if ( pNote->get_noteoff() ) noteoff = "true";			

@@ -37,6 +37,9 @@
 #define MIDI_OUT_CHANNEL_MIN    -1
 #define MIDI_OUT_CHANNEL_MAX    15
 
+#define EMPTY_INSTR_ID          -1
+#define METRONOME_INSTR_ID      -2
+
 #define TWOPI 	            6.28318530717958647692
 
 // useful to suppress gcc warning on unused variables

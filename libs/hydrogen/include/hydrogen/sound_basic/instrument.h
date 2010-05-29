@@ -45,7 +45,7 @@ class Instrument : public Object
          * \param name the name of the instrument
          * \param adsr attack decay sustain release instance
          */
-        Instrument( const QString& id, const QString& name, ADSR* adsr );
+        Instrument( const int id, const QString& name, ADSR* adsr );
         /** \brief copy constructor */
         Instrument( Instrument *other );
         /** \brief destructor */
@@ -111,9 +111,9 @@ class Instrument : public Object
         /** \brief get the name of the instrument */
         const QString& get_name()                   { return __name; }
         /** \brief set the id of the instrument */
-        void set_id( const QString& id )            { __id = id; }
+        void set_id( const int id )                 { __id = id; }
         /** \brief get the id of the instrument */
-        QString& get_id()                           { return __id; }
+        int get_id()                                { return __id; }
         /** \brief set the ADSR of the instrument */
         void set_adsr( ADSR* adsr );
         /** \brief get the ADSR of the instrument */
@@ -201,7 +201,7 @@ class Instrument : public Object
         const QString& get_drumkit_name() { return __drumkit_name; }
 
     private:
-        QString __id;			                    ///< instrument id, should be unique
+        int __id;			                        ///< instrument id, should be unique
         QString __name;			                    ///< instrument name
         float __gain;                               ///< gain of the instrument
         float __volume;			                    ///< volume of the instrument

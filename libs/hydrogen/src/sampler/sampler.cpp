@@ -70,7 +70,7 @@ Sampler::Sampler()
 
 	// instrument used in file preview
 	QString sEmptySampleFilename = DataPath::get_data_path() + "/emptySample.wav";
-	__preview_instrument = new Instrument( sEmptySampleFilename, "preview", new ADSR() );
+	__preview_instrument = new Instrument( EMPTY_INSTR_ID, "preview", new ADSR() );
 	__preview_instrument->set_volume( 0.8 );
 	__preview_instrument->set_layer( new InstrumentLayer( Sample::load( sEmptySampleFilename ) ), 0 );
 

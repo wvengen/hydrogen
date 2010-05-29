@@ -36,7 +36,7 @@ namespace H2Core
 
 const char* Instrument::__class_name = "Instrument";
 
-Instrument::Instrument( const QString& id, const QString& name, ADSR* adsr )
+Instrument::Instrument( const int id, const QString& name, ADSR* adsr )
     : Object( __class_name )
     , __id( id )
     , __name( name )
@@ -111,7 +111,7 @@ Instrument::~Instrument() {
 	__adsr = 0;
 }
 
-Instrument* Instrument::create_empty() { return new Instrument( QString(""), "Empty Instrument", new ADSR() ); }
+Instrument* Instrument::create_empty() { return new Instrument( EMPTY_INSTR_ID, "Empty Instrument", new ADSR() ); }
 
 Instrument* Instrument::load_instrument( const QString& drumkit_name, const QString& instrument_name ) {
     Instrument* i = create_empty();
@@ -183,8 +183,8 @@ void Instrument::load_from( const QString& drumkit_name, const QString& instrume
 }
 
 Instrument* Instrument::load_from( XMLNode* node ) {
-    QString id = node->read_string( "id", "", false, false );
-    if ( id.isEmpty() ) return 0;
+    int id = node->read_int( "id", EMPTY_INSTR_ID, false, false );
+    if ( id==EMPTY_INSTR_ID ) return 0;
     Instrument *instrument = new Instrument( id, node->read_string( "name", "" ), 0 );
     instrument->set_volume( node->read_float( "volume", 1.0f ) );
     instrument->set_muted( node->read_bool( "isMuted", false ) );
@@ -236,7 +236,7 @@ Instrument* Instrument::load_from( XMLNode* node ) {
 }
 
 void Instrument::save_to( XMLNode* node ) {
-    node->write_string( "id", __id );
+    node->write_int( "id", __id );
     node->write_string( "name", __name );
     node->write_float( "volume", __volume );
     node->write_bool( "isMuted", __muted );

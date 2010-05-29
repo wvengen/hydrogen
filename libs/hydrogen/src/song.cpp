@@ -184,7 +184,7 @@ Song* Song::get_default_song(){
 	song->set_swing_factor( 0.0 );
 
 	InstrumentList* pList = new InstrumentList();
-	Instrument *pNewInstr = new Instrument(QString( "" ), "New instrument", new ADSR());
+	Instrument *pNewInstr = new Instrument(EMPTY_INSTR_ID, "New instrument", new ADSR());
 	pList->add( pNewInstr );
 	song->set_instrument_list( pList );
 	
@@ -485,7 +485,7 @@ Song* SongReader::readSong( const QString& filename )
 		while ( ! instrumentNode.isNull()  ) {
 			instrumentList_count++;
 
-			QString sId = LocalFileMng::readXmlString( instrumentNode, "id", "" );			// instrument id
+			int id = LocalFileMng::readXmlInt( instrumentNode, "id", EMPTY_INSTR_ID );			// instrument id
 			QString sDrumkit = LocalFileMng::readXmlString( instrumentNode, "drumkit", "" );	// drumkit
 			Hydrogen::get_instance()->setCurrentDrumkitname( sDrumkit ); 
 			QString sName = LocalFileMng::readXmlString( instrumentNode, "name", "" );		// name
@@ -517,7 +517,7 @@ Song* SongReader::readSong( const QString& filename )
 			int nMidiOutChannel = sMidiOutChannel.toInt();
 			int nMidiOutNote = sMidiOutNote.toInt();
 
-			if ( sId.isEmpty() ) {
+			if ( id==EMPTY_INSTR_ID ) {
 				ERRORLOG( "Empty ID for instrument '" + sName + "'. skipping." );
 				instrumentNode = (QDomNode) instrumentNode.nextSiblingElement( "instrument" );
 				continue;
@@ -525,7 +525,7 @@ Song* SongReader::readSong( const QString& filename )
 
 
 			// create a new instrument
-			Instrument *pInstrument = new Instrument( sId, sName, new ADSR( fAttack, fDecay, fSustain, fRelease ) );
+			Instrument *pInstrument = new Instrument( id, sName, new ADSR( fAttack, fDecay, fSustain, fRelease ) );
 			pInstrument->set_volume( fVolume );
 			pInstrument->set_muted( bIsMuted );
 			pInstrument->set_pan_l( fPan_L );
@@ -967,7 +967,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 			QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
 			QString nNoteOff = LocalFileMng::readXmlString( noteNode, "note_off", "false", false, false );
 
-			QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
+			int instrId = LocalFileMng::readXmlInt( noteNode, "instrument", EMPTY_INSTR_ID );
 
 			Instrument *instrRef = NULL;
 			// search instrument by ref
@@ -979,7 +979,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 				}
 			}
 			if ( !instrRef ) {
-				ERRORLOG( "Instrument with ID: '" + instrId + "' not found. Note skipped." );
+				ERRORLOG( QString("Instrument with ID: '%1' not found. Note skipped.").arg(instrId) );
 				noteNode = ( QDomNode ) noteNode.nextSiblingElement( "note" );
 				continue;
 			}
@@ -1018,7 +1018,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 				int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
 				float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
 
-				QString instrId = LocalFileMng::readXmlString( noteNode, "instrument", "" );
+				int instrId = LocalFileMng::readXmlInt( noteNode, "instrument", EMPTY_INSTR_ID );
 
 				Instrument *instrRef = NULL;
 				// search instrument by ref

@@ -288,7 +288,7 @@ void audioEngine_init()
 	QString sMetronomeFilename = QString( "%1/click.wav" )
 					.arg( DataPath::get_data_path() );
 	m_pMetronomeInstrument =
-		new Instrument( sMetronomeFilename, "metronome", new ADSR() );
+		new Instrument( METRONOME_INSTR_ID, "metronome", new ADSR() );
 	m_pMetronomeInstrument->set_layer(
 		new InstrumentLayer( Sample::load( sMetronomeFilename ) ),
 		0

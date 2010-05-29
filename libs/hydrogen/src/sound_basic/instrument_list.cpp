@@ -109,6 +109,12 @@ int InstrumentList::index( Instrument* instr ) {
     return -1;
 }
 
+Instrument*  InstrumentList::find( const int id ) {
+    for(int i=0; i<__instruments.size(); i++)
+        if (__instruments[i]->get_id()==id) return __instruments[i];
+    return 0;
+}
+
 Instrument*  InstrumentList::find( const QString& name ) {
     for(int i=0; i<__instruments.size(); i++)
         if (__instruments[i]->get_name()==name) return __instruments[i];
