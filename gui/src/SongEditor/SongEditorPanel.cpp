@@ -424,13 +424,9 @@ void SongEditorPanel::revertaddEmptyPattern( int patternPosition )
 void SongEditorPanel::upBtnClicked( Button* btn )
 {
 	UNUSED( btn );
-	Hydrogen *pEngine = Hydrogen::get_instance();
-
-	if( pEngine->getSelectedPatternNumber() < 0 || !pEngine->getSelectedPatternNumber() ) return;
-	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
-
-	SE_movePatternListItemAction *action = new SE_movePatternListItemAction( nSelectedPatternPos, nSelectedPatternPos -1 ) ;
-	HydrogenApp::get_instance()->m_undoStack->push( action );
+	int idx = Hydrogen::get_instance()->getSelectedPatternNumber();
+	if( idx<=0 ) return;
+	HydrogenApp::get_instance()->m_undoStack->push( new SE_movePatternListItemAction( idx, idx-1 ) );
 }
 
 
@@ -441,15 +437,10 @@ void SongEditorPanel::upBtnClicked( Button* btn )
 void SongEditorPanel::downBtnClicked( Button* btn )
 {
 	UNUSED( btn );
-	Hydrogen *pEngine = Hydrogen::get_instance();
-	Song *pSong = pEngine->getSong();
-	PatternList *pPatternList = pSong->get_pattern_list();
-
-	if( pEngine->getSelectedPatternNumber() +1 >=  pSong->get_pattern_list()->size() ) return;
-	int nSelectedPatternPos = pEngine->getSelectedPatternNumber();
-
-	SE_movePatternListItemAction *action = new SE_movePatternListItemAction( nSelectedPatternPos, nSelectedPatternPos +1 ) ;
-	HydrogenApp::get_instance()->m_undoStack->push( action );
+	Hydrogen *engine = Hydrogen::get_instance();
+	int idx = engine->getSelectedPatternNumber();
+	if( idx+1>=engine->getSong()->get_pattern_list()->size() ) return;
+	HydrogenApp::get_instance()->m_undoStack->push( new SE_movePatternListItemAction( idx, idx+1 ) );
 }
 
 
