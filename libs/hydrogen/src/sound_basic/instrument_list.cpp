@@ -121,9 +121,21 @@ Instrument*  InstrumentList::find( const QString& name ) {
     return 0;
 }
 
-void InstrumentList::del( int idx ) {
+Instrument* InstrumentList::del( int idx ) {
 	assert( idx >= 0 && idx < __instruments.size() );
+    Instrument* instrument = __instruments[idx];
 	__instruments.erase( __instruments.begin() + idx );
+    return instrument;
+}
+
+Instrument* InstrumentList::del( Instrument* instrument ) {
+    for( int i=0; i<__instruments.size(); i++ ) {
+        if(__instruments[i]==instrument) {
+	        __instruments.erase( __instruments.begin() + i );
+            return instrument;
+        }
+    }
+    return 0;
 }
 
 void InstrumentList::swap( int idx_a, int idx_b ) {

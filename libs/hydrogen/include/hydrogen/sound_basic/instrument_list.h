@@ -72,11 +72,18 @@ class InstrumentList : public Object
         /**
          * \brief remove the instrument at a given index, does not delete it
          * \param idx the index
+         * \return a pointer to the removed instrument
          */
-	    void del( int idx );
+	    Instrument* del( int idx );
+        /**
+         * \brief remove an instrument from the list, does not delete it
+         * \param instrument the instrument to be removed
+         * \return a pointer to the removed instrument, 0 if not found
+         */
+	    Instrument* del( Instrument* instrument );
         /**
          * \brief get the index of an instrument within the instruments
-         * \param instrument a pointer to the instrument to add
+         * \param instrument a pointer to the instrument to find
          * \return -1 if not found
          */
 	    int index( Instrument* instrument );
