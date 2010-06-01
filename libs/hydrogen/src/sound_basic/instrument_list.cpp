@@ -82,24 +82,20 @@ void InstrumentList::add( Instrument* instrument ) {
 }
 
 Instrument* InstrumentList::operator[]( int idx ) {
-	assert( idx >= 0 && idx < __instruments.size() );
-	/*
-    if ( idx >= __instruments.size() ) {
-		ERRORLOG( QString( "idx %1 > size() %2" ).arg( idx ).arg(size()) );
+    if ( idx < 0 || idx >= __instruments.size() ) {
+		ERRORLOG( QString( "idx %1 out of [0;%2]" ).arg( idx ).arg(size()) );
 		return 0;
 	}
-    */
+	assert( idx >= 0 && idx < __instruments.size() );
 	return __instruments[idx];
 }
 
 Instrument* InstrumentList::get( int idx ) {
-	assert( idx >= 0 && idx < __instruments.size() );
-	/*
-    if ( idx >= __instruments.size() ) {
-		ERRORLOG( QString( "idx %1 > size() %2" ).arg( idx ).arg(size()) );
+    if ( idx < 0 || idx >= __instruments.size() ) {
+		ERRORLOG( QString( "idx %1 out of [0;%2]" ).arg( idx ).arg(size()) );
 		return 0;
 	}
-    */
+	assert( idx >= 0 && idx < __instruments.size() );
 	return __instruments[idx];
 }
 
