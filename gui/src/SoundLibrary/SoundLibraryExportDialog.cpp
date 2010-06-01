@@ -140,7 +140,7 @@ void SoundLibraryExportDialog::updateDrumkitList()
 		Drumkit *info = Drumkit::load( absPath );
 		if (info) {
 			drumkitInfoList.push_back( info );
-			drumkitList->addItem( info->getName() );
+			drumkitList->addItem( info->get_name() );
 		}
 	}
 

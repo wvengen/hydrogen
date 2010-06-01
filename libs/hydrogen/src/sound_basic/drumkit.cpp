@@ -71,7 +71,7 @@ Drumkit* Drumkit::load( const QString& dk_path ) {
         return 0;
     }
     Drumkit* drumkit = Drumkit::load_from( &root );
-    drumkit->setPath( dk_path );
+    drumkit->set_path( dk_path );
     return drumkit;
 }
 
@@ -82,50 +82,43 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
         return 0;
     }
     Drumkit *drumkit = new Drumkit();
-    drumkit->setName( drumkit_name );
-    drumkit->setAuthor( node->read_string( "author", "undefined author" ) );
-    drumkit->setInfo( node->read_string( "info", "defaultInfo" ) );
-    drumkit->setLicense( node->read_string( "license", "undefined license" ) );
+    drumkit->set_name( drumkit_name );
+    drumkit->set_author( node->read_string( "author", "undefined author" ) );
+    drumkit->set_info( node->read_string( "info", "defaultInfo" ) );
+    drumkit->set_license( node->read_string( "license", "undefined license" ) );
     XMLNode instruments_node = node->firstChildElement( "instrumentList" );
     if ( instruments_node.isNull() ) {
         WARNINGLOG( "instrumentList node not found" );
-        drumkit->setInstrumentList( new InstrumentList() );
+        drumkit->set_instruments( new InstrumentList() );
     } else {
-        drumkit->setInstrumentList( InstrumentList::load_from( &instruments_node ) );
+        drumkit->set_instruments( InstrumentList::load_from( &instruments_node ) );
     }
     drumkit->dump();
     return drumkit;
 }
 
-bool Drumkit::save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments )
-{
+bool Drumkit::save( bool overwrite ) {
     INFOLOG( "Saving drumkit" );
-    if( Filesystem::drumkit_exists( name ) ) {
-        ERRORLOG( QString("drumkit %1 already exists").arg(name) );
+    if( Filesystem::drumkit_exists( __name ) && !overwrite ) {
+        ERRORLOG( QString("drumkit %1 already exists").arg(__name) );
         return false;
     }
-    QString dk_path = Filesystem::usr_drumkits_dir() + "/" + name;
+    QString dk_path = Filesystem::usr_drumkits_dir() + "/" + __name;
     if( !Filesystem::mkdir( dk_path) ) {
         ERRORLOG( QString("unable to create %1").arg(dk_path) );
         return false;
     }
-    Drumkit *drumkit = new Drumkit();
-    drumkit->setPath( dk_path );
-    drumkit->setName( name );
-    drumkit->setAuthor( author );
-    drumkit->setInfo( info );
-    drumkit->setLicense( license );
-	drumkit->setInstrumentList( new InstrumentList( instruments ) );
     XMLDoc doc;
     QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
     doc.appendChild( header );
     XMLNode root = doc.createElement( "drumkit_info" );
-    drumkit->save_to( &root );
+    save_to( &root );
     doc.appendChild( root );
     bool ret = doc.write( Filesystem::drumkit_file(dk_path) );
-    if(ret) {   
+    if(ret) {
+        // TODO use overwrite, keep lists of already written files
         // Copy sample files
-        InstrumentList *instruments = drumkit->getInstrumentList();
+        InstrumentList *instruments = get_instruments();
         for( int i=0; i<instruments->size(); i++) {
             Instrument* instrument = (*instruments)[i];
             for ( int n = 0; n < MAX_LAYERS; n++ ) {
@@ -137,7 +130,7 @@ bool Drumkit::save( const QString& name, const QString& author, const QString& i
                     if(idx>=0) {
                         QString dst = dk_path + "/" + path.right( path.size()-1-path.lastIndexOf("/") );
                         if( Filesystem::file_readable( dst ) ) {
-                            WARNINGLOG( QString("do not overright %1 with %2 has it already exists").arg(dst).arg(path) );
+                            WARNINGLOG( QString("do not overwrite %1 with %2 has it already exists").arg(dst).arg(path) );
                         } else {
                             Filesystem::file_copy( path, dst );
                         }
@@ -150,6 +143,18 @@ bool Drumkit::save( const QString& name, const QString& author, const QString& i
         }
         INFOLOG( QString("Drumkit saved in %1").arg(dk_path) );
     }
+    return ret;
+}
+
+bool Drumkit::save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments, bool overwrite ) {
+    Drumkit *drumkit = new Drumkit();
+    //drumkit->set_path( dk_path );
+    drumkit->set_name( name );
+    drumkit->set_author( author );
+    drumkit->set_info( info );
+    drumkit->set_license( license );
+	drumkit->set_instruments( new InstrumentList( instruments ) );
+    bool ret = drumkit->save( overwrite );
 	delete drumkit;
     return ret;
 }

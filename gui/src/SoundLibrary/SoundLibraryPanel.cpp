@@ -184,11 +184,11 @@ void SoundLibraryPanel::updateDrumkitList()
 		if (pInfo) {
 			__user_drumkit_info_list.push_back( pInfo );
 			QTreeWidgetItem* pDrumkitItem = new QTreeWidgetItem( __user_drumkits_item );
-			pDrumkitItem->setText( 0, pInfo->getName() );
-			if ( QString(pInfo->getName() ) == currentSL ){
+			pDrumkitItem->setText( 0, pInfo->get_name() );
+			if ( QString(pInfo->get_name() ) == currentSL ){
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
-			InstrumentList *pInstrList = pInfo->getInstrumentList();
+			InstrumentList *pInstrList = pInfo->get_instruments();
 			for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 				Instrument *pInstr = pInstrList->get( nInstr );
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
@@ -207,11 +207,11 @@ void SoundLibraryPanel::updateDrumkitList()
 		if (pInfo) {
 			__system_drumkit_info_list.push_back( pInfo );
 			QTreeWidgetItem* pDrumkitItem = new QTreeWidgetItem( __system_drumkits_item );
-			pDrumkitItem->setText( 0, pInfo->getName() );
-			if ( QString( pInfo->getName() ) == currentSL ){
+			pDrumkitItem->setText( 0, pInfo->get_name() );
+			if ( QString( pInfo->get_name() ) == currentSL ){
 				pDrumkitItem->setBackgroundColor( 0, QColor( 50, 50, 50) );
 			}
-			InstrumentList *pInstrList = pInfo->getInstrumentList();
+			InstrumentList *pInstrList = pInfo->get_instruments();
 			for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 				Instrument *pInstr = pInstrList->get( nInstr );
 				QTreeWidgetItem* pInstrumentItem = new QTreeWidgetItem( pDrumkitItem );
@@ -496,14 +496,14 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
 		Drumkit *pInfo = __system_drumkit_info_list[i];
-		if ( pInfo->getName() == sDrumkitName ) {
+		if ( pInfo->get_name() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
 		Drumkit *pInfo = __user_drumkit_info_list[i];
-		if ( pInfo->getName() == sDrumkitName ) {
+		if ( pInfo->get_name() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
@@ -514,7 +514,7 @@ void SoundLibraryPanel::on_drumkitLoadAction()
 
 	Hydrogen::get_instance()->loadDrumkit( drumkitInfo );
 	Hydrogen::get_instance()->getSong()->__is_modified = true;
-	HydrogenApp::get_instance()->onDrumkitLoad( drumkitInfo->getName() );
+	HydrogenApp::get_instance()->onDrumkitLoad( drumkitInfo->get_name() );
 	HydrogenApp::get_instance()->getPatternEditorPanel()->getDrumPatternEditor()->updateEditor();
 	HydrogenApp::get_instance()->getPatternEditorPanel()->updatePianorollEditor();
 
@@ -617,14 +617,14 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
 		Drumkit *pInfo = __system_drumkit_info_list[i];
-		if ( pInfo->getName() == sDrumkitName ) {
+		if ( pInfo->get_name() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
 		Drumkit*pInfo = __user_drumkit_info_list[i];
-		if ( pInfo->getName() == sDrumkitName ) {
+		if ( pInfo->get_name() == sDrumkitName ) {
 			drumkitInfo = pInfo;
 			break;
 		}
@@ -640,14 +640,14 @@ void SoundLibraryPanel::on_drumkitPropertiesAction()
 	// find the drumkit in the list
 	for ( uint i = 0; i < __system_drumkit_info_list.size(); i++ ) {
 		Drumkit *prInfo = __system_drumkit_info_list[i];
-		if ( prInfo->getName() == sPreDrumkitName ) {
+		if ( prInfo->get_name() == sPreDrumkitName ) {
 			preDrumkitInfo = prInfo;
 			break;
 		}
 	}
 	for ( uint i = 0; i < __user_drumkit_info_list.size(); i++ ) {
 		Drumkit *prInfo = __user_drumkit_info_list[i];
-		if ( prInfo->getName() == sPreDrumkitName ) {
+		if ( prInfo->get_name() == sPreDrumkitName ) {
 			preDrumkitInfo = prInfo;
 			break;
 		}

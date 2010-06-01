@@ -42,36 +42,60 @@ class Drumkit : public Object {
         /** \brief drumkit destructor, delete__ instruments */
 	    ~Drumkit();
         
-        /** \brief load drumkit information from a path
+        /**
+         * \brief load drumkit information from a path
          * \param dk_path like one returned by Filesystem::drumkit_path
          * \return a Drumkit on success, 0 otherwise
          */
         static Drumkit* load( const QString& dk_path );
-        /// Save a drumkit using given parameters and an instrument list
-        static bool save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments );
-        /// Installs a drumkit
+        /**
+         * \brief save a drumkit
+         * \oaram overwrite allows to write over existing drumkit files
+         * \return true on success
+         */
+        bool save( bool override=false );
+        /**
+         * \brief save a drumkit using given parameters and an instrument list
+         * \param name the name of the drumkit
+         * \param author the author of the drumkit
+         * \param info the info of the drumkit
+         * \param license the license of the drumkit
+         * \þaram instruments the instruments to be saved within the drumkit
+         * \oaram overwrite allows to write over existing drumkit files
+         * \return true on success
+         */
+        static bool save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments, bool overwrite=false );
+        /**
+         * \brief install a drumkit from a filename
+         * \param filename the path to the new drumkit
+         * \return true on success
+         */
         static bool install( const QString& filename );
-        /// Remove a drumkit from the disk
+        /**
+         * \brief Remove a drumkit from the disk
+         * \param name the drumkit name
+         * \return true on success
+         */
         static bool removeDrumkit( const QString& name );
 
         /** \brief set __instruments, delete existing one */
-        void setInstrumentList( InstrumentList* l ) { if(__instruments) { delete __instruments; } __instruments = l; }
-        InstrumentList* getInstrumentList()         { return __instruments; }   ///< returns __instrumetns
+        void set_instruments( InstrumentList* l )   { if(__instruments) { delete __instruments; } __instruments = l; }
+        InstrumentList* get_instruments()           { return __instruments; }   ///< returns __instruments
 
-        void setPath( const QString& path )         { __path = path; }          ///< sets __path
-        const QString& getPath()                    { return __path; }          ///< returns __path
+        void set_path( const QString& path )        { __path = path; }          ///< sets __path
+        const QString& get_path()                   { return __path; }          ///< returns __path
 
-        void setName( const QString& name )         { __name = name; }          ///< sets __name
-        const QString& getName()                    { return __name; }          ///< returns __name
+        void set_name( const QString& name )        { __name = name; }          ///< sets __name
+        const QString& get_name()                   { return __name; }          ///< returns __name
         
-        void setAuthor( const QString& author )     { __author = author; }      ///< sets __author
-        const QString& getAuthor()                  { return __author; }        ///< returns __author
+        void set_author( const QString& author )    { __author = author; }      ///< sets __author
+        const QString& get_author()                 { return __author; }        ///< returns __author
         
-        void setInfo( const QString& info )         { __info = info; }          ///< sets __info
-        const QString& getInfo()                    { return __info; }          ///< returns __info
+        void set_info( const QString& info )        { __info = info; }          ///< sets __info
+        const QString& get_info()                   { return __info; }          ///< returns __info
         
-        void setLicense( const QString& license )   { __license = license; }    ///< sets __license
-        const QString& getLicense()                 { return __license; }       ///< returns __license
+        void set_license( const QString& license )  { __license = license; }    ///< sets __license
+        const QString& get_license()                { return __license; }       ///< returns __license
 
         void dump();
     
@@ -81,7 +105,7 @@ class Drumkit : public Object {
         QString __author;               ///< drumkit author
         QString __info;                 ///< drumkit free text
         QString __license;              ///< drumkit license description
-        InstrumentList *__instruments;  ///< the list of instruments
+        InstrumentList* __instruments;  ///< the list of instruments
         /*
          * \brief save the drumkit within the given XMLNode
          * \param node the XMLNode to feed

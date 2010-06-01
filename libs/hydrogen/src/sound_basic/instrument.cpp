@@ -128,7 +128,7 @@ void Instrument::load_from( Drumkit* drumkit, Instrument* instrument, bool is_li
 			if ( is_live )
 				AudioEngine::get_instance()->unlock();
 		} else {
-	        QString sample_path =  drumkit->getPath() + "/" + src_layer->get_sample()->get_filename();
+	        QString sample_path =  drumkit->get_path() + "/" + src_layer->get_sample()->get_filename();
 			Sample *sample = Sample::load( sample_path );
 			if (sample==0) {
 				_ERRORLOG( QString("Error loading sample %1. Creating a new empty layer.").arg(sample_path));
@@ -171,7 +171,7 @@ void Instrument::load_from( const QString& drumkit_name, const QString& instrume
     if ( dir.isEmpty() ) return;
     Drumkit *drumkit = Drumkit::load( dir );
     assert( drumkit );
-    Instrument *instrument = drumkit->getInstrumentList()->find( instrument_name );
+    Instrument *instrument = drumkit->get_instruments()->find( instrument_name );
     if ( instrument!=0 ) {
         load_from( drumkit, instrument, is_live );
     }

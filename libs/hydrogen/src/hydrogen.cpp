@@ -2579,16 +2579,16 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		m_audioEngineState = STATE_PREPARED;
 	}
 
-	INFOLOG( drumkitInfo->getName() );
-	m_currentDrumkit = drumkitInfo->getName();
-	QString sDrumkitPath = Filesystem::drumkit_path( drumkitInfo->getName() );
+	INFOLOG( drumkitInfo->get_name() );
+	m_currentDrumkit = drumkitInfo->get_name();
+	QString sDrumkitPath = Filesystem::drumkit_path( drumkitInfo->get_name() );
 
 
 	//current instrument list
 	InstrumentList *songInstrList = m_pSong->get_instrument_list();
 
 	//new instrument list
-	InstrumentList *pDrumkitInstrList = drumkitInfo->getInstrumentList();
+	InstrumentList *pDrumkitInstrList = drumkitInfo->get_instruments();
 
 	/*
 		If the old drumkit is bigger then the new drumkit,
