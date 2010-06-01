@@ -94,17 +94,28 @@ int PatternList::index( Pattern* pattern ) {
     return -1;
 }
 
-void PatternList::replace( Pattern* newPattern, int idx ) {
-	if ( idx < 0 || idx >= __patterns.size() ) {
-		ERRORLOG( QString( "idx %1 out of [0;%2]" ).arg( idx ).arg(__patterns.size()) );
-		return;
-	}
-	__patterns.insert( __patterns.begin() + idx, newPattern );
-	__patterns.erase( __patterns.begin() + idx + 1 );
-}
-
 void PatternList::set_to_old() {
 	for ( int i=0 ; i<__patterns.size() ; i++ ) get(i)->set_to_old();
+}
+
+void PatternList::swap( int idx_a, int idx_b ) {
+	assert( idx_a >= 0 && idx_a < __patterns.size() );
+	assert( idx_b >= 0 && idx_b < __patterns.size() );
+    if( idx_a == idx_b ) return;
+    //DEBUGLOG(QString("===>> SWAP  %1 %2").arg(idx_a).arg(idx_b) );
+    Pattern *tmp = __patterns[idx_a];
+    __patterns[idx_a] = __patterns[idx_b];
+    __patterns[idx_b] = tmp;
+}
+
+void PatternList::move( int idx_a, int idx_b ) {
+	//assert( idx_a >= 0 && idx_a < __patterns.size() );
+	//assert( idx_b >= 0 && idx_b < __patterns.size() );
+    if( idx_a == idx_b ) return;
+    //DEBUGLOG(QString("===>> MOVE  %1 %2").arg(idx_a).arg(idx_b) );
+    Pattern *tmp = __patterns[idx_a];
+    __patterns.erase( __patterns.begin() + idx_a );
+	__patterns.insert( __patterns.begin() + idx_b, tmp );
 }
 
 };

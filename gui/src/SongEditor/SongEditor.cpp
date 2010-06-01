@@ -1189,12 +1189,7 @@ void SongEditorPatternList::loadPatternAction( QString afilename, int position)
 	}else{
 		H2Core::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
-		for (int nPatr = pPatternList->size() +1 ; nPatr >= position; nPatr--) {
-			H2Core::Pattern *pPattern = pPatternList->get(nPatr - 1);
-			pPatternList->replace( pPattern, nPatr );
-		}
-		pPatternList->replace( pNewPattern, position );
-
+		pPatternList->move( pPatternList->size()-1, position );
 		engine->setSelectedPatternNumber( position );
 		song->__is_modified = true;
 		createBackground();
@@ -1426,13 +1421,7 @@ void SongEditorPatternList::restoreDeletedPatternsFromList( QString patternFilen
 	}else{
 		H2Core::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
-
-		for (int nPatr = pPatternList->size() +1 ; nPatr >= tmpselectedpatternpos; nPatr--) {
-			H2Core::Pattern *pPattern = pPatternList->get(nPatr - 1);
-			pPatternList->replace( pPattern, nPatr );
-		}
-
-		pPatternList->replace( pNewPattern, tmpselectedpatternpos );
+		pPatternList->move( pPatternList->size()-1, patternPosition );
 		song->__is_modified = true;
 		createBackground();
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
@@ -1663,26 +1652,8 @@ void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPat
 		Hydrogen *engine = Hydrogen::get_instance();
 
 		Song *pSong = engine->getSong();
-		PatternList *pPatternList = pSong->get_pattern_list();
-
-
-
-		// move instruments...
-		H2Core::Pattern *pSourcePattern = pPatternList->get( nSourcePattern );//Instrument *pSourceInstr = pPatternList->get(nSourcePattern);
-		if ( nSourcePattern < nTargetPattern) {
-			for (int nPatr = nSourcePattern; nPatr < nTargetPattern; nPatr++) {
-				H2Core::Pattern *pPattern = pPatternList->get(nPatr + 1);
-				pPatternList->replace( pPattern, nPatr );
-			}
-			pPatternList->replace( pSourcePattern, nTargetPattern );
-		}
-		else {
-			for (int nPatr = nSourcePattern; nPatr >= nTargetPattern; nPatr--) {
-				H2Core::Pattern *pPattern = pPatternList->get(nPatr - 1);
-				pPatternList->replace( pPattern, nPatr );
-			}
-			pPatternList->replace( pSourcePattern, nTargetPattern );
-		}
+        ERRORLOG(QString("%1 %2").arg(nSourcePattern).arg(nTargetPattern ));
+		pSong->get_pattern_list()->move(nSourcePattern, nTargetPattern );
 		engine->setSelectedPatternNumber( nTargetPattern );
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 		pSong->__is_modified = true;

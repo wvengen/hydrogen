@@ -395,13 +395,7 @@ void SongEditorPanel::addEmptyPattern( QString newPatternName , QString newPatte
 	emptyPattern->set_name( newPatternName );
 	emptyPattern->set_category( newPatternCategory );
 	patternList->add( emptyPattern );
-	if( patternPosition != patternList->size() ){
-		for (int nPatr = patternList->size() +1 ; nPatr >= patternPosition; nPatr--) {
-			H2Core::Pattern *pPattern = patternList->get(nPatr - 1);
-			patternList->replace( pPattern, nPatr );
-		}
-		patternList->replace( emptyPattern,  patternPosition );
-	}
+	patternList->move( patternList->size()-1, patternPosition );
 	song->__is_modified = true;
 	updateAll();
 }

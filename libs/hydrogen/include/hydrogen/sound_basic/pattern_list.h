@@ -93,11 +93,18 @@ class PatternList : public Object
         /** \brief mark all patterns as old, see Pattern::set_to_old */
         void set_to_old();
 
-        /** \brief replace a pattern at a given index with a new one
-         * \param new_pattern the new pattern
-         * \param idx the index
+        /**
+         * \brief swap the patterns of two different indexes
+         * \param idx_a the first index
+         * \param idx_b the second index
          */
-        void replace( Pattern* new_pattern, int idx );
+	    void swap( int idx_a, int idx_b );
+        /**
+         * \brief move a pattern from a position to another
+         * \param idx_a the start index
+         * \param idx_b the finish index
+         */
+	    void move( int idx_a, int idx_b );
 
     private:
         std::vector<Pattern*> __patterns;

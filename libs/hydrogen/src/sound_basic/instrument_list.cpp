@@ -151,11 +151,7 @@ void InstrumentList::move( int idx_a, int idx_b ) {
     //DEBUGLOG(QString("===>> MOVE  %1 %2").arg(idx_a).arg(idx_b) );
     Instrument *tmp = __instruments[idx_a];
     __instruments.erase( __instruments.begin() + idx_a );
-    if ( idx_a > idx_b ) {
-	    __instruments.insert( __instruments.begin() + idx_b, tmp );
-    } else {
-	    __instruments.insert( __instruments.begin() + idx_b-1, tmp );
-    }
+	__instruments.insert( __instruments.begin() + idx_b, tmp );
 }
 
 };
