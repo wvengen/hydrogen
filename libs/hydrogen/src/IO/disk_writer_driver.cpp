@@ -25,6 +25,7 @@
 #include <hydrogen/event_queue.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 
 #include <pthread.h>
 #include <cassert>
@@ -137,7 +138,7 @@ void* diskWriterDriver_thread( void* param )
 	int nSongSize = 0;
 	for ( int i = 0; i < nColumns; ++i ) {
 		PatternList *pColumn = ( *pPatternColumns )[ i ];
-		if ( pColumn->get_size() != 0 ) {
+		if ( pColumn->size() != 0 ) {
 			nPatternSize = pColumn->get( 0 )->get_length();
 		} else {
 			nPatternSize = MAX_NOTES;

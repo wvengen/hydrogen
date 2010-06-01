@@ -27,6 +27,7 @@
 
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 
 
@@ -126,7 +127,7 @@ void PatternPropertiesDialog::defaultNameCheck( QString pattName, bool savepatte
 
 	PatternList *patternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
 	
-	for (uint i = 0; i < patternList->get_size(); i++) {
+	for (uint i = 0; i < patternList->size(); i++) {
 		if ( patternList->get(i)->get_name() == pattName) {
 			if (savepattern){
 				patternNameTxt->setText( trUtf8( "%1#2").arg(patternList->get(i)->get_name()) );
@@ -147,7 +148,7 @@ bool PatternPropertiesDialog::nameCheck( QString pattName )
 	}
 	PatternList *patternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
 	
-	for (uint i = 0; i < patternList->get_size(); i++) {
+	for (uint i = 0; i < patternList->size(); i++) {
 		if ( patternList->get(i)->get_name() == pattName) {
 			return false;
 		}

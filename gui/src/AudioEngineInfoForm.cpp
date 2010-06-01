@@ -27,6 +27,7 @@
 #include "HydrogenApp.h"
 
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/IO/MidiInput.h>
@@ -197,7 +198,7 @@ void AudioEngineInfoForm::updateInfo()
 	QString currentPatternName;
 	PatternList *pPatternList = Hydrogen::get_instance()->getCurrentPatternList();
 	if (pPatternList) {
-		currentPatternLbl->setText( QString::number(pPatternList->get_size()) );
+		currentPatternLbl->setText( QString::number(pPatternList->size()) );
 	}
 	else {
 		currentPatternLbl->setText( "N/A" );

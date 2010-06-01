@@ -26,6 +26,7 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 
 #include "Skin.h"
 
@@ -92,7 +93,7 @@ void VirtualPatternDialog::computeVirtualPatternTransitiveClosure(H2Core::Patter
 {
     //std::map<Pattern*, SimplePatternNode*> patternNodeGraph;
     
-    int listsize = pPatternList->get_size();    
+    int listsize = pPatternList->size();
     for (unsigned int index = 0; index < listsize; ++index) {
 	H2Core::Pattern *curPattern = pPatternList->get(index);
 	//SimplePatternNode *newNode = new SimplePatternNode();

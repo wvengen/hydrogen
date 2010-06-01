@@ -31,6 +31,7 @@
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/note.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/sound_basic/drumkit.h>
@@ -854,7 +855,7 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 
 	QDomNode tempPatternListNode = doc.createElement( "tempPatternList" );
 
-	unsigned nPatterns = song->get_pattern_list()->get_size();
+	unsigned nPatterns = song->get_pattern_list()->size();
 	
 	QDomNode virtualPatternListNode = doc.createElement( "virtualPatternList" );
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
@@ -882,7 +883,7 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 		QDomNode groupNode = doc.createElement( "group" );
 
 		PatternList *pList = ( *song->get_pattern_group_vector() )[i];
-		for ( unsigned j = 0; j < pList->get_size(); j++ ) {
+		for ( unsigned j = 0; j < pList->size(); j++ ) {
 			Pattern *pPattern = pList->get( j );
 			LocalFileMng::writeXmlString( groupNode, "patternID", pPattern->get_name() );
 		}
@@ -1071,7 +1072,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	// pattern list
 	QDomNode patternListNode = doc.createElement( "patternList" );
 
-	unsigned nPatterns = song->get_pattern_list()->get_size();
+	unsigned nPatterns = song->get_pattern_list()->size();
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
 		Pattern *pat = song->get_pattern_list()->get( i );
 
@@ -1138,7 +1139,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		QDomNode groupNode = doc.createElement( "group" );
 
 		PatternList *pList = ( *song->get_pattern_group_vector() )[i];
-		for ( unsigned j = 0; j < pList->get_size(); j++ ) {
+		for ( unsigned j = 0; j < pList->size(); j++ ) {
 			Pattern *pPattern = pList->get( j );
 			LocalFileMng::writeXmlString( groupNode, "patternID", pPattern->get_name() );
 		}

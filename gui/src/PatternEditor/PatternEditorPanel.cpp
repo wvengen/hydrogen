@@ -24,6 +24,7 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
 using namespace H2Core;
@@ -670,7 +671,7 @@ void PatternEditorPanel::selectedPatternChangedEvent()
 	PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
 	int nSelectedPatternNumber = Hydrogen::get_instance()->getSelectedPatternNumber();
 
-	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->get_size() ) ) {
+	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->size() ) ) {
 		// update pattern name text
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
 		QString sCurrentPatternName = m_pPattern->get_name();

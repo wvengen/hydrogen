@@ -32,6 +32,7 @@
 
 #include <hydrogen/note.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/hydrogen.h>
@@ -155,7 +156,7 @@ void ExportSongDialog::exportTracks()
 
 		bool instrumentexists = false;
 		//if a instrument contains no notes we jump to the next instrument
-		unsigned nPatterns = pSong->get_pattern_list()->get_size();
+		unsigned nPatterns = pSong->get_pattern_list()->size();
 		for ( unsigned i = 0; i < nPatterns; i++ ) {
 			Pattern *pat = pSong->get_pattern_list()->get( i );
 

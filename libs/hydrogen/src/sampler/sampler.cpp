@@ -37,6 +37,7 @@
 #include <hydrogen/sample.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/event_queue.h>
 
 #include <hydrogen/fx/Effects.h>
@@ -821,7 +822,7 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 		( pEngine->getState() != STATE_PLAYING )){
 			PatternList *pPatternList = mSong->get_pattern_list();
 			if ( ( selectedpattern != -1 )
-			&& ( selectedpattern < ( int )pPatternList->get_size() ) ) {
+			&& ( selectedpattern < ( int )pPatternList->size() ) ) {
 				currentPattern = pPatternList->get( selectedpattern );
 			}
 		}else

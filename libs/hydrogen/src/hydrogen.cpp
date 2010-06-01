@@ -51,6 +51,7 @@
 #include <hydrogen/sample.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/note.h>
 #include <hydrogen/fx/LadspaFX.h>
 #include <hydrogen/fx/Effects.h>
@@ -1019,7 +1020,7 @@ void audioEngine_setSong( Song *newSong )
 	audioEngine_process_checkBPMChanged();
 
 	// find the first pattern and set as current
-	if ( m_pSong->get_pattern_list()->get_size() > 0 ) {
+	if ( m_pSong->get_pattern_list()->size() > 0 ) {
 		m_pPlayingPatterns->add( m_pSong->get_pattern_list()->get( 0 ) );
 	}
 
@@ -1204,7 +1205,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 				( *( m_pSong->get_pattern_group_vector() ) )[m_nSongPos];
 				
 			std::set<Pattern*> patternsToPlay;
-			for ( unsigned i = 0; i < pPatternList->get_size(); ++i ) {
+			for ( unsigned i = 0; i < pPatternList->size(); ++i ) {
 			    Pattern *curPattern = pPatternList->get(i);
 			    patternsToPlay.insert(curPattern);
 			    
@@ -1220,7 +1221,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			}//for
 			
 			//if ( pPatternList ) {
-				//for ( unsigned i = 0; i < pPatternList->get_size(); ++i ) {
+				//for ( unsigned i = 0; i < pPatternList->size(); ++i ) {
 				//	m_pPlayingPatterns->add( pPatternList->get( i ) );
 				//}
 				
@@ -1261,7 +1262,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			}
 
 
-			if ( m_pPlayingPatterns->get_size() != 0 ) {
+			if ( m_pPlayingPatterns->size() != 0 ) {
 				Pattern *pFirstPattern = m_pPlayingPatterns->get( 0 );
 				nPatternSize = pFirstPattern->get_length();
 			}
@@ -1272,10 +1273,10 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 
 			if ( ( tick == m_nPatternStartTick + nPatternSize )
 			     || ( m_nPatternStartTick == -1 ) ) {
-				if ( m_pNextPatterns->get_size() > 0 ) {
+				if ( m_pNextPatterns->size() > 0 ) {
 					Pattern * p;
 					for ( uint i = 0;
-					      i < m_pNextPatterns->get_size();
+					      i < m_pNextPatterns->size();
 					      i++ ) {
 						p = m_pNextPatterns->get( i );
 // 						___WARNINGLOG( QString( "Got pattern # %1" )
@@ -1338,9 +1339,9 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 		}
 
 		// update the notes queue
-		if ( m_pPlayingPatterns->get_size() != 0 ) {
+		if ( m_pPlayingPatterns->size() != 0 ) {
 			for ( unsigned nPat = 0 ;
-			      nPat < m_pPlayingPatterns->get_size() ;
+			      nPat < m_pPlayingPatterns->size() ;
 			      ++nPat ) {
 				Pattern *pPattern = m_pPlayingPatterns->get( nPat );
 				assert( pPattern != NULL );
@@ -1442,7 +1443,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 	int nPatternSize;
 	for ( int i = 0; i < nColumns; ++i ) {
 		PatternList *pColumn = ( *pPatternColumns )[ i ];
-		if ( pColumn->get_size() != 0 ) {
+		if ( pColumn->size() != 0 ) {
 			// tengo in considerazione solo il primo pattern. I
 			// pattern nel gruppo devono avere la stessa lunghezza.
 			nPatternSize = pColumn->get( 0 )->get_length();
@@ -1466,7 +1467,7 @@ inline int findPatternInTick( int nTick, bool bLoopMode, int *pPatternStartTick 
 		nTotalTick = 0;
 		for ( int i = 0; i < nColumns; ++i ) {
 			PatternList *pColumn = ( *pPatternColumns )[ i ];
-			if ( pColumn->get_size() != 0 ) {
+			if ( pColumn->size() != 0 ) {
 				// tengo in considerazione solo il primo
 				// pattern. I pattern nel gruppo devono avere la
 				// stessa lunghezza.
@@ -1961,7 +1962,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 		// Recording + song playback mode + actually playing
 		PatternList *pPatternList = m_pSong->get_pattern_list();
 		int ipattern = getPatternPos(); // playlist index
-		if ( ipattern < 0 || ipattern >= (int) pPatternList->get_size() ) {
+		if ( ipattern < 0 || ipattern >= (int) pPatternList->size() ) {
 			AudioEngine::get_instance()->unlock(); // unlock the audio engine
 			return;
 		}
@@ -1969,7 +1970,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 		column = getTickPosition();
 		while ( column < lookaheadTicks ) {
 			ipattern -= 1;
-			if ( ipattern < 0 || ipattern >= (int) pPatternList->get_size() ) {
+			if ( ipattern < 0 || ipattern >= (int) pPatternList->size() ) {
 				AudioEngine::get_instance()->unlock(); // unlock the audio engine
 				return;
 			}
@@ -2003,7 +2004,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 		// Not song-record mode
 		PatternList *pPatternList = m_pSong->get_pattern_list();
 		if ( ( m_nSelectedPatternNumber != -1 )
-		&& ( m_nSelectedPatternNumber < ( int )pPatternList->get_size() ) ) {
+		&& ( m_nSelectedPatternNumber < ( int )pPatternList->size() ) ) {
 			currentPattern = pPatternList->get( m_nSelectedPatternNumber );
 		}
 		if( currentPattern == NULL ){
@@ -2377,7 +2378,7 @@ void Hydrogen::sequencer_setNextPattern( int pos, bool appendPattern, bool delet
 	if ( m_pSong && m_pSong->get_mode() == Song::PATTERN_MODE ) {
 		PatternList *patternList = m_pSong->get_pattern_list();
 		Pattern * p = patternList->get( pos );
-		if ( ( pos >= 0 ) && ( pos < ( int )patternList->get_size() ) ) {
+		if ( ( pos >= 0 ) && ( pos < ( int )patternList->size() ) ) {
 			// if p is already on the next pattern list, delete it.
 			if ( m_pNextPatterns->del( p ) == NULL ) {
 // 				WARNINGLOG( "Adding to nextPatterns" );
@@ -2389,7 +2390,7 @@ void Hydrogen::sequencer_setNextPattern( int pos, bool appendPattern, bool delet
 			ERRORLOG( QString( "pos not in patternList range. pos=%1 "
 					    "patternListSize=%2" )
 				   .arg( pos )
-				   .arg( patternList->get_size() ) );
+				   .arg( patternList->size() ) );
 			m_pNextPatterns->clear();
 		}
 	} else {
@@ -2592,9 +2593,9 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 	/*
 		If the old drumkit is bigger then the new drumkit,
 		delete all instruments with a bigger pos then
-		pDrumkitInstrList->get_size(). Otherwise the instruments
+		pDrumkitInstrList->size(). Otherwise the instruments
 		from our old instrumentlist with
-		pos > pDrumkitInstrList->get_size() stay in the
+		pos > pDrumkitInstrList->size() stay in the
 		new instrumentlist
 		
 	wolke: info!
@@ -2605,9 +2606,9 @@ int Hydrogen::loadDrumkit( Drumkit *drumkitInfo )
 		2. all not used instruments will complete deleted 
 	
 	old funktion:
-	while ( pDrumkitInstrList->get_size() < songInstrList->get_size() )
+	while ( pDrumkitInstrList->size() < songInstrList->size() )
 	{
-		songInstrList->del(songInstrList->get_size() - 1);
+		songInstrList->del(songInstrList->size() - 1);
 	}
 	*/
 	
@@ -2677,7 +2678,7 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	// new! this check if a pattern has an active note if there is an note
 	//inside the pattern the intrument would not be deleted
 		for ( int nPattern = 0 ;
-		      nPattern < (int)pPatternList->get_size() ;
+		      nPattern < pPatternList->size() ;
 		      ++nPattern ) {
 			if( pPatternList
 			    ->get( nPattern )
