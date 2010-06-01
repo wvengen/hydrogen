@@ -31,7 +31,7 @@ namespace H2Core
 {
 
 /**
-\brief InstrumentList is a collection or instruments used within a song, a drumkit, ...
+\brief InstrumentList is a collection of instruments used within a song, a drumkit, ...
 */
 class InstrumentList : public Object
 {
