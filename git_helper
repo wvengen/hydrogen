@@ -83,7 +83,7 @@ function push_to_clone() {
 function dcommit() {
     echo -e "** cd ${SRC}${SVN_CLONE_DIR}${RESET}" && cd ${SVN_CLONE_DIR} || error
     echo -e "** checkout ${SBC}${SVN_CLONE_B}${RESET}" && git checkout ${SVN_CLONE_B} || error
-    echo -e "** rebase ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${branch}${RESET}" && git svn rebase || error
+    echo -e "** rebase ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}" && git svn rebase || error
     echo -e "** dcommit ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} to ${URL_COLOR}${SVN_URL}${RESET}" && git svn dcommit
 }
 
