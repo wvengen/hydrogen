@@ -299,3 +299,4 @@ inline void Instrument::set_midi_out_note( int note ) {
 
 };
 
+/* vim: set softtabstop=4 expandtab: */

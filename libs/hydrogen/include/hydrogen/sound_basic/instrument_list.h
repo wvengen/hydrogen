@@ -132,3 +132,4 @@ class InstrumentList : public Object
 
 #endif // H2_INSTRUMENT_LIST_H
 
+/* vim: set softtabstop=4 expandtab: */

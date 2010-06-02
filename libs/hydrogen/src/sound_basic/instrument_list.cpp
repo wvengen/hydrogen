@@ -156,3 +156,4 @@ void InstrumentList::move( int idx_a, int idx_b ) {
 
 };
 
+/* vim: set softtabstop=4 expandtab: */

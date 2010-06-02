@@ -72,11 +72,11 @@ class Drumkit : public Object {
          */
         static bool install( const QString& filename );
         /**
-         * \brief Remove a drumkit from the disk
+         * \brief remove a drumkit from the disk
          * \param name the drumkit name
          * \return true on success
          */
-        static bool removeDrumkit( const QString& name );
+        static bool remove( const QString& name );
 
         /** \brief set __instruments, delete existing one */
         void set_instruments( InstrumentList* l )   { if(__instruments) { delete __instruments; } __instruments = l; }

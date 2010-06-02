@@ -169,13 +169,13 @@ void Drumkit::save_to( XMLNode* node ) {
     node->appendChild( instruments_node ); 
 }
 
-bool Drumkit::removeDrumkit( const QString& sDrumkitName ) {
+bool Drumkit::remove( const QString& sDrumkitName ) {
     QString path = Filesystem::usr_drumkits_dir() + "/" + sDrumkitName;
-    _INFOLOG( QString("Removing drumkit: %1").arg(path) );
     if( !Filesystem::drumkit_valid( path ) ) {
         ERRORLOG( QString("%1 is not valid drumkit").arg(path));
         return false;
     }
+    _INFOLOG( QString("Removing drumkit: %1").arg(path) );
     if( !Filesystem::rm_fr( path ) ) {
         _ERRORLOG( QString("Unable to remove drumkit: %1").arg(path) );
         return false;
@@ -304,3 +304,4 @@ bool Drumkit::install( const QString& filename ) {
 
 };
 
+/* vim: set softtabstop=4 expandtab: */

@@ -24,7 +24,7 @@
 #define H2_PATTERN_LIST_H
 
 #include <hydrogen/Object.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 
 namespace H2Core
 {
@@ -114,3 +114,4 @@ class PatternList : public Object
 
 #endif // H2_PATTERN_LIST_H
 
+/* vim: set softtabstop=4 expandtab: */

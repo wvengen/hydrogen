@@ -58,27 +58,21 @@ class InstrumentLayer : public Object
         /** \brief destructor */
         ~InstrumentLayer();
 
-        /** \brief set the gain of the layer */
-        void set_gain( float gain )             { __gain = gain; }
-        /** \brief get the gain of the layer */
-        float get_gain()                        { return __gain; }
-        /** \brief set the pitch of the layer */
-        void set_pitch( float pitch )           { __pitch = pitch; }
-        /** \brief get the pitch of the layer */
-        float get_pitch()                       { return __pitch; }
-        /** \brief set the start ivelocity of the layer */
-        void set_start_velocity( float start )  { __start_velocity = start; }
-        /** \brief get the start velocity of the layer */
-        float get_start_velocity()              { return __start_velocity; }
-        /** \brief set the end velocity of the layer */
-        void set_end_velocity( float end )      { __end_velocity = end; }
-        /** \brief get the end velocity of the layer */
-        float get_end_velocity()                { return __end_velocity; }
-        /** \brief set the sample of the layer */
-        void set_sample( Sample* sample )       { __sample = sample; }
-        /** \brief get the sample of the layer */
-        Sample* get_sample()                    { return __sample; }
-        /*
+        void set_gain( float gain )             { __gain = gain; }              ///< \brief set the gain of the layer
+        float get_gain()                        { return __gain; }              ///< \brief get the gain of the layer
+
+        void set_pitch( float pitch )           { __pitch = pitch; }            ///< \brief set the pitch of the layer
+        float get_pitch()                       { return __pitch; }             ///< \brief get the pitch of the layer
+
+        void set_start_velocity( float start )  { __start_velocity = start; }   ///< \brief set the start ivelocity of the layer
+        float get_start_velocity()              { return __start_velocity; }    ///< \brief get the start velocity of the layer
+
+        void set_end_velocity( float end )      { __end_velocity = end; }       ///< \brief set the end velocity of the layer
+        float get_end_velocity()                { return __end_velocity; }      ///< \brief get the end velocity of the layer
+
+        void set_sample( Sample* sample )       { __sample = sample; }          ///< \brief set the sample of the layer
+        Sample* get_sample()                    { return __sample; }            ///< \brief get the sample of the layer
+        /**
          * \brief save the intrument layer within the given XMLNode
          * \param node the XMLNode to feed
          */
@@ -102,3 +96,4 @@ class InstrumentLayer : public Object
 
 #endif // H2_INSTRUMENT_LAYER_H
 
+/* vim: set softtabstop=4 expandtab: */
