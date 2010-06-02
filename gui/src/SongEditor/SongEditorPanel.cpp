@@ -369,7 +369,7 @@ void SongEditorPanel::newPatBtnClicked( Button* btn)
 	PatternPropertiesDialog *dialog = new PatternPropertiesDialog( this, emptyPattern, 0, true );
 	if ( dialog->exec() == QDialog::Accepted ) {
 
-		SE_addEmptyPatternAction*action = new SE_addEmptyPatternAction( emptyPattern->get_name() , emptyPattern->get_category(), emptyPatternNo);
+		SE_addEmptyPatternAction*action = new SE_addEmptyPatternAction( emptyPattern->get_name() , emptyPattern->get_category(), engine->getSelectedPatternNumber()+1 );
 		HydrogenApp::get_instance()->m_undoStack->push( action );
 		patternList->del( emptyPattern );
 		delete emptyPattern;
