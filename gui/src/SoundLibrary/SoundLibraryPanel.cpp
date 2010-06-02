@@ -591,7 +591,7 @@ void SoundLibraryPanel::on_drumkitDeleteAction()
 	}
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	bool success = Drumkit::removeDrumkit( item->text(0) );
+	bool success = Drumkit::remove( item->text(0) );
 	test_expandedItems();
 	updateDrumkitList();
 	QApplication::restoreOverrideCursor();
