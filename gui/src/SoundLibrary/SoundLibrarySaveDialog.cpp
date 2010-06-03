@@ -22,7 +22,7 @@
 
 #include "SoundLibrarySaveDialog.h"
 
-#include <hydrogen/sound_basics/drumkit.h>
+#include <hydrogen/basics/drumkit.h>
 #include <hydrogen/hydrogen.h>
 
 #include <QMessageBox>

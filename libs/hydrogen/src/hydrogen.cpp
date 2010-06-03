@@ -47,12 +47,12 @@
 #include <hydrogen/adsr.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/audio_engine.h>
-#include <hydrogen/sound_basics/instrument.h>
+#include <hydrogen/basics/instrument.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/sound_basics/pattern.h>
-#include <hydrogen/sound_basics/pattern_list.h>
-#include <hydrogen/sound_basics/note.h>
+#include <hydrogen/basics/pattern.h>
+#include <hydrogen/basics/pattern_list.h>
+#include <hydrogen/basics/note.h>
 #include <hydrogen/fx/LadspaFX.h>
 #include <hydrogen/fx/Effects.h>
 #include <hydrogen/IO/AudioOutput.h>

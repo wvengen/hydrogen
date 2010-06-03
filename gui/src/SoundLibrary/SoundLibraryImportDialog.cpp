@@ -31,7 +31,7 @@
 
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/helpers/filesystem.h>
-#include <hydrogen/sound_basics/drumkit.h>
+#include <hydrogen/basics/drumkit.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/Preferences.h>
 

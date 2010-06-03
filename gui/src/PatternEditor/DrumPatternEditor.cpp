@@ -29,10 +29,10 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/event_queue.h>
-#include <hydrogen/sound_basics/instrument.h>
-#include <hydrogen/sound_basics/pattern.h>
-#include <hydrogen/sound_basics/pattern_list.h>
-#include <hydrogen/sound_basics/note.h>
+#include <hydrogen/basics/instrument.h>
+#include <hydrogen/basics/pattern.h>
+#include <hydrogen/basics/pattern_list.h>
+#include <hydrogen/basics/note.h>
 #include <hydrogen/audio_engine.h>
 
 #include "UndoActions.h"

@@ -63,9 +63,9 @@ HEADERS += src/flac_file.h \
            include/hydrogen/LashClient.h \
            include/hydrogen/LocalFileMng.h \
            include/hydrogen/midiMap.h \
-           include/hydrogen/sound_basics/note.h \
+           include/hydrogen/basics/note.h \
            include/hydrogen/Object.h \
-           include/hydrogen/sound_basics/pattern.h \
+           include/hydrogen/basics/pattern.h \
            include/hydrogen/playlist.h \
            include/hydrogen/Preferences.h \
            include/hydrogen/sample.h \

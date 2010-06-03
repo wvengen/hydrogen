@@ -26,7 +26,7 @@
 
 #include <QtGui>
 
-#include <hydrogen/sound_basics/instrument.h>
+#include <hydrogen/basics/instrument.h>
 #include <hydrogen/Object.h>
 
 #include "../EventListener.h"

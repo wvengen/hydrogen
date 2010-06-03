@@ -31,8 +31,8 @@
 #include <hydrogen/event_queue.h>
 
 #include <pthread.h>
-#include <hydrogen/sound_basics/note.h>
-#include <hydrogen/sound_basics/instrument.h>
+#include <hydrogen/basics/note.h>
+#include <hydrogen/basics/instrument.h>
 
 #ifdef H2CORE_HAVE_LASH
 #include <hydrogen/LashClient.h>

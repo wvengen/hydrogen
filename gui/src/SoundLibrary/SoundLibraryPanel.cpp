@@ -47,15 +47,15 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/sound_basics/instrument.h>
+#include <hydrogen/basics/instrument.h>
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/helpers/filesystem.h>
 #include <hydrogen/Preferences.h>
-#include <hydrogen/sound_basics/pattern.h>
-#include <hydrogen/sound_basics/pattern_list.h>
+#include <hydrogen/basics/pattern.h>
+#include <hydrogen/basics/pattern_list.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/sound_basics/drumkit.h>
+#include <hydrogen/basics/drumkit.h>
 
 using namespace H2Core;
 

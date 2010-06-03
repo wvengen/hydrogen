@@ -26,7 +26,7 @@
 #include "hydrogen/config.h"
 #include <hydrogen/action.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/sound_basics/drumkit.h>
+#include <hydrogen/basics/drumkit.h>
 #include <hydrogen/Object.h>
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/MidiInput.h>

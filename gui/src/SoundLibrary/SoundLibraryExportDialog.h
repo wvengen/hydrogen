@@ -27,7 +27,7 @@
 
 #include <hydrogen/Object.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/sound_basics/drumkit.h>
+#include <hydrogen/basics/drumkit.h>
 
 #include <vector>
 

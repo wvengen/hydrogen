@@ -25,8 +25,8 @@
 
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/sound_basics/pattern.h>
-#include <hydrogen/sound_basics/pattern_list.h>
+#include <hydrogen/basics/pattern.h>
+#include <hydrogen/basics/pattern_list.h>
 using namespace H2Core;
 
 #include "PatternEditorRuler.h"
