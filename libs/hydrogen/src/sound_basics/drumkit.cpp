@@ -20,10 +20,10 @@
  *
  */
 
-#include <hydrogen/sound_basic/drumkit.h>
+#include <hydrogen/sound_basics/drumkit.h>
 
-#include <hydrogen/sound_basic/instrument.h>
-#include <hydrogen/sound_basic/instrument_list.h>
+#include <hydrogen/sound_basics/instrument.h>
+#include <hydrogen/sound_basics/instrument_list.h>
 
 #include <hydrogen/adsr.h>
 #include <hydrogen/sample.h>

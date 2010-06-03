@@ -27,14 +27,14 @@
 #include <hydrogen/data_path.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/h2_exception.h>
-#include <hydrogen/sound_basic/instrument.h>
+#include <hydrogen/sound_basics/instrument.h>
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/note.h>
-#include <hydrogen/sound_basic/pattern.h>
-#include <hydrogen/sound_basic/pattern_list.h>
+#include <hydrogen/sound_basics/pattern.h>
+#include <hydrogen/sound_basics/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/sound_basic/drumkit.h>
+#include <hydrogen/sound_basics/drumkit.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/fx/Effects.h>
 

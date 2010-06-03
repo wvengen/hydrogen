@@ -39,7 +39,7 @@
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/helpers/filesystem.h>
-#include <hydrogen/sound_basic/drumkit.h>
+#include <hydrogen/sound_basics/drumkit.h>
 #include <hydrogen/globals.h>
 #include <hydrogen/event_queue.h>
 #include <hydrogen/Preferences.h>

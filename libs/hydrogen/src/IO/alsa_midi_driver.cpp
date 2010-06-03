@@ -32,7 +32,7 @@
 
 #include <pthread.h>
 #include <hydrogen/note.h>
-#include <hydrogen/sound_basic/instrument.h>
+#include <hydrogen/sound_basics/instrument.h>
 
 #ifdef H2CORE_HAVE_LASH
 #include <hydrogen/LashClient.h>

@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/sound_basic/instrument_layer.h>
+#include <hydrogen/sound_basics/instrument_layer.h>
 
 namespace H2Core
 {

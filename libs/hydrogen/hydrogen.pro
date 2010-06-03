@@ -65,7 +65,7 @@ HEADERS += src/flac_file.h \
            include/hydrogen/midiMap.h \
            include/hydrogen/note.h \
            include/hydrogen/Object.h \
-           include/hydrogen/sound_basic/pattern.h \
+           include/hydrogen/sound_basics/pattern.h \
            include/hydrogen/playlist.h \
            include/hydrogen/Preferences.h \
            include/hydrogen/sample.h \

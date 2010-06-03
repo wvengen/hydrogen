@@ -29,7 +29,7 @@
 
 #include <hydrogen/adsr.h>
 #include <hydrogen/sample.h>
-#include <hydrogen/sound_basic/instrument.h>
+#include <hydrogen/sound_basics/instrument.h>
 
 #include <memory>
 #include <QtGui>

@@ -20,7 +20,7 @@
  *
  */
 
-#include <hydrogen/sound_basic/pattern_list.h>
+#include <hydrogen/sound_basics/pattern_list.h>
 
 namespace H2Core
 {

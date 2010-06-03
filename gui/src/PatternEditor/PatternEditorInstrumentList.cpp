@@ -25,10 +25,10 @@
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/sound_basic/instrument.h>
+#include <hydrogen/sound_basics/instrument.h>
 #include <hydrogen/note.h>
-#include <hydrogen/sound_basic/pattern.h>
-#include <hydrogen/sound_basic/pattern_list.h>
+#include <hydrogen/sound_basics/pattern.h>
+#include <hydrogen/sound_basics/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
 using namespace H2Core;

@@ -27,11 +27,11 @@
 #include <hydrogen/Song.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
-#include <hydrogen/sound_basic/pattern.h>
-#include <hydrogen/sound_basic/pattern_list.h>
+#include <hydrogen/sound_basics/pattern.h>
+#include <hydrogen/sound_basics/pattern_list.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
-#include <hydrogen/sound_basic/instrument.h>
+#include <hydrogen/sound_basics/instrument.h>
 using namespace H2Core;
 
 #include "UndoActions.h"

@@ -26,7 +26,7 @@
 #include "SoundLibraryPropertiesDialog.h"
 #include "../InstrumentRack.h"
 #include "SoundLibraryPanel.h"
-#include <hydrogen/sound_basic/drumkit.h>
+#include <hydrogen/sound_basics/drumkit.h>
 #include <hydrogen/hydrogen.h>
 
 namespace H2Core

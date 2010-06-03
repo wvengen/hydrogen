@@ -27,7 +27,7 @@
 #include <hydrogen/globals.h>
 #include <hydrogen/helpers/xml.h>
 #include <hydrogen/adsr.h>
-#include <hydrogen/sound_basic/instrument_layer.h>
+#include <hydrogen/sound_basics/instrument_layer.h>
 
 namespace H2Core
 {
