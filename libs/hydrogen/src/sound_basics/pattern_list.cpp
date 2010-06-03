@@ -95,7 +95,7 @@ int PatternList::index( Pattern* pattern ) {
 }
 
 void PatternList::set_to_old() {
-	for ( int i=0 ; i<__patterns.size() ; i++ ) get(i)->set_to_old();
+	for ( int i=0 ; i<__patterns.size() ; i++ ) __patterns[i]->set_to_old();
 }
 
 void PatternList::swap( int idx_a, int idx_b ) {
@@ -116,6 +116,15 @@ void PatternList::move( int idx_a, int idx_b ) {
     Pattern *tmp = __patterns[idx_a];
     __patterns.erase( __patterns.begin() + idx_a );
 	__patterns.insert( __patterns.begin() + idx_b, tmp );
+}
+
+void PatternList::compute_flattened_virtual_patterns() {
+	for ( int i=0 ; i<__patterns.size() ; i++ ) __patterns[i]->clear_flattened_virtual_patterns();
+	for ( int i=0 ; i<__patterns.size() ; i++ ) __patterns[i]->compute_flattened_virtual_patterns();
+}
+
+void PatternList::del_virtual_pattern( Pattern* pattern ) {
+	for( int i=0; i<__patterns.size(); i++ ) __patterns[i]->del_virtual_pattern( pattern );
 }
 
 };

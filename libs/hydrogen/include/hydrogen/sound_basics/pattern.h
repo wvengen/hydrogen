@@ -29,8 +29,10 @@
 namespace H2Core
 {
 
+class PatternList;
+
 /**
- * \brief The Pattern is a Note container.
+ * \brief The Pattern is a Note container which also may contains virtual patterns which are referecences to other patterns
  */
 class Pattern : public Object
 {
@@ -42,6 +44,8 @@ class Pattern : public Object
          * \param length
          */
 	    Pattern( const QString& name, const QString& category, int length = MAX_NOTES );
+        /** \brief copy constructor */
+        Pattern( Pattern *other );
         /** \brief destructor */
 	    ~Pattern();
 
@@ -52,15 +56,17 @@ class Pattern : public Object
         void purge_instrument( Instrument * I );
 	
 	    /**
+         * TODO
          * check if there are any notes pertaining to I
          */
 	    bool references_instrument( Instrument * I );
+        // TODO
         void set_to_old();
+        /** \brief return an empty pattern */
         static Pattern* get_empty_pattern();
-        Pattern* copy();
         
-        /** */
-        void debug_dump();
+        /** \brief output details through logger with DEBUG severity */
+        void dump();
 
         void set_length( unsigned length )              { __length = length; }      ///< \brief set length of the pattern 
         int get_length()                                { return __length; }        ///< \brief get length of the pattern 
@@ -80,21 +86,41 @@ class Pattern : public Object
 		typedef virtual_patterns_t::iterator virtual_patterns_it_t;                 ///< \brief note set iterator type;
 		typedef virtual_patterns_t::const_iterator virtual_patterns_cst_it_t;       ///< \brief note set const iterator type;
 
-        virtual_patterns_t* get_virtual_patterns()      { return &__virtual_patterns; } ///< \brief get the virtual pattern set
+        bool virtual_patterns_empty()                   { return __virtual_patterns.empty(); }      ///< \brief return true if __virtual_patterns is empty
+        void clear_virtual_patterns()                   { __virtual_patterns.clear(); }             ///< \brief clear __virtual_patterns
+        /**
+         * \brief add a pattern to virtual patern set
+         * \param pattern the pattern to add
+         */
+        void add_virtual_pattern( Pattern* pattern )    { __virtual_patterns.insert( pattern); }
+        /**
+         * \brief remove a pattern from virtual pattern set, flattened virtual patterns have to be rebuilt
+         */
+        void del_virtual_pattern( Pattern* pattern );
+
+        void clear_flattened_virtual_patterns()         { __flattened_virtual_patterns.clear(); }   ///< \brief clear __flattened_virtual_patterns
+        /**
+         * \brief compute __flattened_virtual_patterns based on __virtual_patterns
+         * __flattened_virtual_patterns must have been cleared before which is the case is called
+         * from PatternList::compute_flattened_virtual_patterns
+         */
+        void compute_flattened_virtual_patterns();
+        /**
+         * \brief add content of __flatteened_virtual_patterns into patterns
+         * \param patterns the pattern list to feed
+         */
+        void extand_with_flattened_virtual_patterns( PatternList* patterns );
         
-        /** \brief get the virtual pattern transitive closure set */
-        virtual_patterns_t* get_virtual_patterns_transitive_closure()   { return &__virtual_patterns_transitive_closure; }
-        /** \brief set the virtual pattern transitive closure set */
-        //virtual_pattern_set_t set_virtual_pattern_transitive_closure_set( virtual_pattern_set_t set ) { __virtual_pattern_transitive_closure_set = set; }
-        void copy_virtual_patterns_to_transitive_closure( );
-    
+        virtual_patterns_t* get_virtual_patterns()              { return &__virtual_patterns; }             ///< \brief get the virtual pattern set
+        virtual_patterns_t* get_flattened_virtual_patterns()    { return &__flattened_virtual_patterns; }   ///< \brief get the flattened virtual pattern set
+        
     private:
-        int __length;                                               ///< TODO
+        int __length;                                               ///< the length of the pattern
         QString __name;                                             ///< the name of thepattern
-        QString __category;                                         ///< the categora of the pattern
+        QString __category;                                         ///< the category of the pattern
 	    notes_t __notes;                                            ///< a multimap (hash with possible multiple values for one key) of notes
-        virtual_patterns_t __virtual_patterns;                      ///< TODO
-        virtual_patterns_t __virtual_patterns_transitive_closure;   ///< TODO
+        virtual_patterns_t __virtual_patterns;                      ///< a list of patterns directly referenced by this one
+        virtual_patterns_t __flattened_virtual_patterns;            ///< the complete list of virtual patterns
 };
 
 };

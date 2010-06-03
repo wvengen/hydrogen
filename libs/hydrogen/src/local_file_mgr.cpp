@@ -862,7 +862,7 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 		Pattern *pat = song->get_pattern_list()->get( i );
 
 		// pattern
-		if (pat->get_virtual_patterns()->empty() == false) {
+		if (pat->virtual_patterns_empty() == false) {
 		    QDomNode patternNode = doc.createElement( "pattern" );
 		    LocalFileMng::writeXmlString( patternNode, "name", pat->get_name() );
 		
@@ -1118,7 +1118,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		Pattern *pat = song->get_pattern_list()->get( i );
 
 		// pattern
-		if (pat->get_virtual_patterns()->empty() == false) {
+		if (pat->virtual_patterns_empty() == false) {
 		    QDomNode patternNode = doc.createElement( "pattern" );
 		    LocalFileMng::writeXmlString( patternNode, "name", pat->get_name() );
 		

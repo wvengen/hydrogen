@@ -25,6 +25,7 @@
 #include <hydrogen/Song.h>
 #include <hydrogen/note.h>
 #include <hydrogen/audio_engine.h>
+#include <hydrogen/sound_basics/pattern_list.h>
 
 #include <vector>
 #include <cassert>
@@ -36,9 +37,21 @@ const char* Pattern::__class_name = "Pattern";
 Pattern::Pattern( const QString& name, const QString& category, int length )
     : Object( __class_name ),
     __length( length ),
-    __category( category ),
-    __name( name )
+    __name( name ),
+    __category( category )
 {
+}
+
+Pattern::Pattern( Pattern *other)
+    : Object( __class_name ),
+    __length( other->get_length() ),
+    __name( other->get_name() ),
+    __category( other->get_category() )
+{
+    for( notes_cst_it_t it=other->get_notes()->begin(); it!=other->get_notes()->end(); ++it ) {
+        Note *pNote = new Note( it->second );
+        __notes.insert( std::make_pair( it->first, pNote ) );
+    }
 }
 
 Pattern::~Pattern() {
@@ -99,29 +112,48 @@ Pattern* Pattern::get_empty_pattern() {
     return pat;
 }
 
-Pattern* Pattern::copy() {
-    Pattern *newPat = new Pattern( __name, __category );
-    // TODO newPat->set_length( get_length() );
-    for( notes_cst_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
-        Note *pNote = new Note( it->second );
-        newPat->__notes.insert( std::make_pair( it->first, pNote ) );
-    }
-    return newPat;
-}
-
+/*
 void Pattern::copy_virtual_patterns_to_transitive_closure( ) {
     __virtual_patterns_transitive_closure.clear();
     for( virtual_patterns_cst_it_t it = __virtual_patterns.begin(); it!=__virtual_patterns.end(); ++it ) {
         __virtual_patterns_transitive_closure.insert( *it);
     }
 }
+*/
 
-void Pattern::debug_dump() {
-    INFOLOG( "Pattern dump" );INFOLOG( "Pattern name: " + __name );
-    INFOLOG( "Pattern category: " + __category );
-    INFOLOG( QString("Pattern length: %1").arg( __length ) );
+void Pattern::del_virtual_pattern( Pattern* pattern ) {
+    virtual_patterns_cst_it_t it = __virtual_patterns.find(pattern);
+    if ( it!=__virtual_patterns.end() ) __virtual_patterns.erase(it);
 }
 
+void Pattern::compute_flattened_virtual_patterns() {
+    // __flattened_virtual_patterns must have been clear before
+    if( __flattened_virtual_patterns.size() >= __virtual_patterns.size() ) return;
+    // for each virtual pattern
+    for( virtual_patterns_cst_it_t it0=__virtual_patterns.begin(); it0!=__virtual_patterns.end(); ++it0) {
+        __flattened_virtual_patterns.insert(*it0);          // add it
+        (*it0)->compute_flattened_virtual_patterns();       // build it's flattened virtual patterns set
+        // for each pattern of it's flattened virtual patern set
+        for( virtual_patterns_cst_it_t it1=(*it0)->get_flattened_virtual_patterns()->begin(); it1!=(*it0)->get_flattened_virtual_patterns()->end(); ++it1) {
+            // add the pattern
+            __flattened_virtual_patterns.insert( *it1 );
+        }
+    }
+}
+
+void Pattern::extand_with_flattened_virtual_patterns( PatternList* patterns ) {
+    for( virtual_patterns_cst_it_t it=__flattened_virtual_patterns.begin(); it!=__flattened_virtual_patterns.end(); ++it) patterns->add( *it );
+}
+
+void Pattern::dump() {
+    DEBUGLOG( "Pattern : " + __name );
+    DEBUGLOG( "  category: " + __category );
+    DEBUGLOG( QString("  length: %1").arg( __length ) );
+    DEBUGLOG( "  direct virtual patterns : " );
+    for( virtual_patterns_cst_it_t it = __virtual_patterns.begin(); it!=__virtual_patterns.end(); ++it ) { DEBUGLOG( "  "+(*it)->get_name() ); }
+    DEBUGLOG( "  flattened virtual patterns : " );
+    for( virtual_patterns_cst_it_t it = __flattened_virtual_patterns.begin(); it!=__flattened_virtual_patterns.end(); ++it ) { DEBUGLOG( "  " + (*it)->get_name() ); }
+}
 };
 
 /* vim: set softtabstop=4 expandtab: */

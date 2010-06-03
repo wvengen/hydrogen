@@ -50,12 +50,12 @@ class PatternList : public Object
         /** \brief returns the numbers of patterns */
 	    int size() { return __patterns.size(); }
         /** 
-         * \brief add a pattern to the list
+         * \brief add a pattern to the list, if not allready in
          * \param pattern a pointer to the pattern to add
          */
         void operator<<( Pattern* pattern );
         /** 
-         * \brief get a pattern from  the list
+         * \brief get a pattern from the list, if not allready in
          * \param idx the index to get the pattern from
          */
         Pattern* operator[]( int idx );
@@ -105,6 +105,16 @@ class PatternList : public Object
          * \param idx_b the finish index
          */
 	    void move( int idx_a, int idx_b );
+
+        /**
+         * \brief call compute_flattened_virtual_patterns on each pattern
+         */
+        void compute_flattened_virtual_patterns();
+        /**
+         * \brief call del_virtual_pattern on each pattern
+         * \param pattern the pattern to remove where it's found
+         */
+        void del_virtual_pattern( Pattern* pattern);
 
     private:
         std::vector<Pattern*> __patterns;

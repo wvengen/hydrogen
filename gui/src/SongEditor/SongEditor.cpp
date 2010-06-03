@@ -661,7 +661,7 @@ void SongEditor::drawSequence()
 			    drawPattern( i, position, false );
 			}//if
 			
-			for (Pattern::virtual_patterns_cst_it_t virtualIter = pat->get_virtual_patterns_transitive_closure()->begin(); virtualIter != pat->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
+			for (Pattern::virtual_patterns_cst_it_t virtualIter = pat->get_flattened_virtual_patterns()->begin(); virtualIter != pat->get_flattened_virtual_patterns()->end(); ++virtualIter) {
 			    if (drawnAsVirtual.find(*virtualIter) == drawnAsVirtual.end()) {
 				int position = -1;
 				// find the position in pattern list
@@ -1115,20 +1115,19 @@ void SongEditorPatternList::patternPopup_virtualPattern()
     }//for
     
     if ( dialog->exec() == QDialog::Accepted ) {
-	selectedPattern->get_virtual_patterns()->clear();
-	for (unsigned int index = 0; index < listsize-1; ++index) {
-	    QListWidgetItem *listItem = dialog->patternList->item(index);
-	    if (dialog->patternList->isItemSelected(listItem) == true) {
-		if (patternNameMap.find(listItem->text()) != patternNameMap.end()) {
-		    selectedPattern->get_virtual_patterns()->insert(patternNameMap[listItem->text()]);
-		}//if
-	    }//if
-	}//for
-	
-	pSEPanel->updateAll();
-    }//if
-    
-    dialog->computeVirtualPatternTransitiveClosure(pPatternList);
+	    selectedPattern->clear_virtual_patterns();
+	    for (unsigned int index = 0; index < listsize-1; ++index) {
+	        QListWidgetItem *listItem = dialog->patternList->item(index);
+	        if (dialog->patternList->isItemSelected(listItem) == true) {
+		        if (patternNameMap.find(listItem->text()) != patternNameMap.end()) {
+                    selectedPattern->add_virtual_pattern(patternNameMap[listItem->text()]);
+		        }
+	        }
+	    }
+        pSEPanel->updateAll();
+    }
+
+    pPatternList->compute_flattened_virtual_patterns();
 
     delete dialog;
 }//patternPopup_virtualPattern
@@ -1385,17 +1384,9 @@ void SongEditorPatternList::deletePatternFromList( QString patternFilename, QStr
 		pEngine->setSelectedPatternNumber( -1 );
 		pEngine->setSelectedPatternNumber( 0 );
 	}
-	
-	for (unsigned int index = 0; index < pSongPatternList->size(); ++index) {
-	    H2Core::Pattern *curPattern = pSongPatternList->get(index);
-	    
-	    Pattern::virtual_patterns_it_t virtIter = curPattern->get_virtual_patterns()->find(pattern);
-	    if (virtIter != curPattern->get_virtual_patterns()->end()) {
-		curPattern->get_virtual_patterns()->erase(virtIter);
-	    }//if
-	}//for
 
-	VirtualPatternDialog::computeVirtualPatternTransitiveClosure(pSongPatternList);
+    pSongPatternList->del_virtual_pattern( pattern );
+    pSongPatternList->compute_flattened_virtual_patterns();
 
 	delete pattern;
 	song->__is_modified = true;
@@ -1439,7 +1430,7 @@ void SongEditorPatternList::patternPopup_copy()
 	H2Core::Pattern *pPattern = pPatternList->get( nSelectedPattern );
 
 	//create a tmp pattern needed for PatternPropertiesDialog.
-	H2Core::Pattern *pNewPattern = pPattern->copy();
+	H2Core::Pattern* pNewPattern = new Pattern( pPattern );
 	pPatternList->add( pNewPattern );
 
 	// rename the copied pattern

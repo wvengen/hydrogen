@@ -33,27 +33,14 @@
 namespace
 {
 
+/*
 struct SimplePatternNode
 {
     H2Core::Pattern *curPattern;
     int colour;
     std::set<H2Core::Pattern*> edges;
 };//SimplePatternNode
-    
-void addEdges(std::set<H2Core::Pattern*>& patternSet)
-{
-    H2Core::Pattern::virtual_patterns_t curPatternSet = patternSet;
-    
-    for (H2Core::Pattern::virtual_patterns_cst_it_t setIter = curPatternSet.begin(); setIter != curPatternSet.end(); ++setIter) {
-	 for (H2Core::Pattern::virtual_patterns_cst_it_t innerSetIter = (*setIter)->get_virtual_patterns()->begin(); innerSetIter != (*setIter)->get_virtual_patterns()->end(); ++innerSetIter) {
-	     patternSet.insert(*innerSetIter);
-	 }//for
-    }//for
-    
-    if (patternSet.size() != curPatternSet.size()) {
-	addEdges(patternSet);
-    }//if
-}//addEdges
+*/
     
 }//anonymous namespace
 
@@ -88,26 +75,4 @@ void VirtualPatternDialog::on_okBtn_clicked()
 {
 	accept();
 }
-
-void VirtualPatternDialog::computeVirtualPatternTransitiveClosure(H2Core::PatternList *pPatternList)
-{
-    //std::map<Pattern*, SimplePatternNode*> patternNodeGraph;
-    
-    int listsize = pPatternList->size();
-    for (unsigned int index = 0; index < listsize; ++index) {
-	H2Core::Pattern *curPattern = pPatternList->get(index);
-	//SimplePatternNode *newNode = new SimplePatternNode();
-	//newNode->curPattern = curPattern;
-	//newNode->colour = 0;
-	//newNode->edges = curPattern->virtual_pattern_set;
-	
-	//curPattern->set_virtual_pattern_transitive_closure_set( *curPattern->get_virtual_pattern_set() );
-	curPattern->copy_virtual_patterns_to_transitive_closure( );
-	
-	addEdges( *curPattern->get_virtual_patterns_transitive_closure() );
-	
-	//patternNodeGraph[curPattern] = newNode;
-    }//for
-}//computeVirtualPatternTransitiveClosure
-
 

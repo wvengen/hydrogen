@@ -1201,31 +1201,14 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 					return -1;
 				}
 			}
-			PatternList *pPatternList =
-				( *( m_pSong->get_pattern_group_vector() ) )[m_nSongPos];
+			PatternList *pPatternList = ( *( m_pSong->get_pattern_group_vector() ) )[m_nSongPos];
 				
-			std::set<Pattern*> patternsToPlay;
-			for ( unsigned i = 0; i < pPatternList->size(); ++i ) {
-			    Pattern *curPattern = pPatternList->get(i);
-			    patternsToPlay.insert(curPattern);
-			    
-			    for (Pattern::virtual_patterns_cst_it_t virtualIter = curPattern->get_virtual_patterns_transitive_closure()->begin(); virtualIter != curPattern->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
-				patternsToPlay.insert(*virtualIter);
-			    }//for
-			}//for
-				
-			// copio tutti i pattern
-			m_pPlayingPatterns->clear();
-			for (Pattern::virtual_patterns_cst_it_t virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
-			    m_pPlayingPatterns->add(*virtualIter);
-			}//for
-			
-			//if ( pPatternList ) {
-				//for ( unsigned i = 0; i < pPatternList->size(); ++i ) {
-				//	m_pPlayingPatterns->add( pPatternList->get( i ) );
-				//}
-				
-			//}
+            m_pPlayingPatterns->clear();
+			for ( int i=0; i< pPatternList->size(); ++i ) {
+                Pattern* pattern = pPatternList->get(i);
+                m_pPlayingPatterns->add( pattern );
+                pattern->extand_with_flattened_virtual_patterns( m_pPlayingPatterns );
+            }
 
 			// Set destructive record depending on punch area
 			doErase = doErase && Preferences::get_instance()->inPunchArea(m_nSongPos);
@@ -1244,21 +1227,9 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			if ( Preferences::get_instance()->patternModePlaysSelected() )
 			{
 				m_pPlayingPatterns->clear();
-				Pattern * pSelectedPattern =
-					m_pSong->get_pattern_list()
-					       ->get(m_nSelectedPatternNumber);
-				
-				std::set<Pattern*> patternsToPlay;
-				patternsToPlay.insert(pSelectedPattern);
-				for (Pattern::virtual_patterns_cst_it_t virtualIter = pSelectedPattern->get_virtual_patterns_transitive_closure()->begin(); virtualIter != pSelectedPattern->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
-				    patternsToPlay.insert(*virtualIter);
-				}//for
-				
-				for (Pattern::virtual_patterns_cst_it_t virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
-				   m_pPlayingPatterns->add(*virtualIter);
-				}//for
-				
-				//m_pPlayingPatterns->add( pSelectedPattern );
+				Pattern * pattern = m_pSong->get_pattern_list()->get(m_nSelectedPatternNumber);
+				m_pPlayingPatterns->add( pattern );
+                pattern->extand_with_flattened_virtual_patterns( m_pPlayingPatterns );
 			}
 
 
