@@ -25,7 +25,7 @@
 
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 using namespace H2Core;
 

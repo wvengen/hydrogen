@@ -24,6 +24,7 @@
 #define H2_OBJECT_H
 
 #include "hydrogen/logger.h"
+#include "hydrogen/globals.h"
 
 #include <map>
 #include <iostream>

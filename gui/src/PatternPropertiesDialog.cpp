@@ -26,7 +26,7 @@
 #include "UndoActions.h"
 
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 

@@ -35,7 +35,7 @@
 #include <hydrogen/Song.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/sound_basic/instrument.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/note.h>
 #include <hydrogen/hydrogen.h>
@@ -45,12 +45,12 @@
 namespace
 {
 
-void addEdges(std::set<H2Core::Pattern*> &patternSet)
+void addEdges(H2Core::Pattern::virtual_patterns_t &patternSet)
 {
-    std::set<H2Core::Pattern*> curPatternSet = patternSet;
+    H2Core::Pattern::virtual_patterns_t curPatternSet = patternSet;
     
-    for (std::set<H2Core::Pattern*>::const_iterator setIter = curPatternSet.begin(); setIter != curPatternSet.end(); ++setIter) {
-	 for (std::set<H2Core::Pattern*>::const_iterator innerSetIter = (*setIter)->virtual_pattern_set.begin(); innerSetIter != (*setIter)->virtual_pattern_set.end(); ++innerSetIter) {
+    for (H2Core::Pattern::virtual_patterns_cst_it_t setIter = curPatternSet.begin(); setIter != curPatternSet.end(); ++setIter) {
+	 for (H2Core::Pattern::virtual_patterns_cst_it_t innerSetIter = (*setIter)->get_virtual_patterns()->begin(); innerSetIter != (*setIter)->get_virtual_patterns()->end(); ++innerSetIter) {
 	     patternSet.insert(*innerSetIter);
 	 }//for
     }//for
@@ -72,9 +72,10 @@ void computeVirtualPatternTransitiveClosure(H2Core::PatternList *pPatternList)
 	//newNode->colour = 0;
 	//newNode->edges = curPattern->virtual_pattern_set;
 	
-	curPattern->virtual_pattern_transitive_closure_set = curPattern->virtual_pattern_set;
+	//curPattern->virtual_pattern_transitive_closure_set = curPattern->virtual_pattern_set;
+	curPattern->copy_virtual_patterns_to_transitive_closure( );
 	
-	addEdges(curPattern->virtual_pattern_transitive_closure_set);
+	addEdges( *curPattern->get_virtual_patterns_transitive_closure() );
 	
 	//patternNodeGraph[curPattern] = newNode;
     }//for
@@ -310,7 +311,7 @@ void Song::readTempPatternList( QString filename )
 			}//for
 			
 			if (virtPattern != NULL) {
-			    curPattern->virtual_pattern_set.insert(virtPattern);
+			    curPattern->get_virtual_patterns()->insert(virtPattern);
 			} else {
 			    ERRORLOG( "Song had invalid virtual pattern list data (virtual)" );
 			}//if
@@ -748,7 +749,7 @@ Song* SongReader::readSong( const QString& filename )
 			}//for
 			
 			if (virtPattern != NULL) {
-			    curPattern->virtual_pattern_set.insert(virtPattern);
+			    curPattern->get_virtual_patterns()->insert(virtPattern);
 			} else {
 			    ERRORLOG( "Song had invalid virtual pattern list data (virtual)" );
 			}//if
@@ -991,7 +992,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
 			pNote->set_leadlag(fLeadLag);
 			pNote->set_noteoff( noteoff );
-			pPattern->note_map.insert( std::make_pair( pNote->get_position(), pNote ) );
+			pPattern->get_notes()->insert( std::make_pair( pNote->get_position(), pNote ) );
 			
 			noteNode = ( QDomNode ) noteNode.nextSiblingElement( "note" );
 		}
@@ -1035,7 +1036,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 				pNote->set_leadlag(fLeadLag);
 
 				//infoLog( "new note!! pos: " + toString( pNote->m_nPosition ) + "\t instr: " + instrId );
-				pPattern->note_map.insert( std::make_pair( pNote->get_position(), pNote ) );
+				pPattern->get_notes()->insert( std::make_pair( pNote->get_position(), pNote ) );
 			
 				noteNode = ( QDomNode ) noteNode.nextSiblingElement( "note" );
 

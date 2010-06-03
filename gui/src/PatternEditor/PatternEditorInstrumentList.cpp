@@ -27,7 +27,7 @@
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/note.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
@@ -226,8 +226,8 @@ void InstrumentLine::functionClearNotes()
 	Instrument *pSelectedInstrument = H->getSong()->get_instrument_list()->get( m_nInstrumentNumber );
 
 	std::list< Note* > noteList;
-	std::multimap <int, Note*>::iterator pos = pPattern->note_map.begin();
-	while ( pos != pPattern->note_map.end() ) {
+	Pattern::notes_it_t pos = pPattern->get_notes()->begin();
+	while ( pos != pPattern->get_notes()->end() ) {
 		Note *pNote = pos->second;
 		assert( pNote );
 		
@@ -284,8 +284,8 @@ void InstrumentLine::functionFillNotes( int every )
 			for (int i = 0; i < nPatternSize; i += nResolution) {
 				bool noteAlreadyPresent = false;
 
-				std::multimap <int, Note*>::iterator pos;
-				for ( pos = pCurrentPattern->note_map.lower_bound( i ); pos != pCurrentPattern->note_map.upper_bound( i ); ++pos ) {
+	            Pattern::notes_it_t pos;
+				for ( pos = pCurrentPattern->get_notes()->lower_bound( i ); pos != pCurrentPattern->get_notes()->upper_bound( i ); ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote->get_instrument() == instrRef ) {
 						// note already exists
@@ -338,8 +338,8 @@ void InstrumentLine::functionRandomizeVelocity()
 			Instrument *instrRef = (pSong->get_instrument_list())->get( nSelectedInstrument );
 
 			for (int i = 0; i < nPatternSize; i += nResolution) {
-				std::multimap <int, Note*>::iterator pos;
-				for ( pos = pCurrentPattern->note_map.lower_bound(i); pos != pCurrentPattern->note_map.upper_bound( i ); ++pos ) {
+	            Pattern::notes_it_t pos;
+				for ( pos = pCurrentPattern->get_notes()->lower_bound(i); pos != pCurrentPattern->get_notes()->upper_bound( i ); ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote->get_instrument() == instrRef ) {
 						float fVal = ( rand() % 100 ) / 100.0;
@@ -382,8 +382,8 @@ void InstrumentLine::functionDeleteInstrument()
 
 	for ( int i = 0; i < patList->size(); i++ ) {
 		H2Core::Pattern *pPattern = song->get_pattern_list()->get(i);
-		std::multimap <int, Note*>::iterator pos = pPattern->note_map.begin();
-		while ( pos != pPattern->note_map.end() ) {
+	    Pattern::notes_it_t pos = pPattern->get_notes()->begin();
+		while ( pos != pPattern->get_notes()->end() ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 			

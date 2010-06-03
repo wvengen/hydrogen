@@ -23,7 +23,7 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/sound_basic/instrument.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/note.h>
 using namespace H2Core;
@@ -124,8 +124,8 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev )
 	int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 	Song *pSong = (Hydrogen::get_instance())->getSong();
 
-	std::multimap <int, Note*>::iterator pos;
-	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
+	Pattern::notes_it_t pos;
+	for ( pos = m_pPattern->get_notes()->lower_bound( column ); pos != m_pPattern->get_notes()->upper_bound( column ); ++pos ) {
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( (int)pNote->get_position() == column );
@@ -248,8 +248,8 @@ void NotePropertiesRuler::pressAction( int x, int y)
 	__nSelectedInstrument = nSelectedInstrument;
 	__undoColumn = 	column;
 
-	std::multimap <int, Note*>::iterator pos;
-	for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
+	Pattern::notes_it_t pos;
+	for ( pos = m_pPattern->get_notes()->lower_bound( column ); pos != m_pPattern->get_notes()->upper_bound( column ); ++pos ) {
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( (int)pNote->get_position() == column );
@@ -329,8 +329,8 @@ void NotePropertiesRuler::pressAction( int x, int y)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = (Hydrogen::get_instance())->getSong();
 		
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.lower_bound( column ); pos != m_pPattern->note_map.upper_bound( column ); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->lower_bound( column ); pos != m_pPattern->get_notes()->upper_bound( column ); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 			assert( (int)pNote->get_position() == column );
@@ -647,15 +647,15 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = Hydrogen::get_instance()->getSong();
 
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pposNote = pos->second;
 			assert( pposNote );
 			uint pos = pposNote->get_position();
 
 			std::multimap <int, Note*>::iterator copos;
 			int xoffset = 0;
-			for ( copos = m_pPattern->note_map.lower_bound( pos ); copos != m_pPattern->note_map.upper_bound( pos ); ++copos ) {
+			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
 				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
@@ -810,15 +810,15 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = Hydrogen::get_instance()->getSong();
 
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pposNote = pos->second;
 			assert( pposNote );
 			uint pos = pposNote->get_position();
 
 			std::multimap <int, Note*>::iterator copos;
 			int xoffset = 0;
-			for ( copos = m_pPattern->note_map.lower_bound( pos ); copos != m_pPattern->note_map.upper_bound( pos ); ++copos ) {
+			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
 				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
@@ -978,16 +978,16 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = Hydrogen::get_instance()->getSong();
  
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 
 			Note *pposNote = pos->second;
 			assert( pposNote );
 			uint pos = pposNote->get_position();
 
-			std::multimap <int, Note*>::iterator copos;
+	        Pattern::notes_it_t copos;
 			int xoffset = 0;
-			for ( copos = m_pPattern->note_map.lower_bound( pos ); copos != m_pPattern->note_map.upper_bound( pos ); ++copos ) {
+			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
 				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
@@ -1194,8 +1194,8 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = Hydrogen::get_instance()->getSong();
  
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
@@ -1246,8 +1246,8 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 		int nSelectedInstrument = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		Song *pSong = Hydrogen::get_instance()->getSong();
  
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = m_pPattern->note_map.begin(); pos != m_pPattern->note_map.end(); ++pos ) {
+	    Pattern::notes_it_t pos;
+		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {

@@ -21,7 +21,7 @@
  */
 
 #include <hydrogen/smf/SMF.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/note.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/sound_basic/instrument.h>
@@ -261,9 +261,9 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 			for ( unsigned nNote = 0 ;
 			      nNote < pPattern->get_length() ;
 			      nNote++ ) {
-				std::multimap <int, Note*>::iterator pos;
-				for ( pos = pPattern->note_map.lower_bound( nNote ) ;
-				      pos != pPattern->note_map.upper_bound( nNote );
+                Pattern::notes_it_t pos;
+				for ( pos = pPattern->get_notes()->lower_bound( nNote ) ;
+				      pos != pPattern->get_notes()->upper_bound( nNote );
 				      ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote ) {

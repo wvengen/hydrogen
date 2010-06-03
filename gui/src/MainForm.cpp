@@ -27,7 +27,7 @@
 #include <hydrogen/smf/SMF.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/LocalFileMng.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/event_queue.h>
 using namespace H2Core;

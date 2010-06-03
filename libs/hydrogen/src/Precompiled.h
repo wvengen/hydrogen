@@ -23,7 +23,7 @@
 #include <hydrogen/Object.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/Instrument.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/Note.h>
 #include <hydrogen/AudioEngine.h>
 #include <hydrogen/Hydrogen.h>

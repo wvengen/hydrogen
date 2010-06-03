@@ -30,7 +30,7 @@
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/LocalFileMng.h>
 #include <hydrogen/note.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
@@ -198,7 +198,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
 			pNote->set_leadlag(fLeadLag);
 			pNote->set_noteoff( noteoff );
-			pPattern->note_map.insert( std::make_pair( pNote->get_position(),pNote ) );
+			pPattern->get_notes()->insert( std::make_pair( pNote->get_position(),pNote ) );
 			noteNode = noteNode.nextSiblingElement( "note" );
 		}
 	}
@@ -271,8 +271,8 @@ int LocalFileMng::savePattern( Song *song , const QString& drumkit_name, int sel
 	writeXmlString( patternNode, "size", QString("%1").arg( pat->get_length() ) );
 
 		QDomNode noteListNode = doc.createElement( "noteList" );
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
+        Pattern::notes_it_t pos;
+		for ( pos = pat->get_notes()->begin(); pos != pat->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 
@@ -862,11 +862,11 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 		Pattern *pat = song->get_pattern_list()->get( i );
 
 		// pattern
-		if (pat->virtual_pattern_set.empty() == false) {
+		if (pat->get_virtual_patterns()->empty() == false) {
 		    QDomNode patternNode = doc.createElement( "pattern" );
 		    LocalFileMng::writeXmlString( patternNode, "name", pat->get_name() );
 		
-		    for (std::set<Pattern*>::const_iterator virtIter = pat->virtual_pattern_set.begin(); virtIter != pat->virtual_pattern_set.end(); ++virtIter) {
+		    for (Pattern::virtual_patterns_it_t virtIter = pat->get_virtual_patterns()->begin(); virtIter != pat->get_virtual_patterns()->end(); ++virtIter) {
 			LocalFileMng::writeXmlString( patternNode, "virtual", (*virtIter)->get_name() );
 		    }//for
 		
@@ -1083,8 +1083,8 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		LocalFileMng::writeXmlString( patternNode, "size", QString("%1").arg( pat->get_length() ) );
 
 		QDomNode noteListNode = doc.createElement( "noteList" );
-		std::multimap <int, Note*>::iterator pos;
-		for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
+        Pattern::notes_it_t pos;
+		for ( pos = pat->get_notes()->begin(); pos != pat->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
 
@@ -1118,11 +1118,11 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		Pattern *pat = song->get_pattern_list()->get( i );
 
 		// pattern
-		if (pat->virtual_pattern_set.empty() == false) {
+		if (pat->get_virtual_patterns()->empty() == false) {
 		    QDomNode patternNode = doc.createElement( "pattern" );
 		    LocalFileMng::writeXmlString( patternNode, "name", pat->get_name() );
 		
-		    for (std::set<Pattern*>::const_iterator virtIter = pat->virtual_pattern_set.begin(); virtIter != pat->virtual_pattern_set.end(); ++virtIter) {
+		    for (Pattern::virtual_patterns_cst_it_t virtIter = pat->get_virtual_patterns()->begin(); virtIter != pat->get_virtual_patterns()->end(); ++virtIter) {
 			LocalFileMng::writeXmlString( patternNode, "virtual", (*virtIter)->get_name() );
 		    }//for
 		

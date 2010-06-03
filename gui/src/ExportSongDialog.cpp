@@ -31,7 +31,7 @@
 #include "Mixer/Mixer.h"
 
 #include <hydrogen/note.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/Song.h>
@@ -160,8 +160,7 @@ void ExportSongDialog::exportTracks()
 		for ( unsigned i = 0; i < nPatterns; i++ ) {
 			Pattern *pat = pSong->get_pattern_list()->get( i );
 
-			std::multimap <int, Note*>::iterator pos;
-			for ( pos = pat->note_map.begin(); pos != pat->note_map.end(); ++pos ) {
+			for ( Pattern::notes_it_t pos = pat->get_notes()->begin(); pos != pat->get_notes()->end(); ++pos ) {
 				Note *pNote = pos->second;
 				assert( pNote );
 				if( pNote->get_instrument()->get_name() == Hydrogen::get_instance()->getSong()->get_instrument_list()->get(m_ninstrument)->get_name() ){

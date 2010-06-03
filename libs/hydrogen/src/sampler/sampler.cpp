@@ -36,7 +36,7 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/event_queue.h>
 
@@ -843,9 +843,9 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 				for ( unsigned nNote = 0 ;
 				nNote < currentPattern->get_length() ;
 				nNote++ ) {
-					std::multimap <int, Note*>::iterator pos;
-					for ( pos = currentPattern->note_map.lower_bound( nNote ) ;
-					pos != currentPattern->note_map.upper_bound( nNote ) ;
+                    Pattern::notes_it_t pos;
+					for ( pos = currentPattern->get_notes()->lower_bound( nNote ) ;
+					pos != currentPattern->get_notes()->upper_bound( nNote ) ;
 					++pos ) {
 						Note *pNote = pos->second;
 						if ( pNote!=NULL ) {

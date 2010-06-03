@@ -25,7 +25,7 @@
 
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Song.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 
 #include "Skin.h"
@@ -40,12 +40,12 @@ struct SimplePatternNode
     std::set<H2Core::Pattern*> edges;
 };//SimplePatternNode
     
-void addEdges(std::set<H2Core::Pattern*> &patternSet)
+void addEdges(std::set<H2Core::Pattern*>& patternSet)
 {
-    std::set<H2Core::Pattern*> curPatternSet = patternSet;
+    H2Core::Pattern::virtual_patterns_t curPatternSet = patternSet;
     
-    for (std::set<H2Core::Pattern*>::const_iterator setIter = curPatternSet.begin(); setIter != curPatternSet.end(); ++setIter) {
-	 for (std::set<H2Core::Pattern*>::const_iterator innerSetIter = (*setIter)->virtual_pattern_set.begin(); innerSetIter != (*setIter)->virtual_pattern_set.end(); ++innerSetIter) {
+    for (H2Core::Pattern::virtual_patterns_cst_it_t setIter = curPatternSet.begin(); setIter != curPatternSet.end(); ++setIter) {
+	 for (H2Core::Pattern::virtual_patterns_cst_it_t innerSetIter = (*setIter)->get_virtual_patterns()->begin(); innerSetIter != (*setIter)->get_virtual_patterns()->end(); ++innerSetIter) {
 	     patternSet.insert(*innerSetIter);
 	 }//for
     }//for
@@ -101,9 +101,10 @@ void VirtualPatternDialog::computeVirtualPatternTransitiveClosure(H2Core::Patter
 	//newNode->colour = 0;
 	//newNode->edges = curPattern->virtual_pattern_set;
 	
-	curPattern->virtual_pattern_transitive_closure_set = curPattern->virtual_pattern_set;
+	//curPattern->set_virtual_pattern_transitive_closure_set( *curPattern->get_virtual_pattern_set() );
+	curPattern->copy_virtual_patterns_to_transitive_closure( );
 	
-	addEdges(curPattern->virtual_pattern_transitive_closure_set);
+	addEdges( *curPattern->get_virtual_patterns_transitive_closure() );
 	
 	//patternNodeGraph[curPattern] = newNode;
     }//for

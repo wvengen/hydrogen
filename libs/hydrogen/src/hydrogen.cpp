@@ -50,7 +50,7 @@
 #include <hydrogen/sound_basic/instrument.h>
 #include <hydrogen/sample.h>
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/note.h>
 #include <hydrogen/fx/LadspaFX.h>
@@ -1209,14 +1209,14 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 			    Pattern *curPattern = pPatternList->get(i);
 			    patternsToPlay.insert(curPattern);
 			    
-			    for (std::set<Pattern*>::const_iterator virtualIter = curPattern->virtual_pattern_transitive_closure_set.begin(); virtualIter != curPattern->virtual_pattern_transitive_closure_set.end(); ++virtualIter) {
+			    for (Pattern::virtual_patterns_cst_it_t virtualIter = curPattern->get_virtual_patterns_transitive_closure()->begin(); virtualIter != curPattern->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
 				patternsToPlay.insert(*virtualIter);
 			    }//for
 			}//for
 				
 			// copio tutti i pattern
 			m_pPlayingPatterns->clear();
-			for (std::set<Pattern*>::const_iterator virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
+			for (Pattern::virtual_patterns_cst_it_t virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
 			    m_pPlayingPatterns->add(*virtualIter);
 			}//for
 			
@@ -1250,11 +1250,11 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 				
 				std::set<Pattern*> patternsToPlay;
 				patternsToPlay.insert(pSelectedPattern);
-				for (std::set<Pattern*>::const_iterator virtualIter = pSelectedPattern->virtual_pattern_transitive_closure_set.begin(); virtualIter != pSelectedPattern->virtual_pattern_transitive_closure_set.end(); ++virtualIter) {
+				for (Pattern::virtual_patterns_cst_it_t virtualIter = pSelectedPattern->get_virtual_patterns_transitive_closure()->begin(); virtualIter != pSelectedPattern->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
 				    patternsToPlay.insert(*virtualIter);
 				}//for
 				
-				for (std::set<Pattern*>::const_iterator virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
+				for (Pattern::virtual_patterns_cst_it_t virtualIter = patternsToPlay.begin(); virtualIter != patternsToPlay.end(); ++virtualIter) {
 				   m_pPlayingPatterns->add(*virtualIter);
 				}//for
 				
@@ -1349,15 +1349,15 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 				// Delete notes before attempting to play them
 				if ( doErase ) {
 					std::multimap <int, Note*>::iterator pos0;
-					for ( pos0 = pPattern->note_map.lower_bound( m_nPatternTickPosition );
-							pos0 != pPattern->note_map.upper_bound( m_nPatternTickPosition );
+					for ( pos0 = pPattern->get_notes()->lower_bound( m_nPatternTickPosition );
+							pos0 != pPattern->get_notes()->upper_bound( m_nPatternTickPosition );
 							++pos0 ) {
                                                 Note *pNote = NULL;
                                                 pNote = pos0->second;
 						assert( pNote != NULL );
 						if ( pNote->m_bJustRecorded == false ) {
 							delete pNote;
-							pPattern->note_map.erase( pos0 );
+							pPattern->get_notes()->erase( pos0 );
 						}
 					}
 				}
@@ -1366,8 +1366,8 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 
 				// Now play notes
 				std::multimap <int, Note*>::iterator pos;
-				for ( pos = pPattern->note_map.lower_bound( m_nPatternTickPosition ) ;
-				      pos != pPattern->note_map.upper_bound( m_nPatternTickPosition ) ;
+				for ( pos = pPattern->get_notes()->lower_bound( m_nPatternTickPosition ) ;
+				      pos != pPattern->get_notes()->upper_bound( m_nPatternTickPosition ) ;
 				      ++pos ) {
 					Note *pNote = pos->second;
 					if ( pNote ) {
@@ -2094,8 +2094,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				
 			}
 
-			std::multimap <int, Note*>::iterator pos0;
-			for ( pos0 = currentPattern->note_map.begin(); pos0 != currentPattern->note_map.end(); ++pos0 ) {
+			for ( Pattern::notes_it_t pos0 = currentPattern->get_notes()->begin(); pos0 != currentPattern->get_notes()->end(); ++pos0 ) {
 				Note *pNote = pos0->second;
 				assert( pNote );
 
@@ -2106,13 +2105,13 @@ void Hydrogen::addRealtimeNote( int instrument,
 		
 						if( (prefpredelete == 15) && (pNote->m_bJustRecorded == false)){
 							delete pNote;
-							currentPattern->note_map.erase( pos0 );
+							currentPattern->get_notes()->erase( pos0 );
 							continue;
 						}
 		
 						if( ( pNote->m_bJustRecorded == false ) && (static_cast<int>( pNote->get_position() ) >= postdelete && pNote->get_position() < column + predelete +1 )){
 							delete pNote;
-							currentPattern->note_map.erase( pos0 );
+							currentPattern->get_notes()->erase( pos0 );
 						}
 					}
 					continue;	
@@ -2127,13 +2126,13 @@ void Hydrogen::addRealtimeNote( int instrument,
 
 				if( (prefpredelete == 15) && (pNote->m_bJustRecorded == false)){
 					delete pNote;
-					currentPattern->note_map.erase( pos0 );
+					currentPattern->get_notes()->erase( pos0 );
 					continue;
 				}
 
 				if( ( pNote->m_bJustRecorded == false ) && ( static_cast<int>( pNote->get_position() ) >= postdelete && pNote->get_position() <column + predelete +1 )){
 					delete pNote;
-					currentPattern->note_map.erase( pos0 );
+					currentPattern->get_notes()->erase( pos0 );
 				}
 				
 			}
@@ -2146,8 +2145,8 @@ void Hydrogen::addRealtimeNote( int instrument,
 		      nNote < currentPattern->get_length() ;
 		      nNote++ ) {
 			std::multimap <int, Note*>::iterator pos;
-			for ( pos = currentPattern->note_map.lower_bound( nNote ) ;
-			      pos != currentPattern->note_map.upper_bound( nNote ) ;
+			for ( pos = currentPattern->get_notes()->lower_bound( nNote ) ;
+			      pos != currentPattern->get_notes()->upper_bound( nNote ) ;
 			      ++pos ) {
 				pNoteOld = pos->second;
 				if ( pNoteOld!=NULL ) {
@@ -2188,7 +2187,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 						pan_R,
 						-1,
 						0 );
-				currentPattern->note_map.insert(
+				currentPattern->get_notes()->insert(
 					std::make_pair( column, note )
 					);
 
@@ -2231,7 +2230,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				else if ( notehigh == 10 ) note->m_noteKey.m_key = H2Core::NoteKey::Bf;
 				else if ( notehigh == 11 ) note->m_noteKey.m_key = H2Core::NoteKey::B;
 
-				currentPattern->note_map.insert(
+				currentPattern->get_notes()->insert(
 					std::make_pair( column, note )
 					);
 

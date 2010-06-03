@@ -27,7 +27,7 @@
 #include <hydrogen/Song.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
-#include <hydrogen/Pattern.h>
+#include <hydrogen/sound_basic/pattern.h>
 #include <hydrogen/sound_basic/pattern_list.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
@@ -641,8 +641,7 @@ void SongEditor::drawSequence()
 	for (uint i = 0; i < pColumns->size(); i++) {
 		PatternList* pColumn = (*pColumns)[ i ];
 		
-		std::set<Pattern*> drawnAsVirtual;
-
+		Pattern::virtual_patterns_t drawnAsVirtual;
 		for (uint nPat = 0; nPat < pColumn->size(); ++nPat) {
 			H2Core::Pattern *pat = pColumn->get( nPat );
 
@@ -662,7 +661,7 @@ void SongEditor::drawSequence()
 			    drawPattern( i, position, false );
 			}//if
 			
-			for (std::set<Pattern*>::const_iterator virtualIter = pat->virtual_pattern_transitive_closure_set.begin(); virtualIter != pat->virtual_pattern_transitive_closure_set.end(); ++virtualIter) {
+			for (Pattern::virtual_patterns_cst_it_t virtualIter = pat->get_virtual_patterns_transitive_closure()->begin(); virtualIter != pat->get_virtual_patterns_transitive_closure()->end(); ++virtualIter) {
 			    if (drawnAsVirtual.find(*virtualIter) == drawnAsVirtual.end()) {
 				int position = -1;
 				// find the position in pattern list
@@ -1110,18 +1109,18 @@ void SongEditorPatternList::patternPopup_virtualPattern()
 	QListWidgetItem *newItem = new QListWidgetItem(patternName, dialog->patternList);
 	dialog->patternList->insertItem(0, newItem );
 	
-	if (selectedPattern->virtual_pattern_set.find(curPattern) != selectedPattern->virtual_pattern_set.end()) {
+	if (selectedPattern->get_virtual_patterns()->find(curPattern) != selectedPattern->get_virtual_patterns()->end()) {
 	    dialog->patternList->setItemSelected(newItem, true);
 	}//if
     }//for
     
     if ( dialog->exec() == QDialog::Accepted ) {
-	selectedPattern->virtual_pattern_set.clear();
+	selectedPattern->get_virtual_patterns()->clear();
 	for (unsigned int index = 0; index < listsize-1; ++index) {
 	    QListWidgetItem *listItem = dialog->patternList->item(index);
 	    if (dialog->patternList->isItemSelected(listItem) == true) {
 		if (patternNameMap.find(listItem->text()) != patternNameMap.end()) {
-		    selectedPattern->virtual_pattern_set.insert(patternNameMap[listItem->text()]);
+		    selectedPattern->get_virtual_patterns()->insert(patternNameMap[listItem->text()]);
 		}//if
 	    }//if
 	}//for
@@ -1390,9 +1389,9 @@ void SongEditorPatternList::deletePatternFromList( QString patternFilename, QStr
 	for (unsigned int index = 0; index < pSongPatternList->size(); ++index) {
 	    H2Core::Pattern *curPattern = pSongPatternList->get(index);
 	    
-	    std::set<Pattern*>::iterator virtIter = curPattern->virtual_pattern_set.find(pattern);
-	    if (virtIter != curPattern->virtual_pattern_set.end()) {
-		curPattern->virtual_pattern_set.erase(virtIter);
+	    Pattern::virtual_patterns_it_t virtIter = curPattern->get_virtual_patterns()->find(pattern);
+	    if (virtIter != curPattern->get_virtual_patterns()->end()) {
+		curPattern->get_virtual_patterns()->erase(virtIter);
 	    }//if
 	}//for
 
