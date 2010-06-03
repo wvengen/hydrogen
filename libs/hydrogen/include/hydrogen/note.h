@@ -26,6 +26,7 @@
 #include <cassert>
 #include <hydrogen/Object.h>
 #include <hydrogen/adsr.h>
+#include <hydrogen/sound_basics/note_key.h>
 
 
 namespace H2Core
@@ -33,41 +34,6 @@ namespace H2Core
 
 class ADSR;
 class Instrument;
-
-class NoteKey
-{
-public:
-	enum Key {
-		C = 0,
-		Cs,
-		D,
-		Ef,
-		E,
-		F,
-		Fs,
-		G,
-		Af,
-		A,
-		Bf,
-		B,
-	};
-
-	Key m_key;
-	int m_nOctave;
-
-	NoteKey() {
-		m_key = C;
-		m_nOctave = 0;
-	}
-
-	NoteKey( const NoteKey& key ) {
-		m_key = key.m_key;
-		m_nOctave = key.m_nOctave;
-	}
-
-
-};
-
 
 /**
 
@@ -120,9 +86,6 @@ public:
 	}
 
 	void dumpInfo();
-	static NoteKey stringToKey( const QString& sKey );
-	static QString keyToString( NoteKey key );
-
 
 	/// Return the note position inside a pattern
 	unsigned get_position() const {

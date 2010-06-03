@@ -949,7 +949,7 @@ Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
 			if ( nNoteOff == "true" ) 
 				noteoff = true;
 
-			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, Note::stringToKey( sKey ) );
+			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, NoteKey::string_to_key( sKey ) );
 			pNote->set_leadlag(fLeadLag);
 			pNote->set_noteoff( noteoff );
 			pPattern->get_notes()->insert( std::make_pair( pNote->get_position(), pNote ) );

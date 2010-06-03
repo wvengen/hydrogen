@@ -21,6 +21,7 @@
  */
 
 #include <hydrogen/note.h>
+#include <hydrogen/sound_basics/note_key.h>
 #include <hydrogen/sound_basics/instrument.h>
 
 #include <cassert>
@@ -141,115 +142,11 @@ void Note::dumpInfo()
 	     .arg( get_position() )
 	     .arg( m_nHumanizeDelay )
 	     .arg( __instrument->get_name() )
-	     .arg( keyToString( m_noteKey ) )
+	     .arg( NoteKey::key_to_string( m_noteKey ) )
 	     .arg( get_pitch() )
 	     .arg( get_noteoff() )
 	);
 }
-
-
-
-NoteKey Note::stringToKey( const QString& str )
-{
-	NoteKey key;
-
-
-	QString sKey = str.left( str.length() - 1 );
-	QString sOct = str.mid( str.length() - 1, str.length() );
-
-	if ( sKey.endsWith( "-" ) ){
-		sKey.replace("-", "");
-		sOct.insert( 0, "-");
-	}
-	int nOctave = sOct.toInt();
-
-//	_INFOLOG( "skey: " + sKey );
-//	_INFOLOG( "sOct: " + sOct );
-//	_INFOLOG( "nOctave: " + to_string( nOctave ) );
-
-	if ( sKey == "C" ) {
-		key.m_key = NoteKey::C;
-	} else if ( sKey == "Cs" ) {
-		key.m_key = NoteKey::Cs;
-	} else if ( sKey == "D" ) {
-		key.m_key = NoteKey::D;
-	} else if ( sKey == "Ef" ) {
-		key.m_key = NoteKey::Ef;
-	} else if ( sKey == "E" ) {
-		key.m_key = NoteKey::E;
-	} else if ( sKey == "F" ) {
-		key.m_key = NoteKey::F;
-	} else if ( sKey == "Fs" ) {
-		key.m_key = NoteKey::Fs;
-	} else if ( sKey == "G" ) {
-		key.m_key = NoteKey::G;
-	} else if ( sKey == "Af" ) {
-		key.m_key = NoteKey::Af;
-	} else if ( sKey == "A" ) {
-		key.m_key = NoteKey::A;
-	} else if ( sKey == "Bf" ) {
-		key.m_key = NoteKey::Bf;
-	} else if ( sKey == "B" ) {
-		key.m_key = NoteKey::B;
-	} else {
-		_ERRORLOG( "Unhandled key: " + sKey );
-	}
-	key.m_nOctave = nOctave;
-
-	return key;
-}
-
-
-
-QString Note::keyToString( NoteKey key )
-{
-	QString sKey;
-
-	switch ( key.m_key ) {
-	case NoteKey::C:
-		sKey = "C";
-		break;
-	case NoteKey::Cs:
-		sKey = "Cs";
-		break;
-	case NoteKey::D:
-		sKey = "D";
-		break;
-	case NoteKey::Ef:
-		sKey = "Ef";
-		break;
-	case NoteKey::E:
-		sKey = "E";
-		break;
-	case NoteKey::F:
-		sKey = "F";
-		break;
-	case NoteKey::Fs:
-		sKey = "Fs";
-		break;
-	case NoteKey::G:
-		sKey = "G";
-		break;
-	case NoteKey::Af:
-		sKey = "Af";
-		break;
-	case NoteKey::A:
-		sKey = "A";
-		break;
-	case NoteKey::Bf:
-		sKey = "Bf";
-		break;
-	case NoteKey::B:
-		sKey = "B";
-		break;
-
-	}
-
-	sKey = sKey + QString("%1").arg( key.m_nOctave );
-
-	return sKey;
-}
-
 
 Note* Note::copy()
 {
