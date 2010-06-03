@@ -80,9 +80,9 @@ void* loggerThread_func( void* param )
 		QString tmpString;
 		for( it = last = queue.begin() ; it != queue.end() ; ++it ) {
 			last = it;
-			printf( it->toLocal8Bit() );
+			printf( "%s", it->toLocal8Bit().data() );
 			if( pLogFile ) {
-				fprintf( pLogFile, it->toLocal8Bit() );
+				fprintf( pLogFile, "%s", it->toLocal8Bit().data() );
 				fflush( pLogFile );
 			}
 		}
