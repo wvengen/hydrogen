@@ -37,7 +37,7 @@
 #include <hydrogen/sound_basics/instrument.h>
 #include <hydrogen/sound_basics/pattern.h>
 #include <hydrogen/sound_basics/pattern_list.h>
-#include <hydrogen/note.h>
+#include <hydrogen/sound_basics/note.h>
 #include <hydrogen/hydrogen.h>
 
 #include <QDomDocument>

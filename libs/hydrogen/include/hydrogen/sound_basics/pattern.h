@@ -24,7 +24,7 @@
 #define H2_PATTERN_H
 
 #include <hydrogen/Object.h>
-#include <hydrogen/note.h>
+#include <hydrogen/sound_basics/note.h>
 
 namespace H2Core
 {

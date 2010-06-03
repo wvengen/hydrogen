@@ -32,7 +32,7 @@
 #ifdef H2CORE_HAVE_COREMIDI
 
 #include <hydrogen/hydrogen.h>
-#include <hydrogen/note.h>
+#include <hydrogen/sound_basics/note.h>
 #include <hydrogen/instrument.h>
 #include <hydrogen/Preferences.h>
 

@@ -23,7 +23,7 @@
 #include "PortMidiDriver.h"
 
 #include <hydrogen/Preferences.h>
-#include <hydrogen/note.h>
+#include <hydrogen/sound_basics/note.h>
 #include <hydrogen/sound_basics/instrument.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/globals.h>
