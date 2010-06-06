@@ -569,10 +569,9 @@ void DrumPatternEditor::mouseMoveEvent(QMouseEvent *ev)
 			nLen = -1;
 		}
 
-		float fNotePitch = m_pDraggedNote->get_octave() * 12 + m_pDraggedNote->get_key();
 		float fStep = 0;
 		if(nLen > -1){
-			fStep = pow( 1.0594630943593, ( double )fNotePitch );
+			fStep = pow( 1.0594630943593, ( double )m_pDraggedNote->get_notekey_pitch() );
 		}else
 		{
 			fStep = 1.0; 
@@ -757,8 +756,7 @@ void DrumPatternEditor::__draw_note( Note *note, QPainter& p )
 
 	}		
 	else {
-		float fNotePitch = note->get_octave() * 12 + note->get_key();
-		float fStep = pow( 1.0594630943593, ( double )fNotePitch );
+		float fStep = pow( 1.0594630943593, ( double )note->get_notekey_pitch() );
 
 		uint x = 20 + (pos * m_nGridWidth);
 		int w = m_nGridWidth * note->get_length() / fStep;

@@ -160,11 +160,12 @@ class Note : public Object
 		float get_adsr_value(float v)       { return __adsr.get_value( v ); }
 
         float update_sample_position( float incr ) { __sample_position += incr; return __sample_position; }
+        /** \brief returns octave*12 + key */
+        float get_notekey_pitch()           { return __octave * 12 + __key; }
         /** \brief return scaled velocity for midi output */
         /*
         int midi_velocity()                 { return __velocity*127; }
         float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
-        float get_pure_pitch()              { return __octave * 12 + __key; }
         int compute_key()                   { return (__octave +3)*12 + __key + __instrument->get_midi_out_note() - 60; }
         int compute_key_height()            { return (__octave +3)*12 + __key; }
         int compute_position( int tick_size ) { return __humanize_delay + (__position * tick_size); }
