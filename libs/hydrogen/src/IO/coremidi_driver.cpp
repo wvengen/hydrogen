@@ -225,7 +225,7 @@ void CoreMidiDriver::handleQueueNote(Note* pNote)
 	}
 
 	int key = (pNote->m_noteKey.m_nOctave +3 ) * 12 + pNote->m_noteKey.m_key + pNote->get_instrument()->get_midi_out_note() -60;
-	int velocity = pNote->get_velocity() * 127;
+	int velocity = pNote->get_midi_velocity();
 	
 	MIDIPacketList packetList;
 	packetList.numPackets = 1;
@@ -259,7 +259,7 @@ void CoreMidiDriver::handleQueueNoteOff( int channel, int key, int velocity )
 	}
 		
 //	int key = pNote->get_instrument()->get_midi_out_note();
-//	int velocity = pNote->get_velocity() * 127;
+//	int velocity = pNote->get_midi_velocity();
 	
 	MIDIPacketList packetList;
 	packetList.numPackets = 1;

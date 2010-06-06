@@ -133,10 +133,28 @@ class Note : public Object
         bool get_note_off() const           { return __note_off; }          ///< get note_off of the note
         //void set_midi_msg( int midi_msg )   { __midi_msg = midi_msg; }      ///< set midi message of the note
         int get_midi_msg() const            { return __midi_msg; }          ///< get midi message of the note
-        void set_id( int id )               { __pat_id = id; }              ///< set id of the note
-        int get_id() const                  { return __pat_id; }	        ///< get id of the note
+        void set_pat_id( int id )               { __pat_id = id; }          ///< set id of the note
+        int get_pat_id() const                  { return __pat_id; }	    ///< get id of the note
         void set_just_recorded( bool val )  { __just_recorded = val; }      ///< set just recorded
         bool get_just_recorded() const      { return __just_recorded; }	    ///< get just recorded
+        float get_sample_position()         { return __sample_position; }   ///< get sample position
+        void set_humanize_delay(int delay ) { __humanize_delay = delay; }   ///< set humanize delay
+        int get_humanize_delay()            { return __humanize_delay; }    ///< get humanize delay
+        float get_cut_off()                 { return __cut_off; }           ///< get cut off
+        float get_resonance()               { return __resonance; }         ///< get resonance
+        float get_bpfb_l()                  { return __bpfb_l; }            ///< get left band pass filter buffer
+        float get_bpfb_r()                  { return __bpfb_r; }            ///< get right band pass filter buffer
+        float get_lpfb_l()                  { return __lpfb_l; }            ///< get left low pass filter buffer
+        float get_lpfb_r()                  { return __lpfb_r; }            ///< get right low pass filter buffer
+        Key get_key()                       { return __key; }               ///< get key
+        int get_octave()                    { return __octave; }            ///< get octave
+
+        /** \brief return scaled velocity for midi output */
+        int get_midi_velocity()             { return __velocity*127; }
+        /** \brief returns octave*12 + key */
+        float get_notekey_pitch()           { return __octave * 12 + __key; }
+        /** \brief returns octave*12+key+pitch */
+        float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
 
         /** \brief return a string representation of key-actove */
         QString key_to_string();
@@ -158,22 +176,15 @@ class Note : public Object
          */
         void set_midi_info( int key, int octave, int msg)  { if(key>=0 && key<=11)__key=(Key)key; if(octave>=-3 && octave<=3)__octave = octave; __midi_msg = msg; }
 
-        float get_sample_position()         { return __sample_position; }
-        void set_humanize_delay(int delay ) { __humanize_delay = delay; }
-        int get_humanize_delay()            { return __humanize_delay; }
-        float get_cut_off()                 { return __cut_off; }
-        float get_resonance()               { return __resonance; }
-        float get_bpfb_l()                  { return __bpfb_l; }
-        float get_bpfb_r()                  { return __bpfb_r; }
-        float get_lpfb_l()                  { return __lpfb_l; }
-        float get_lpfb_r()                  { return __lpfb_r; }
-        int get_pat_id()                    { return __pat_id; }
-        Key get_key()                       { return __key; }
-        int get_octave()                    { return __octave; }
-
+        /** \brief call release on adsr */
         float release_adsr()                { return __adsr.release(); }
+        /** \brief call get value on adsr */
 		float get_adsr_value(float v)       { return __adsr.get_value( v ); }
-
+        
+        /**
+         * \brief update sample_position with increment
+         * \param incr the value to add to current sample position
+         */
         float update_sample_position( float incr ) { __sample_position += incr; return __sample_position; }
 
         /** \brief return true if instrument, key and octave matches with internal
@@ -182,16 +193,7 @@ class Note : public Object
          * \param octave the octave to match with __octave
          */
         bool match( Instrument* instrument, int key, int octave )   { return ((__instrument==instrument) && (__key==key) && (__octave==octave)); }
-        /** \brief return scaled velocity for midi output */
-        /*
-        int midi_velocity()                 { return __velocity*127; }
-        int compute_key()                   { return (__octave +3)*12 + __key + __instrument->get_midi_out_note() - 60; }
-        int compute_position( int tick_size ) { return __humanize_delay + (__position * tick_size); }
-        */
-        /** \brief returns octave*12 + key */
-        float get_notekey_pitch()           { return __octave * 12 + __key; }
-        /** \brief returns octave*12+key+pitch */
-        float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
+        
 
         /** \brief compute left and right output based on filters */
         void compute_lr_values( float* val_l, float* val_r ) {
