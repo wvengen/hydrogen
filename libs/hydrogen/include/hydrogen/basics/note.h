@@ -28,6 +28,22 @@
 #include <hydrogen/adsr.h>
 #include <hydrogen/basics/instrument.h>
 
+#define KEY_MIN              0
+#define KEY_MAX             11
+#define OCTAVE_MIN          -3
+#define OCTAVE_MAX           3
+#define OCTAVE_OFFSET        3
+#define KEYS_PER_OCTAVE     12
+
+#define MIDI_FACTOR         127
+
+#define VELOCITY_MIN        0.0
+#define VELOCITY_MAX        1.0
+#define PAN_MIN             0.0
+#define PAN_MAX             0.5
+#define LEAD_LAG_MIN        -1.0
+#define LEAD_LAG_MAX        1.0
+
 namespace H2Core
 {
 
@@ -42,7 +58,7 @@ class Note : public Object
     H2_OBJECT
     public:
         /** \brief possible keys */
-        enum Key { C = 0, Cs, D, Ef, E, F, Fs, G, Af, A, Bf, B };
+        enum Key { C=KEY_MIN, Cs, D, Ef, E, F, Fs, G, Af, A, Bf, B };
         /**
          * \brief constructor
          * \param instrument the instrument played by this note
@@ -81,49 +97,52 @@ class Note : public Object
 	    int get_position() const                        { return __position; }
         /** brief set the velocity of the note */
 	    void set_velocity( float velocity ) {
-		    if ( velocity > 1.0 ) {
-			    velocity = 1.0;
-		    } else if ( velocity < 0 ) {
-			    velocity = 0;
-		    }
-		    __velocity = velocity;
+		    if ( velocity > VELOCITY_MAX ) {
+			    __velocity = VELOCITY_MAX;
+		    } else if ( velocity < VELOCITY_MIN ) {
+			    __velocity = VELOCITY_MIN;
+		    } else {
+		        __velocity = velocity;
+            }
 	    }
         /** brief get the velocity of the note */
 	    float get_velocity() const                      { return __velocity; }
         /** brief set the left pan of the note */
 	    void set_pan_l( float pan ) {
-		    if ( pan > 0.5 ) {
-			    pan = 0.5;
-		    }
-		    __pan_l = pan;
+		    if ( pan > PAN_MAX ) {
+			    __pan_l = PAN_MAX;
+		    } else if ( pan < PAN_MIN ) {
+                __pan_l = PAN_MIN;
+            } else {
+		        __pan_l = pan;
+            }
         }
         /** brief get the left pan of the note */
         float get_pan_l() const                         { return __pan_l; }
         /** brief set the right pan of the note */
 	    void set_pan_r( float pan ) {
-		    if ( pan > 0.5 ) {
-			    pan = 0.5;
-		    }
-		    __pan_r = pan;
+		    if ( pan > PAN_MAX ) {
+			    __pan_r = PAN_MAX;
+		    } else if ( pan < PAN_MIN ) {
+                __pan_r = PAN_MIN;
+            } else {
+		        __pan_r = pan;
+            }
 	    }
         /** brief get the right pan of the note */
         float get_pan_r() const                         { return __pan_r; }
         /** brief set the lead lag of the note */
         void set_lead_lag( float lead_lag ) {
-		    if(lead_lag > 1.0) {
-			    __lead_lag = 1.0;
-		    } else if (lead_lag < -1.0) {
-			    __lead_lag = -1.0;
+		    if(lead_lag > LEAD_LAG_MAX) {
+			    __lead_lag = LEAD_LAG_MAX;
+		    } else if (lead_lag < LEAD_LAG_MIN) {
+			    __lead_lag = LEAD_LAG_MIN;
 		    } else {
 			    __lead_lag = lead_lag;
 		    }
     	}
         /** brief get the lead lag of the note */
-	    float get_lead_lag() const {
-		    assert(__lead_lag <=  1.0);
-		    assert(__lead_lag >= -1.0);
-		    return __lead_lag;
-	    }
+	    float get_lead_lag() const                      { return __lead_lag; }
         
         void set_length( int length )       { __length = length; }          ///< set length of the note
         int get_length() const              { return __length; }            ///< get length of the note
@@ -149,12 +168,14 @@ class Note : public Object
         Key get_key()                       { return __key; }               ///< get key
         int get_octave()                    { return __octave; }            ///< get octave
 
+        /** \brief return scaled key for midi output */
+        int get_midi_key()                  { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-60; }
         /** \brief return scaled velocity for midi output */
-        int get_midi_velocity()             { return __velocity*127; }
+        int get_midi_velocity()             { return __velocity * MIDI_FACTOR; }
         /** \brief returns octave*12 + key */
-        float get_notekey_pitch()           { return __octave * 12 + __key; }
+        float get_notekey_pitch()           { return __octave * KEYS_PER_OCTAVE + __key; }
         /** \brief returns octave*12+key+pitch */
-        float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
+        float get_total_pitch()             { return __octave * KEYS_PER_OCTAVE + __key + __pitch; }
 
         /** \brief return a string representation of key-actove */
         QString key_to_string();
@@ -168,13 +189,20 @@ class Note : public Object
          * \param key the key to set
          * \param octave the octave to be set
          */
-        void set_key_octave( int key, int octave )  { if(key>=0 && key<=11)__key=(Key)key; if(octave>=-3 && octave<=3)__octave = octave; }
+        void set_key_octave( int key, int octave )  {
+            if( key>=KEY_MIN && key<=KEY_MAX ) __key=(Key)key;
+            if( octave>=OCTAVE_MIN && octave<=OCTAVE_MAX ) __octave = octave;
+        }
         /**
          * \brief set __key, __octave and __midi_msg only if within acceptable range
          * \param key the key to set
          * \param octave the octave to be set
          */
-        void set_midi_info( int key, int octave, int msg)  { if(key>=0 && key<=11)__key=(Key)key; if(octave>=-3 && octave<=3)__octave = octave; __midi_msg = msg; }
+        void set_midi_info( int key, int octave, int msg)  {
+            if( key>=KEY_MIN && key<=KEY_MAX ) __key=(Key)key;
+            if( octave>=OCTAVE_MIN && octave<=OCTAVE_MAX ) __octave = octave;
+            __midi_msg = msg;
+        }
 
         /** \brief call release on adsr */
         float release_adsr()                { return __adsr.release(); }

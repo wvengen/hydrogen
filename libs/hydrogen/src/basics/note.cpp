@@ -96,7 +96,7 @@ Note::~Note() { }
 
 void Note::set_instrument( Instrument* instrument ) {
     if ( instrument == 0 ) return;
-    instrument = instrument;
+    __instrument = instrument;
     assert( __instrument->get_adsr() );
     __adsr = ADSR( *( __instrument->get_adsr() ) );
 }

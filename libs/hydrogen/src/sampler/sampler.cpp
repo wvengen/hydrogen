@@ -136,10 +136,7 @@ void Sampler::process( uint32_t nFrames, Song* pSong )
 		pNote =  __queuedNoteOffs[0];
 		MidiOutput* midiOut = Hydrogen::get_instance()->getMidiOutput();
 		if( midiOut != NULL ){ 
-		    midiOut->handleQueueNoteOff( pNote->get_instrument()->get_midi_out_channel(),
-					        ( pNote->get_octave() +3 ) * 12 + pNote->get_key() +
-					        ( pNote->get_instrument()->get_midi_out_note() -60 ), 
-					        pNote->get_velocity() * 127 );
+		    midiOut->handleQueueNoteOff( pNote->get_instrument()->get_midi_out_channel(), pNote->get_midi_key(),  pNote->get_midi_velocity() );
 
 		}
 		__queuedNoteOffs.erase( __queuedNoteOffs.begin() );
