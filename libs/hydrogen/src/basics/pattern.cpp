@@ -103,7 +103,7 @@ void Pattern::set_to_old() {
     for( notes_cst_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
         Note *pNote = it->second;
         assert( pNote );
-        pNote->m_bJustRecorded = false ;
+        pNote->set_just_recorded( false );
     }
 }
 

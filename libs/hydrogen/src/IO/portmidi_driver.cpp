@@ -263,7 +263,7 @@ void PortMidiDriver::handleQueueNote(Note* pNote)
 		return;
 	}
 		
-	int key = (pNote->m_noteKey.m_nOctave +3 ) * 12 + pNote->m_noteKey.m_key + pNote->get_instrument()->get_midi_out_note() -60;
+	int key = (pNote->get_octave() +3 ) * 12 + pNote->get_key() + pNote->get_instrument()->get_midi_out_note() -60;
 	int velocity = pNote->get_velocity() * 127;
 	
 	PmEvent event;

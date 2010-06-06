@@ -195,9 +195,10 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			if ( nNoteOff == "true" ) 
 				noteoff = true;
 
-			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch, NoteKey::string_to_key( sKey ) );
-			pNote->set_leadlag(fLeadLag);
-			pNote->set_noteoff( noteoff );
+			pNote = new Note( instrRef, nPosition, fVelocity, fPan_L, fPan_R, nLength, nPitch );
+            pNote->set_key_octave( sKey );
+			pNote->set_lead_lag( fLeadLag );
+			pNote->set_note_off( noteoff );
 			pPattern->get_notes()->insert( std::make_pair( pNote->get_position(),pNote ) );
 			noteNode = noteNode.nextSiblingElement( "note" );
 		}
@@ -278,13 +279,13 @@ int LocalFileMng::savePattern( Song *song , const QString& drumkit_name, int sel
 
 			QDomNode noteNode = doc.createElement( "note" );
 			writeXmlString( noteNode, "position", QString("%1").arg( pNote->get_position() ) );
-			writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
+			writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_lead_lag() ) );
 			writeXmlString( noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
 			writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
 			writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
 			writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
 
-			writeXmlString( noteNode, "key", NoteKey::key_to_string( pNote->m_noteKey ) );
+			writeXmlString( noteNode, "key", pNote->key_to_string() );
 
 			writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 			writeXmlString( noteNode, "instrument", QString("%1").arg(pNote->get_instrument()->get_id()) );
@@ -1090,19 +1091,19 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 			QDomNode noteNode = doc.createElement( "note" );
 			LocalFileMng::writeXmlString( noteNode, "position", QString("%1").arg( pNote->get_position() ) );
-			LocalFileMng::writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_leadlag() ) );
+			LocalFileMng::writeXmlString( noteNode, "leadlag", QString("%1").arg( pNote->get_lead_lag() ) );
 			LocalFileMng::writeXmlString( noteNode, "velocity", QString("%1").arg( pNote->get_velocity() ) );
 			LocalFileMng::writeXmlString( noteNode, "pan_L", QString("%1").arg( pNote->get_pan_l() ) );
 			LocalFileMng::writeXmlString( noteNode, "pan_R", QString("%1").arg( pNote->get_pan_r() ) );
 			LocalFileMng::writeXmlString( noteNode, "pitch", QString("%1").arg( pNote->get_pitch() ) );
 
-			LocalFileMng::writeXmlString( noteNode, "key", NoteKey::key_to_string( pNote->m_noteKey ) );
+			LocalFileMng::writeXmlString( noteNode, "key", pNote->key_to_string( ) );
 
 			LocalFileMng::writeXmlString( noteNode, "length", QString("%1").arg( pNote->get_length() ) );
 			LocalFileMng::writeXmlString( noteNode, "instrument", QString("%1").arg(pNote->get_instrument()->get_id()) );
 
 			QString noteoff = "false"; 
-			if ( pNote->get_noteoff() ) noteoff = "true";			
+			if ( pNote->get_note_off() ) noteoff = "true";
 			LocalFileMng::writeXmlString( noteNode, "note_off", noteoff );
 			noteListNode.appendChild( noteNode );
 
