@@ -138,10 +138,25 @@ class Note : public Object
         void set_just_recorded( bool val )  { __just_recorded = val; }      ///< set just recorded
         bool get_just_recorded() const      { return __just_recorded; }	    ///< get just recorded
 
+        /** \brief return a string representation of key-actove */
         QString key_to_string();
+        /**
+         * \brief parse str and set __key and __octave
+         * \param str the string to be parsed
+         */
         void set_key_octave( const QString& str );
-        void set_key_octave( int k, int o )  { if(k>=0 && k<=11)__key=(Key)k; if(o>=-3 && o<=3)__octave = o; }
-        void set_midi_info( int k, int o, int m)  { if(k>=0 && k<=11)__key=(Key)k; if(o>=-3 && o<=3)__octave = o; __midi_msg = m; }
+        /**
+         * \brief set __key and __octave only if within acceptable range
+         * \param key the key to set
+         * \param octave the octave to be set
+         */
+        void set_key_octave( int key, int octave )  { if(key>=0 && key<=11)__key=(Key)key; if(octave>=-3 && octave<=3)__octave = octave; }
+        /**
+         * \brief set __key, __octave and __midi_msg only if within acceptable range
+         * \param key the key to set
+         * \param octave the octave to be set
+         */
+        void set_midi_info( int key, int octave, int msg)  { if(key>=0 && key<=11)__key=(Key)key; if(octave>=-3 && octave<=3)__octave = octave; __midi_msg = msg; }
 
         float get_sample_position()         { return __sample_position; }
         void set_humanize_delay(int delay ) { __humanize_delay = delay; }
@@ -160,20 +175,24 @@ class Note : public Object
 		float get_adsr_value(float v)       { return __adsr.get_value( v ); }
 
         float update_sample_position( float incr ) { __sample_position += incr; return __sample_position; }
-        /** \brief returns octave*12 + key */
-        float get_notekey_pitch()           { return __octave * 12 + __key; }
+
+        /** \brief return true if instrument, key and octave matches with internal
+         * \param instrument the instrument to match with __instrument
+         * \param key the key to match with __key
+         * \param octave the octave to match with __octave
+         */
+        bool match( Instrument* instrument, int key, int octave )   { return ((__instrument==instrument) && (__key==key) && (__octave==octave)); }
         /** \brief return scaled velocity for midi output */
         /*
         int midi_velocity()                 { return __velocity*127; }
         float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
         int compute_key()                   { return (__octave +3)*12 + __key + __instrument->get_midi_out_note() - 60; }
-        int compute_key_height()            { return (__octave +3)*12 + __key; }
         int compute_position( int tick_size ) { return __humanize_delay + (__position * tick_size); }
-
-        bool is_me( Instrument* i, int k, int o) { return ((__instrument==i) && (__key==k) && (__octave==o)); }
         */
+        /** \brief returns octave*12 + key */
+        float get_notekey_pitch()           { return __octave * 12 + __key; }
 
-        /** \brief */
+        /** \brief compute left and right output based on filters */
         void compute_lr_values( float* val_l, float* val_r ) {
             float cut_off = __instrument->get_filter_cutoff();
 	        float resonance = __instrument->get_filter_resonance();

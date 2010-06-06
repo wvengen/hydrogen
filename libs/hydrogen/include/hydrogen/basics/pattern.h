@@ -82,6 +82,22 @@ class Pattern : public Object
         typedef notes_t::const_iterator notes_cst_it_t;                             ///< \brief multimap note const iterator type
         notes_t* get_notes()                            { return &__notes; }        ///< \brief get the note multimap
 
+        /**
+         * \brief search for a note at a given index within __notes wich correspond to the given arguments
+         * \param idx the index to search in within __notes
+         * \param instrument the instrument the note should be playing
+         * \param key the key that should be set to the note
+         * \param octave the octave that should be set to the note
+         * \param strict if set to false, will search for a note around the given idx
+         * \return the note if found, 0 otherwise
+         */
+        Note* find_note( int idx, Instrument* instrument, Note::Key key, int octave, bool strict=true);
+        /**
+         * \brief removes a given note from __notes, it's not deleted
+         * \param note the note to be removed
+         */
+        void remove_note( Note* note );
+
 	    typedef std::set <Pattern*> virtual_patterns_t;                             ///< \brief note set type;
 		typedef virtual_patterns_t::iterator virtual_patterns_it_t;                 ///< \brief note set iterator type;
 		typedef virtual_patterns_t::const_iterator virtual_patterns_cst_it_t;       ///< \brief note set const iterator type;

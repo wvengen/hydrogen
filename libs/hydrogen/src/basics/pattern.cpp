@@ -112,6 +112,31 @@ Pattern* Pattern::get_empty_pattern() {
     return pat;
 }
 
+Note* Pattern::find_note( int idx, Instrument* instrument, Note::Key key, int octave, bool strict ) {
+    if (strict) {
+        for( notes_cst_it_t it=__notes.lower_bound(idx); it!=__notes.upper_bound(idx); ++it ) {
+            Note* note = it->second;
+            if (note->match( instrument, key, octave )) return note;
+        }
+    } else {
+        // TODO maybe not start from 0 but idx-X
+        for ( int n=0; n<idx; n++ ) {
+            for( notes_cst_it_t it=__notes.lower_bound(n); it!=__notes.upper_bound(n); ++it ) {
+				Note *note = it->second;
+                if (note->match( instrument, key, octave ) && ( (idx<=note->get_position()+note->get_length()) && idx>=note->get_position() ) ) return note;
+            }
+        }
+    }
+    return 0;
+}
+
+void Pattern::remove_note( Note* note ) {
+    notes_it_t it=__notes.begin();
+    for( ; it!=__notes.end(); ++it ) {
+        if(it->second==note) break;
+    }
+    if( it!=__notes.end() ) __notes.erase( it );
+}
 /*
 void Pattern::copy_virtual_patterns_to_transitive_closure( ) {
     __virtual_patterns_transitive_closure.clear();
