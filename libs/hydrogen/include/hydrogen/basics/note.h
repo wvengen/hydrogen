@@ -133,8 +133,8 @@ class Note : public Object
         bool get_note_off() const           { return __note_off; }          ///< get note_off of the note
         //void set_midi_msg( int midi_msg )   { __midi_msg = midi_msg; }      ///< set midi message of the note
         int get_midi_msg() const            { return __midi_msg; }          ///< get midi message of the note
-        void set_pat_id( int id )               { __pat_id = id; }          ///< set id of the note
-        int get_pat_id() const                  { return __pat_id; }	    ///< get id of the note
+        void set_pattern_idx( int idx )     { __pattern_idx = idx; }        ///< set pattern index of the note
+        int get_pattern_idx() const         { return __pattern_idx; }	    ///< get pattern index of the note
         void set_just_recorded( bool val )  { __just_recorded = val; }      ///< set just recorded
         bool get_just_recorded() const      { return __just_recorded; }	    ///< get just recorded
         float get_sample_position()         { return __sample_position; }   ///< get sample position
@@ -227,7 +227,7 @@ class Note : public Object
         float __bpfb_r;		        ///< right band pass filter buffer
         float __lpfb_l;		        ///< left low pass filter buffer
         float __lpfb_r;		        ///< right low pass filter buffer
-        int __pat_id;               ///< TODO
+        int __pattern_idx;          ///< index of the pattern holding this note for undo actions
         int __midi_msg;             ///< TODO
 	    bool __note_off;			///< note type on|off
         bool __just_recorded;       ///< used in record+delete

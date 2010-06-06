@@ -53,7 +53,7 @@ Note::Note( Instrument* instrument, int position, float velocity, float pan_l, f
     __bpfb_r( 0.0 ),
     __lpfb_l( 0.0 ),
     __lpfb_r( 0.0 ),
-    __pat_id( 0 ),
+    __pattern_idx( 0 ),
     __midi_msg( -1 ),
     __note_off( false ),
     __just_recorded( false )
@@ -86,7 +86,7 @@ Note::Note( Note* other )
     __bpfb_r( other->get_bpfb_r() ),
     __lpfb_l( other->get_lpfb_l() ),
     __lpfb_r( other->get_lpfb_r() ),
-    __pat_id( other->get_pat_id() ),
+    __pattern_idx( other->get_pattern_idx() ),
     __midi_msg( other->get_midi_msg() ),
     __note_off( other->get_note_off() ),
     __just_recorded( other->get_just_recorded() )

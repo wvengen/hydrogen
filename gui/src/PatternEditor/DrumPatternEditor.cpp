@@ -1366,7 +1366,7 @@ void DrumPatternEditor::functionDeleteInstrumentUndoAction( std::list< H2Core::N
 			pNote = new Note( *note );
 			assert( pNote );
 			int nPosition = pNote->get_position();
-			pPattern = pPatternList->get( pNote->get_pat_id() );
+			pPattern = pPatternList->get( pNote->get_pattern_idx() );
 			assert (pPattern) ;	
 			pPattern->get_notes()->insert( std::make_pair( nPosition, pNote ) );
 			//delete pNote;
