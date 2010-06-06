@@ -359,9 +359,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	//	constant^12 = 2, so constant = 2^(1/12) = 1.059463.
 	//	float nStep = 1.0;1.0594630943593
 
-	float fTotalPitch = pNote->get_octave() * 12 + pNote->get_key();
-	fTotalPitch += pNote->get_pitch();
-	fTotalPitch += fLayerPitch;
+	float fTotalPitch = pNote->get_total_pitch() + fLayerPitch;
 
 	//_INFOLOG( "total pitch: " + to_string( fTotalPitch ) );
 
@@ -414,9 +412,6 @@ int Sampler::__render_note_no_resample(
 	int nTimes = nInitialBufferPos + nAvail_bytes;
 	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
 
-	// filter
-	bool bUseLPF = pNote->get_instrument()->is_filter_active();
-
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
 
@@ -455,13 +450,14 @@ int Sampler::__render_note_no_resample(
 		}
 
 		fADSRValue = pNote->get_adsr_value( 1 );
-		fVal_L = pSample_data_L[ nSamplePos ] * fADSRValue;
-		fVal_R = pSample_data_R[ nSamplePos ] * fADSRValue;
 
 		// Low pass resonant filter
-		if ( bUseLPF ) {
+		if ( pNote->get_instrument()->is_filter_active() ) {
             pNote->compute_lr_values( &fVal_L, &fVal_R );
-		}
+		} else {
+		    fVal_L = pSample_data_L[ nSamplePos ] * fADSRValue;
+		    fVal_R = pSample_data_R[ nSamplePos ] * fADSRValue;
+        }
 
 #ifdef H2CORE_HAVE_JACK
 	if( track_out_L ) { 
@@ -549,8 +545,7 @@ int Sampler::__render_note_resample(
 	if ( pNote->get_length() != -1 ) {
 		nNoteLength = ( int )( pNote->get_length() * audio_output->m_transport.m_nTickSize );
 	}
-	float fNotePitch = pNote->get_pitch() + fLayerPitch;
-	fNotePitch += pNote->get_octave() * 12 + pNote->get_key();
+	float fNotePitch = pNote->get_total_pitch() + fLayerPitch;
 
 	float fStep = pow( 1.0594630943593, ( double )fNotePitch );
 //	_ERRORLOG( QString("pitch: %1, step: %2" ).arg(fNotePitch).arg( fStep) );
@@ -572,9 +567,6 @@ int Sampler::__render_note_resample(
 	double fSamplePos = pNote->get_sample_position();
 	int nTimes = nInitialBufferPos + nAvail_bytes;
 	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
-
-	// filter
-	bool bUseLPF = pNote->get_instrument()->is_filter_active();
 
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
@@ -630,13 +622,14 @@ int Sampler::__render_note_resample(
 
 		// ADSR envelope
 		fADSRValue = pNote->get_adsr_value( fStep );
-		fVal_L = fVal_L * fADSRValue;
-		fVal_R = fVal_R * fADSRValue;
 
 		// Low pass resonant filter
-		if ( bUseLPF ) {
+		if ( pNote->get_instrument()->is_filter_active() ) {
             pNote->compute_lr_values( &fVal_L, &fVal_R );
-		}
+		} else {
+		    fVal_L = fVal_L * fADSRValue;
+		    fVal_R = fVal_R * fADSRValue;
+        }
 
 
 #ifdef H2CORE_HAVE_JACK

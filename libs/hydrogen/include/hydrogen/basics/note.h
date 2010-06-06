@@ -185,12 +185,13 @@ class Note : public Object
         /** \brief return scaled velocity for midi output */
         /*
         int midi_velocity()                 { return __velocity*127; }
-        float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
         int compute_key()                   { return (__octave +3)*12 + __key + __instrument->get_midi_out_note() - 60; }
         int compute_position( int tick_size ) { return __humanize_delay + (__position * tick_size); }
         */
         /** \brief returns octave*12 + key */
         float get_notekey_pitch()           { return __octave * 12 + __key; }
+        /** \brief returns octave*12+key+pitch */
+        float get_total_pitch()             { return __octave * 12 + __key + __pitch; }
 
         /** \brief compute left and right output based on filters */
         void compute_lr_values( float* val_l, float* val_r ) {
