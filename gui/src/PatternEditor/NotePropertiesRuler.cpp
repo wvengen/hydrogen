@@ -404,66 +404,13 @@ void NotePropertiesRuler::pressAction( int x, int y)
 					//QMessageBox::information ( this, "Hydrogen", trUtf8( "val: %1" ).arg(keyval)  );
                     int k = 666;
                     int o = 666;
-					if (keyval >= 6 && keyval <= 15 ){//note c
-						k=0;
-					}
-					if (keyval >= 16 && keyval <= 25 ){//note cis / cs
-                        k=1;
-					}
-					if (keyval >= 26 && keyval <= 35 ){//note d
-                        k=2;
-					}
-					if (keyval >= 36 && keyval <= 45 ){//note dis / ef
-                        k=3;
-					}
-					if (keyval >= 46 && keyval <= 55 ){//note E
-                        k=4;
-					}
-					if (keyval >= 56 && keyval <= 65 ){//note f
-                        k=5;
-					}
-					if (keyval >= 66 && keyval <= 75 ){//note fis
-                        k=6;
-					}
-					if (keyval >= 76 && keyval <= 85 ){//note g
-                        k=7;
-					}
-					if (keyval >= 86 && keyval <= 95 ){//note gis / af
-                        k=8;
-					}
-					if (keyval >= 96 && keyval <= 105 ){//note a
-                        k=9;
-					}
-					if (keyval >= 106 && keyval <= 115 ){//note his / bf
-                        k=10;
-					}
-					if (keyval >= 116 && keyval <= 125 ){//note h / b
-                        k=11;
-					}
-					
-					//set the note oktave 
-					if (keyval >= 135 && keyval <= 145 ){
-					    o = -3;
-					}
-					else if( keyval >= 146 && keyval <= 155 ){
-						o = -2;
-					}
-					else if( keyval >= 156 && keyval <= 165 ){
-						o = -1;
-					}
-					else if( keyval >= 166 && keyval <= 175 ){
-						o = 0;
-					}
-					else if( keyval >= 176 && keyval <= 185 ){
-						o = 1;
-					}
-					else if( keyval >= 186 && keyval <= 195 ){
-						o = 2;
-					}
-					else if( keyval >= 196 && keyval <= 205 ){
-						o = 3;
-					}
-                    pNote->set_key_octave( k, o );
+                    if(keyval >=6 && keyval<=125) {
+                        k = (keyval-6)/10;
+                    } else if(keyval>=135 && keyval<=205) {
+                        o = (keyval-166)/10;
+                        if(o==-4) o=-3; // 135
+                    }
+                    pNote->set_key_octave(k,o); // won't set wrong values see Note::set_key_octave
 
 					__octaveKeyVal = pNote->get_octave();
 					__noteKeyVal = pNote->get_key();
@@ -1204,43 +1151,12 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
 				continue;
 			}
-			
-			//check the note type
-			if ( !pNote->get_note_off() ) {
-				uint x_pos = 20 + pNote->get_position() * m_nGridWidth;
-	
-				int oktave = 0;
-				if ( pNote ) oktave = pNote->get_octave();
-	
-				if (pNote->get_octave() == -3){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 70-3, 6, 6);
-				}
-				if (pNote->get_octave() == -2){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 60-3, 6, 6);
-				}
-				if (pNote->get_octave() == -1){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 50-3, 6, 6);
-				}
-				if (pNote->get_octave() == 0){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 40-3, 6, 6);
-				}
-				if (pNote->get_octave() == 1){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 30-3, 6, 6);
-				}
-				if (pNote->get_octave() == 2){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 20-3, 6, 6);
-				}
-				if (pNote->get_octave() == 3){
-					p.setBrush(QColor( 99, 160, 233 ));
-					p.drawEllipse( x_pos-3, 10-3, 6, 6);
-				}
-			}
+            if ( !pNote->get_note_off() ) {
+                uint x_pos = 17 + pNote->get_position() * m_nGridWidth;
+                uint y_pos = (4-pNote->get_octave())*10-3;
+                p.setBrush(QColor( 99, 160, 233 ));
+                p.drawEllipse( x_pos, y_pos, 6, 6);
+            }
 		}
 	}
 
@@ -1256,61 +1172,26 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
 				continue;
 			}
-
 			if ( !pNote->get_note_off() ) {
-				uint x_pos = 20 + pNote->get_position() * m_nGridWidth;
-	
-				int oktave = 0;
-				if ( pNote ) oktave = pNote->get_octave();
-	
-				if (pNote->get_key() == 0 ){//note c
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 200-4, 8, 8);
-				}
-				if (pNote->get_key() == 1 ){//note cis
-					p.setBrush(QColor( 255, 255, 255  ));
-					p.drawEllipse( x_pos-3, 190-3, 6, 6);
-				}
-				if (pNote->get_key() == 2 ){//note d
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 180-4, 8, 8);
-				}
-				if (pNote->get_key() == 3 ){//note dis
-					p.setBrush(QColor( 255, 255, 255));
-					p.drawEllipse( x_pos-3, 170-3, 6, 6);
-				}
-				if (pNote->get_key() == 4 ){//note e
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 160-4, 8, 8);
-				}
-				if (pNote->get_key() == 5 ){//note f
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 150-4, 8, 8);
-				}
-				if (pNote->get_key() == 6 ){//note fis
-					p.setBrush(QColor( 255, 255, 255));
-					p.drawEllipse( x_pos-3, 140-3, 6, 6);
-				}
-				if (pNote->get_key() == 7 ){//note g
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 130-4, 8, 8);
-				}
-				if (pNote->get_key() == 8 ){//note gis
-					p.setBrush(QColor( 255, 255, 255));
-					p.drawEllipse( x_pos-3, 120-3, 6, 6);
-				}
-				if (pNote->get_key() == 9 ){//note a
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 110-4, 8, 8);
-				}
-				if (pNote->get_key() == 10 ){//note ais
-					p.setBrush(QColor( 255, 255, 255));
-					p.drawEllipse( x_pos-3, 100-3, 6, 6);
-				}
-				if (pNote->get_key() == 11 ){//note h
-					p.setBrush(QColor( 0, 0, 0));
-					p.drawEllipse( x_pos-4, 90-4, 8, 8);
-				}
+                int d = 6;
+                int k = pNote->get_key();
+                uint x_pos = 17 + pNote->get_position() * m_nGridWidth;
+                uint y_pos = 200-(k*10)-3;
+                if(k<5) {
+                    if(!(k&0x01)) {
+                        x_pos-=1;
+                        y_pos-=1;
+                        d+=2;
+                    }
+                } else {
+                    if(k&0x01) {
+                        x_pos-=1;
+                        y_pos-=1;
+                        d+=2;
+                    }
+                }
+                p.setBrush(QColor( 0, 0, 0));
+                p.drawEllipse( x_pos, y_pos, d, d);
 			}
 		}
 	}	
