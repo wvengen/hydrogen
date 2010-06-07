@@ -66,5 +66,8 @@
 #ifndef H2CORE_HAVE_LADSPA
 #cmakedefine H2CORE_HAVE_LADSPA
 #endif
+#ifndef H2CORE_HAVE_RUBBERBAND
+#cmakedefine H2CORE_HAVE_RUBBERBAND
+#endif
 
 #endif
