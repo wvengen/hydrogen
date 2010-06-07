@@ -24,9 +24,6 @@
 #include <hydrogen/helpers/flac.h>
 #include <hydrogen/basics/sample.h>
 
-//#include <vector>
-//#include <fstream>
-
 #ifdef H2CORE_HAVE_FLAC
 
 #include <FLAC++/all.h>
@@ -39,7 +36,6 @@ namespace H2Core
 #undef LEGACY_FLAC
 #endif
 
-/// Reads a FLAC file...not optimized yet
 class FLACFile_real : public FLAC::Decoder::File, public Object
 {
     H2_OBJECT
@@ -48,7 +44,7 @@ public:
 	~FLACFile_real();
 
 	void load( const QString& filename );
-	Sample* getSample();
+	Sample* get_sample();
 
 protected:
 	virtual ::FLAC__StreamDecoderWriteStatus write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] );
@@ -56,184 +52,116 @@ protected:
 	virtual void error_callback( ::FLAC__StreamDecoderErrorStatus status );
 
 private:
-	std::vector<float> m_audioVect_L;
-	std::vector<float> m_audioVect_R;
-	QString m_sFilename;
+	float* __data_l;
+	float* __data_r;
+    unsigned __frames;
+	QString __filename;
 };
 
 
 const char* FLACFile_real::__class_name = "FLACFile_real";
 
-FLACFile_real::FLACFile_real()
-		: Object( __class_name )
-{
-//	infoLog( "INIT" );
-}
+FLACFile_real::FLACFile_real() : Object( __class_name ) { }
 
+FLACFile_real::~FLACFile_real() { }
 
-
-FLACFile_real::~FLACFile_real()
-{
-//	infoLog( "DESTROY" );
-}
-
-
-
-::FLAC__StreamDecoderWriteStatus FLACFile_real::write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] )
-{
-	int nChannelCount = get_channels();
-	int nBits = get_bits_per_sample();
-
-	if ( ( nChannelCount != 1 ) && ( nChannelCount != 2 ) ) {
-		ERRORLOG( QString( "wrong number of channels. nChannelCount=%1" ).arg( nChannelCount ) );
+::FLAC__StreamDecoderWriteStatus FLACFile_real::write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] ) {
+	int channels = get_channels();
+	if ( ( channels!=1 ) && ( channels!=2 ) ) {
+		ERRORLOG( QString( "wrong number of channels. channels=%1" ).arg( channels ) );
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-
-	unsigned nFrames = frame->header.blocksize;
-
-	if ( nBits == 16 ) {
-		if ( nChannelCount == 1 ) {	// mono
-			const FLAC__int32* data = buffer[0];
-
-			for ( unsigned i = 0; i < nFrames; i++ ) {
-				m_audioVect_L.push_back( data[i] / 32768.0 );
-				m_audioVect_R.push_back( data[i] / 32768.0 );
-			}
-		} else {	// stereo
-			const FLAC__int32* data_L = buffer[0];
-			const FLAC__int32* data_R = buffer[1];
-
-			for ( unsigned i = 0; i < nFrames; i++ ) {
-				m_audioVect_L.push_back( ( float )data_L[i] / 32768.0 );
-				m_audioVect_R.push_back( ( float )data_R[i] / 32768.0 );
-			}
-		}
-	} else if ( nBits == 24 ) {
-		if ( nChannelCount == 1 ) {	// mono
-			const FLAC__int32* data = buffer[0];
-
-			for ( unsigned i = 0; i < nFrames; i++ ) {
-				m_audioVect_L.push_back( ( float )data[i] / 8388608.0 );
-				m_audioVect_R.push_back( ( float )data[i] / 8388608.0 );
-			}
-		} else {	// stereo
-			const FLAC__int32* data_L = buffer[0];
-			const FLAC__int32* data_R = buffer[1];
-
-			for ( unsigned i = 0; i < nFrames; i++ ) {
-				m_audioVect_L.push_back( ( float )data_L[i] / 8388608.0 );
-				m_audioVect_R.push_back( ( float )data_R[i] / 8388608.0 );
-			}
-		}
-	} else {
-		ERRORLOG( QString( "[write_callback] FLAC format error. nBits=%1" ).arg( nBits ) );
+    float factor;
+	int bits = get_bits_per_sample();
+	if ( bits==16 ) {
+        factor = 32768.0f;
+    } else if (bits==24) {
+        factor = 8388608.0f;
+    } else {
+		ERRORLOG( QString( "FLAC format error. bits per sample %1 not handled" ).arg( bits ) );
+		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-
+	__frames = frame->header.blocksize;
+	__data_l = new float[__frames];
+	__data_r = new float[__frames];
+    float* l = __data_l;
+    float* r = __data_r;
+    const FLAC__int32* out = buffer[__frames];
+	if ( channels==1 ) {
+        const FLAC__int32* data = buffer[0];
+        for ( ; data!=out; data++ ) {
+            *l = (float)*data/factor;
+            *r = (float)*data/factor;
+            l++;
+            r++;
+        }
+    } else {
+        const FLAC__int32* data_l = buffer[0];
+        const FLAC__int32* data_r = buffer[1];
+        for ( ; data_l!=out; ) {
+            *l = (float)*data_l/factor;
+            *r = (float)*data_r/factor;
+            data_l+=2;
+            data_r+=2;
+            l++;
+            r++;
+        }
+    }
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
+void FLACFile_real::metadata_callback( const ::FLAC__StreamMetadata *metadata ) { UNUSED( metadata ); }
 
+void FLACFile_real::error_callback( ::FLAC__StreamDecoderErrorStatus status ) { UNUSED( status ); ERRORLOG( "[error_callback]" ); }
 
-void FLACFile_real::metadata_callback( const ::FLAC__StreamMetadata *metadata )
-{
-	UNUSED( metadata );
-}
-
-
-
-void FLACFile_real::error_callback( ::FLAC__StreamDecoderErrorStatus status )
-{
-	UNUSED( status );
-	ERRORLOG( "[error_callback]" );
-}
-
-
-
-void FLACFile_real::load( const QString& sFilename )
-{
-	m_sFilename = sFilename;
-
-	// file exists?
-	QFile check( sFilename );
-	if ( !check.exists() ) {
-		ERRORLOG( QString( "file %1 not found" ).arg( sFilename ) );
-		return;
-	} else {
-		/// \todo: devo chiudere il file?
-	}
-
+void FLACFile_real::load( const QString& sFilename ) {
+	__filename = sFilename;
 	set_metadata_ignore_all();
-
 #ifdef LEGACY_FLAC
 	set_filename( sFilename.toLocal8Bit() );
-
 	State s=init();
-	if ( s != FLAC__FILE_DECODER_OK ) {
+	if ( s!=FLAC__FILE_DECODER_OK ) {
+        ERRORLOG( "Error in init()" );
+        return;
+    }
+	if ( process_until_end_of_file() == false ) {
+		ERRORLOG( "Error in process_until_end_of_file(). filename : " + __filename );
+        return;
+	}
 #else
 	FLAC__StreamDecoderInitStatus s = init( sFilename.toLocal8Bit() );
 	if ( s!=FLAC__STREAM_DECODER_INIT_STATUS_OK ) {
-#endif
-		ERRORLOG( "Error in init()" );
-	}
-
-#ifdef LEGACY_FLAC
-	if ( process_until_end_of_file() == false ) {
-		ERRORLOG( "Error in process_until_end_of_file(). Filename: " + m_sFilename );
-	}
-#else
+        ERRORLOG( "Error in init()" );
+        return;
+    }
 	if ( process_until_end_of_stream() == false ) {
-		ERRORLOG( "[load] Error in process_until_end_of_stream()" );
+		ERRORLOG( "Error in process_until_end_of_stream() filename : " + __filename );
+        return;
 	}
 #endif
 }
 
-
-
-Sample* FLACFile_real::getSample() {
-	//infoLog( "[getSample]" );
-	Sample *pSample = NULL;
-
-	if ( m_audioVect_L.size() == 0 ) {
-		// there were errors loading the file
-		return NULL;
-	}
-
-
-	int nFrames = m_audioVect_L.size();
-	float *data_L = new float[nFrames];
-	float *data_R = new float[nFrames];
-
-	memcpy( data_L, &m_audioVect_L[ 0 ], nFrames * sizeof( float ) );
-	memcpy( data_R, &m_audioVect_R[ 0 ], nFrames * sizeof( float ) );
-	pSample = new Sample( nFrames, m_sFilename, get_sample_rate(), data_L, data_R );
-
-	return pSample;
+Sample* FLACFile_real::get_sample() {
+	if ( __frames==0 ) return NULL;
+	Sample *sample = new Sample( __frames, __filename, get_sample_rate(), __data_l, __data_r );
+    __data_l=0;
+    __data_r=0;
+	return sample;
 }
 
 // :::::::::::::::::::::::::::::
 
 const char* FLACFile::__class_name = "FLACFile";
 
-FLACFile::FLACFile()
-		: Object( __class_name ) {
-	//infoLog( "INIT" );
-}
+FLACFile::FLACFile() : Object( __class_name ) { }
 
-
-FLACFile::~FLACFile() {
-	//infoLog( "DESTROY" );
-}
-
-
+FLACFile::~FLACFile() { }
 
 Sample* FLACFile::load( const QString& sFilename ) {
-	//infoLog( "[load] " + sFilename );
-
 	FLACFile_real *pFile = new FLACFile_real();
 	pFile->load( sFilename );
-	Sample *pSample = pFile->getSample();
+	Sample *pSample = pFile->get_sample();
 	delete pFile;
-
 	return pSample;
 }
 

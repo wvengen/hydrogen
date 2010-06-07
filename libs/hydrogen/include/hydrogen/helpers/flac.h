@@ -31,15 +31,16 @@ namespace H2Core
 
 class Sample;
 
-/// \todo: impostare il samplerate in load()
-/// Class for FLAC file handling
+/// FLAC file loader
 class FLACFile : public Object
 {
-    H2_OBJECT
+H2_OBJECT
 public:
+    /** constructor */
 	FLACFile();
+    /** destructor */
 	~FLACFile();
-
+    /** return a sample loaded from the given file */
 	Sample* load( const QString& sFilename );
 };
 
