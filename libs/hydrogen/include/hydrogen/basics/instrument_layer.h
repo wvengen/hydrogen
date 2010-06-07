@@ -25,7 +25,7 @@
 
 #include <hydrogen/Object.h>
 #include <hydrogen/helpers/xml.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 
 namespace H2Core
 {

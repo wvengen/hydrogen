@@ -20,11 +20,12 @@
  *
  */
 
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
+
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
 
-#include "flac_file.h"
+#include "../flac_file.h"
 
 #include <sndfile.h>
 #include <iostream>

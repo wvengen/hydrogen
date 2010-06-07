@@ -22,7 +22,7 @@
 
 #include "flac_file.h"
 #include "hydrogen/config.h"
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 
 #include <vector>
 #include <fstream>

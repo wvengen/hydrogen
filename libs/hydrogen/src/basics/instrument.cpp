@@ -23,7 +23,7 @@
 #include <hydrogen/basics/instrument.h>
 
 #include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/basics/drumkit.h>
 #include <hydrogen/helpers/filesystem.h>

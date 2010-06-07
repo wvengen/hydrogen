@@ -28,7 +28,7 @@
 #include <hydrogen/h2_exception.h>
 
 #include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 #include <hydrogen/basics/instrument.h>
 
 #include <memory>

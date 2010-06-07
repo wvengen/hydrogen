@@ -35,7 +35,7 @@
 #include <hydrogen/Preferences.h>
 #include <hydrogen/Song.h>
 #include <hydrogen/basics/drumkit.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 #include <hydrogen/fx/Effects.h>
 
 

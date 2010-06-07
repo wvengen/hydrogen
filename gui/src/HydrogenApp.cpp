@@ -48,7 +48,7 @@
 #include <hydrogen/event_queue.h>
 #include <hydrogen/fx/LadspaFX.h>
 #include <hydrogen/Preferences.h>
-//#include <hydrogen/sample.h>
+//#include <hydrogen/basics/sample.h>
 
 #include <QtGui>
 //#include <QDir>

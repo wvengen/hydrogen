@@ -26,7 +26,7 @@
 #include <hydrogen/basics/instrument_list.h>
 
 #include <hydrogen/adsr.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 
 #include <hydrogen/helpers/xml.h>
 #include <hydrogen/helpers/filesystem.h>

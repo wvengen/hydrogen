@@ -48,7 +48,7 @@
 #include <hydrogen/h2_exception.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/basics/instrument.h>
-#include <hydrogen/sample.h>
+#include <hydrogen/basics/sample.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/basics/pattern.h>
 #include <hydrogen/basics/pattern_list.h>
