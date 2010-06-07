@@ -20,30 +20,24 @@
  *
  */
 
-#include "flac_file.h"
-#include "hydrogen/config.h"
+#include <hydrogen/config.h>
+#include <hydrogen/helpers/flac.h>
 #include <hydrogen/basics/sample.h>
 
-#include <vector>
-#include <fstream>
+//#include <vector>
+//#include <fstream>
 
 #ifdef H2CORE_HAVE_FLAC
 
-//#include "FLAC/file_decoder.h"
 #include <FLAC++/all.h>
 
 namespace H2Core
 {
-
-
 #if !defined(FLAC_API_VERSION_CURRENT) || FLAC_API_VERSION_CURRENT < 8
 #define LEGACY_FLAC
 #else
 #undef LEGACY_FLAC
 #endif
-
-
-
 
 /// Reads a FLAC file...not optimized yet
 class FLACFile_real : public FLAC::Decoder::File, public Object
