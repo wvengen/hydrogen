@@ -31,6 +31,8 @@ namespace H2Core
 
 class Sample;
 
+#ifdef H2CORE_HAVE_FLAC
+
 /// FLAC file loader
 class FLACFile : public Object
 {
@@ -43,6 +45,23 @@ public:
     /** return a sample loaded from the given file */
 	Sample* load( const QString& sFilename );
 };
+
+#else // H2CORE_HAVE_FLAC
+
+/// fake FLAC file loader
+class FLACFile : public Object
+{
+H2_OBJECT
+public:
+    /** constructor */
+	FLACFile() : Object( __class_name ) { }
+    /** destructor */
+	~FLACFile() { }
+    /** return a sample loaded from the given file */
+	Sample* load( const QString& sFilename ) { return 0; }
+};
+
+#endif // H2CORE_HAVE_FLAC
 
 };
 

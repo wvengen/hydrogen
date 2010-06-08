@@ -36,12 +36,12 @@ namespace H2Core
 #undef LEGACY_FLAC
 #endif
 
-class FLACFile_real : public FLAC::Decoder::File, public Object
+class FLACLoader : public FLAC::Decoder::File, public Object
 {
     H2_OBJECT
 public:
-	FLACFile_real();
-	~FLACFile_real();
+	FLACLoader();
+	~FLACLoader();
 
 	void load( const QString& filename );
 	Sample* get_sample();
@@ -59,13 +59,13 @@ private:
 };
 
 
-const char* FLACFile_real::__class_name = "FLACFile_real";
+const char* FLACLoader::__class_name = "FLACLoader";
 
-FLACFile_real::FLACFile_real() : Object( __class_name ) { }
+FLACLoader::FLACLoader() : Object( __class_name ) { }
 
-FLACFile_real::~FLACFile_real() { }
+FLACLoader::~FLACLoader() { }
 
-::FLAC__StreamDecoderWriteStatus FLACFile_real::write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] ) {
+::FLAC__StreamDecoderWriteStatus FLACLoader::write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] ) {
 	int channels = get_channels();
 	if ( ( channels!=1 ) && ( channels!=2 ) ) {
 		ERRORLOG( QString( "wrong number of channels. channels=%1" ).arg( channels ) );
@@ -110,11 +110,11 @@ FLACFile_real::~FLACFile_real() { }
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-void FLACFile_real::metadata_callback( const ::FLAC__StreamMetadata *metadata ) { UNUSED( metadata ); }
+void FLACLoader::metadata_callback( const ::FLAC__StreamMetadata *metadata ) { UNUSED( metadata ); }
 
-void FLACFile_real::error_callback( ::FLAC__StreamDecoderErrorStatus status ) { UNUSED( status ); ERRORLOG( "[error_callback]" ); }
+void FLACLoader::error_callback( ::FLAC__StreamDecoderErrorStatus status ) { UNUSED( status ); ERRORLOG( "[error_callback]" ); }
 
-void FLACFile_real::load( const QString& sFilename ) {
+void FLACLoader::load( const QString& sFilename ) {
 	__filename = sFilename;
 	set_metadata_ignore_all();
 #ifdef LEGACY_FLAC
@@ -141,7 +141,7 @@ void FLACFile_real::load( const QString& sFilename ) {
 #endif
 }
 
-Sample* FLACFile_real::get_sample() {
+Sample* FLACLoader::get_sample() {
 	if ( __frames==0 ) return NULL;
 	Sample *sample = new Sample( __frames, __filename, get_sample_rate(), __data_l, __data_r );
     __data_l=0;
@@ -149,7 +149,7 @@ Sample* FLACFile_real::get_sample() {
 	return sample;
 }
 
-// :::::::::::::::::::::::::::::
+/****************************************************************/
 
 const char* FLACFile::__class_name = "FLACFile";
 
@@ -158,14 +158,22 @@ FLACFile::FLACFile() : Object( __class_name ) { }
 FLACFile::~FLACFile() { }
 
 Sample* FLACFile::load( const QString& sFilename ) {
-	FLACFile_real *pFile = new FLACFile_real();
-	pFile->load( sFilename );
-	Sample *pSample = pFile->get_sample();
-	delete pFile;
-	return pSample;
+	FLACLoader *loader = new FLACLoader();
+	loader->load( sFilename );
+	Sample *sample = loader->get_sample();
+	delete loader;
+	return sample;
 }
 
 };
+
+};
+#else
+
+namespace H2Core
+{
+const char* FLACFile::__class_name = "FLACFile";
+}
 
 #endif // H2CORE_HAVE_FLAC
 
