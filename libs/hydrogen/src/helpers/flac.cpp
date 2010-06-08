@@ -36,6 +36,9 @@ namespace H2Core
 #undef LEGACY_FLAC
 #endif
 
+#define BITS_FACTOR_16 ((0xFFFF+1)/2)       // 32768
+#define BITS_FACTOR_24 ((0xFFFFFF+1)/2)     // 8388608
+
 class FLACLoader : public FLAC::Decoder::File, public Object
 {
     H2_OBJECT
@@ -54,69 +57,84 @@ protected:
 private:
 	float* __data_l;
 	float* __data_r;
-    unsigned __frames;
+    unsigned __samples;
+    unsigned __sample_rate;
+    unsigned __channels;
+    unsigned __bps;
+    unsigned __idx;
+    float __factor;
 	QString __filename;
 };
 
 
 const char* FLACLoader::__class_name = "FLACLoader";
 
-FLACLoader::FLACLoader() : Object( __class_name ) { }
+FLACLoader::FLACLoader()
+    : Object( __class_name ),
+    __data_l(0),
+    __data_r(0),
+    __samples(0),
+    __sample_rate(0),
+    __channels(0),
+    __bps(0),
+    __idx(0),
+    __factor(0.0f)
+{ }
 
 FLACLoader::~FLACLoader() { }
 
 ::FLAC__StreamDecoderWriteStatus FLACLoader::write_callback( const ::FLAC__Frame *frame, const FLAC__int32 * const buffer[] ) {
-	int channels = get_channels();
-	if ( ( channels!=1 ) && ( channels!=2 ) ) {
-		ERRORLOG( QString( "wrong number of channels. channels=%1" ).arg( channels ) );
-		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    if(__data_l==0) {
+        // error has been reported from within metadata_callback
+	    return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
 	}
-    float factor;
-	int bits = get_bits_per_sample();
-	if ( bits==16 ) {
-        factor = 32768.0f;
-    } else if (bits==24) {
-        factor = 8388608.0f;
-    } else {
-		ERRORLOG( QString( "FLAC format error. bits per sample %1 not handled" ).arg( bits ) );
-		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
-	}
-	__frames = frame->header.blocksize;
-	__data_l = new float[__frames];
-	__data_r = new float[__frames];
-    float* l = __data_l;
-    float* r = __data_r;
-    const FLAC__int32* out = buffer[__frames];
-	if ( channels==1 ) {
+	unsigned frames = frame->header.blocksize;
+    float* l = &__data_l[__idx];
+    float* r = &__data_r[__idx];
+    const FLAC__int32* out = &buffer[0][frames];
+	if ( __channels==1 ) {
         const FLAC__int32* data = buffer[0];
-        for ( ; data!=out; data++ ) {
-            *l = (float)*data/factor;
-            *r = (float)*data/factor;
-            l++;
-            r++;
+        for ( ; data!=out; l++, r++, data++ ) {
+            *l = *r = (float)*data/__factor;
         }
     } else {
         const FLAC__int32* data_l = buffer[0];
         const FLAC__int32* data_r = buffer[1];
-        for ( ; data_l!=out; ) {
-            *l = (float)*data_l/factor;
-            *r = (float)*data_r/factor;
-            data_l+=2;
-            data_r+=2;
-            l++;
-            r++;
+        for ( ; data_l!=out; l++, r++, data_l++, data_r++ ) {
+            *l = (float)*data_l/__factor;
+            *r = (float)*data_r/__factor;
         }
+
     }
+	__idx += frames;
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-void FLACLoader::metadata_callback( const ::FLAC__StreamMetadata *metadata ) { UNUSED( metadata ); }
+void FLACLoader::metadata_callback( const ::FLAC__StreamMetadata *metadata ) {
+    __samples = metadata->data.stream_info.total_samples;
+    __sample_rate = metadata->data.stream_info.sample_rate;
+    __channels = metadata->data.stream_info.channels;
+    __bps = metadata->data.stream_info.bits_per_sample;
+	if ( ( __channels!=1 ) && ( __channels!=2 ) ) {
+		ERRORLOG( QString( "wrong number of channels. channels=%1" ).arg( __channels ) );
+        return;
+	}
+	if ( __bps==16 ) {
+        __factor = (float)BITS_FACTOR_16;
+    } else if (__bps==24) {
+        __factor = (float)BITS_FACTOR_24;
+    } else {
+		ERRORLOG( QString( "FLAC format error. bits per sample %1 not handled" ).arg( __bps ) );
+        return;
+	}
+	__data_l = new float[__samples];
+	__data_r = new float[__samples];
+}
 
 void FLACLoader::error_callback( ::FLAC__StreamDecoderErrorStatus status ) { UNUSED( status ); ERRORLOG( "[error_callback]" ); }
 
-void FLACLoader::load( const QString& sFilename ) {
-	__filename = sFilename;
-	set_metadata_ignore_all();
+void FLACLoader::load( const QString& filename ) {
+	__filename = filename;
 #ifdef LEGACY_FLAC
 	set_filename( sFilename.toLocal8Bit() );
 	State s=init();
@@ -129,7 +147,7 @@ void FLACLoader::load( const QString& sFilename ) {
         return;
 	}
 #else
-	FLAC__StreamDecoderInitStatus s = init( sFilename.toLocal8Bit() );
+	FLAC__StreamDecoderInitStatus s = init( filename.toLocal8Bit() );
 	if ( s!=FLAC__STREAM_DECODER_INIT_STATUS_OK ) {
         ERRORLOG( "Error in init()" );
         return;
@@ -142,8 +160,8 @@ void FLACLoader::load( const QString& sFilename ) {
 }
 
 Sample* FLACLoader::get_sample() {
-	if ( __frames==0 ) return NULL;
-	Sample *sample = new Sample( __frames, __filename, get_sample_rate(), __data_l, __data_r );
+	if ( __samples==0 ) return NULL;
+	Sample *sample = new Sample( __samples, __filename, __sample_rate, __data_l, __data_r );
     __data_l=0;
     __data_r=0;
 	return sample;
@@ -167,13 +185,12 @@ Sample* FLACFile::load( const QString& sFilename ) {
 
 };
 
-};
 #else
 
 namespace H2Core
 {
 const char* FLACFile::__class_name = "FLACFile";
-}
+};
 
 #endif // H2CORE_HAVE_FLAC
 
