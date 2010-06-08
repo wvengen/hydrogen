@@ -1,0 +1,41 @@
+- basics API changes
+    - remove public: and private: identation !!!
+    - remove prefix get_
+    - remove suffix _list
+    - add const to accessors
+    - Note::operator > ?? hydrogen.cpp operator()
+    - Pattern::__virtual* encapsulation must be checked
+    - Drumkit::installl must be checked
+    - remove include replace with class definition
+    - use Note::Key within set_key_octave ... and set Note::Octave
+    - InstrumentList could check for double in add ???
+    - sample.cpp 252... chose sample from velocity => Instrument:: ??
+    - remove brief from doxygen
+
+sample.cpp
+    - use rubberband API instead of binary !!!!!
+
+- what todo with globals.h ???
+
+- use #define HEIGHT_XX 12 int PianoRollEditor ...
+- see ca59f17ffeddd7847bd17f00260e83b9840df841 pref->patternModePlaysSelected seems to be broken
+- usage of Instrument::load_instrument seems to be wrong
+- int Hydrogen::loadDrumkit( Drumkit *drumkitInfo ) is pretty ugly
+- is it nessecary to have 2 queues, the priority one and the sampler one
+
+GUI
+- SongEditor Pattern management
+    - void SongEditorPatternList::patternPopup_delete()
+        - useless :
+        - Song *song = pEngine->getSong();
+	    - PatternList *pSongPatternList = song->get_pattern_list();
+    - void SongEditorPatternList::deletePatternFromList( QString patternFilename, QString sequenceFileName, int patternPosition )
+	    H2Core::Pattern *pattern = pSongPatternList->get( patternPosition );
+	    INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
+	    pSongPatternList->del(pattern);
+        =>
+	    H2Core::Pattern *pattern = pSongPatternList->del(patternPosition);
+	    INFOLOG( QString("[patternPopup_delete] Delete pattern: %1 @%2").arg(pattern->get_name()).arg( (long)pattern ) );
+        ...
+- SoundLibraryPanel, tree widget, and list management
+    - don't destroy and rebuild all at each and every change !!!
