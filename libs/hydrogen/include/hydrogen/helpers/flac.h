@@ -19,9 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#ifndef HAVE_LIBSNDFILE_FLAC_SUPPORT
 
-#ifndef FLAC_FILE_H
-#define FLAC_FILE_H
+#ifndef H2_FLAC_H
+#define H2_FLAC_H
 
 #include <hydrogen/Object.h>
 #include <string>
@@ -65,5 +66,6 @@ public:
 
 };
 
-#endif
+#endif // H2_FLAC_H
 
+#endif // HAVE_LIBSNDFILE_FLAC_SUPPORT

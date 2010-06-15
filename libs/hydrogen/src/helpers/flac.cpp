@@ -24,6 +24,7 @@
 #include <hydrogen/helpers/flac.h>
 #include <hydrogen/basics/sample.h>
 
+#ifndef HAVE_LIBSNDFILE_FLAC_SUPPORT
 #ifdef H2CORE_HAVE_FLAC
 
 #include <FLAC++/all.h>
@@ -193,3 +194,4 @@ const char* FLACFile::__class_name = "FLACFile";
 
 #endif // H2CORE_HAVE_FLAC
 
+#endif // HAVE_LIBSNDFILE_FLAC_SUPPORT
