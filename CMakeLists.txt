@@ -103,6 +103,10 @@ INCLUDE(FindZLIB)
 INCLUDE(FindThreads)
 COMPILE_HELPER(SSCANF ${CMAKE_SOURCE_DIR}/cmake/sscanf sscanf )
 COMPILE_HELPER(RTCLOCK ${CMAKE_SOURCE_DIR}/cmake/rtclock rtclock )
+COMPILE_HELPER(LIBSNDFILE_FLAC_SUPPORT ${CMAKE_SOURCE_DIR}/cmake/libsndfile_flac libsndfile_flac )
+IF(HAVE_LIBSNDFILE_FLAC_SUPPORT)
+    SET(FLAC_NOT_NEEDED TRUE)
+ENDIF()
 CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILES(sys/stat.h HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILES(libtar.h HAVE_LIBTAR_H)
@@ -203,15 +207,16 @@ MESSAGE(
 MESSAGE(
 "Supported file formats for samples\n"
 "-----------------------------------------\n"
-"* WAVE                         : builtin\n"
+"* WAVE                         :   builtin\n"
 "* FLAC                         : ${FLAC_STATUS}\n"
 )
 IF(WANT_DEBUG)
     MESSAGE(
-    "Debug capabilities\n"
+    "Miscellaneous capabilities\n"
     "-----------------------------------------\n"
-    "* realtime clock           : ${HAVE_RTCLOCK}\n"
-    "* working sscanf           : ${HAVE_SSCANF}\n"
+    "* realtime clock               : ${HAVE_RTCLOCK}\n"
+    "* working sscanf               : ${HAVE_SSCANF}\n"
+    "* libsndfile support flac      : ${HAVE_LIBSNDFILE_FLAC_SUPPORT}\n"
     )
 ENDIF()
 
