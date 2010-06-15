@@ -133,6 +133,7 @@ bool Filesystem::check_permissions( const QString& path, const int perms, bool s
 
 bool Filesystem::file_readable( const QString& path, bool silent )  { return check_permissions(path, is_file|is_readable, silent); }
 bool Filesystem::file_writable( const QString& path, bool silent )  { return check_permissions(path, is_file|is_writable, silent); }
+bool Filesystem::file_executable( const QString& path, bool silent ){ return check_permissions(path, is_file|is_executable, silent); }
 bool Filesystem::dir_readable(  const QString& path, bool silent )  { return check_permissions(path, is_dir|is_readable|is_executable, silent); }
 bool Filesystem::dir_writable(  const QString& path, bool silent )  { return check_permissions(path, is_dir|is_writable, silent); }
 

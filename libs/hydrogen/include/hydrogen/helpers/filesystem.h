@@ -126,6 +126,8 @@ class Filesystem : public Object
         static bool file_readable( const QString& path, bool silent=false );
         /** \brief returns true if the given path is a possibly writable file (may exist or not) */
         static bool file_writable( const QString& path, bool silent=false );
+        /** \brief returns true if the given path is an existing executable regular file */
+        static bool file_executable( const QString& path, bool silent=false );
         /** \brief returns true if the given path is a readable regular directory */
         static bool dir_readable( const QString& path, bool silent=false );
         /** \brief returns true if the given path is a writable regular directory */
