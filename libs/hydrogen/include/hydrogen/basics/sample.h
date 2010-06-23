@@ -72,6 +72,14 @@ class Sample : public Object
 {
     H2_OBJECT
 public:
+
+    /** possible sample editing loop mode */
+	typedef enum _loop_mode {
+        FORWARD=0,
+        REVERSE,
+        PINGPONG
+    } loop_mode_t;
+
 	Sample(
 		const QString& filename, 
         int frames,
@@ -79,7 +87,7 @@ public:
 		float* data_L = 0,
 		float* data_R = 0,
 		bool sample_is_modified = false,
-		const QString& sample_mode = "forward",
+		loop_mode_t sample_mode = FORWARD,
 		int start_frame = 0,
 		int end_frame = 0,
 		int loop_frame = 0,
@@ -106,7 +114,7 @@ public:
         const int loppframe,
         const int endframe,
         const int loops,
-        const QString loopmode,
+        const loop_mode_t loopmode,
         const bool use_rubberband,
         const float rubber_divider,
         const int rubber_c_settings,
@@ -121,8 +129,9 @@ public:
 	float* get_data_r() const                   { return __data_r; }
 	void set_is_modified( bool is_modified )    { __sample_is_modified = is_modified; }
 	bool get_is_modified() const                { return __sample_is_modified; }
-	//void set_sample_mode( QString sample_mode )         { __sample_mode = sample_mode; }
-	QString get_sample_mode() const                     { return __sample_mode; }
+	//void set_loop_mode( loop_mode_t loop_mode )         { __loop_mode = loop_mode; }
+	loop_mode_t get_loop_mode() const                   { return __loop_mode; }
+	QString get_loop_mode_string() const                { return __loop_modes[__loop_mode]; }
 	void set_start_frame( int start_frame )             { __start_frame = start_frame; }
 	int get_start_frame() const                         { return __start_frame; }
 	void set_end_frame( int end_frame )                 { __end_frame = end_frame; }
@@ -141,6 +150,7 @@ public:
 	float get_rubber_C_settings() const                 { return __rubber_C_settings; }
 	//void sampleEditProzess( Sample* Sample );
 	//void setmod();
+    static loop_mode_t parse_loop_mode( const QString& loop_mode );
 
 private:
     // TODO relative or absolute path ??
@@ -150,7 +160,7 @@ private:
 	float *__data_l;	        ///< left channel data
 	float *__data_r;	        ///< right channel data
 	bool __sample_is_modified;	///< true if sample is modified
-	QString __sample_mode;		///< loop mode
+	loop_mode_t __loop_mode;	///< loop mode
 	int __start_frame;		    ///< start frame
 	int __end_frame; 		    ///< sample end frame
 	int __loop_frame;		    ///< beginn of the loop section
@@ -163,6 +173,7 @@ private:
 	float __rubber_divider;		///< the divider to calculate the ratio
 	int __rubber_C_settings;	///< the rubberband "crispness" levels
 	//static int __total_used_bytes;
+    static const char* __loop_modes[];
 
 	/**
      * load sample data using libsndfile

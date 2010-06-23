@@ -35,6 +35,7 @@ namespace H2Core
 {
     
 const char* Sample::__class_name = "Sample";
+const char* Sample::__loop_modes[] = { "forward", "reverse", "pingpong" };
 
 Sample::Sample(
 		const QString& filename, 
@@ -43,7 +44,7 @@ Sample::Sample(
 		float* data_l,
 		float* data_r,
 		bool sample_is_modified,
-		const QString& sample_mode,
+		loop_mode_t loop_mode,
 		int start_frame,
 		int end_frame,
 		int loop_frame,
@@ -60,7 +61,7 @@ Sample::Sample(
     __data_l( data_l ),
     __data_r( data_r ),
     __sample_is_modified( sample_is_modified ),
-    __sample_mode( sample_mode ),
+    __loop_mode( loop_mode ),
     __start_frame( start_frame ),
     __end_frame( end_frame ),
     __loop_frame( loop_frame ),
@@ -138,7 +139,7 @@ Sample* Sample::load_edit_wave(
     const int loop_frame,
     const int end_frame,
     const int loops,
-    const QString loop_mode,
+    const loop_mode_t loop_mode,
     bool use_rubberband,
     float rubber_divider,
     int rubberbandCsettings,
@@ -170,7 +171,7 @@ Sample* Sample::load_edit_wave(
 	float *new_data_r = new float[ new_length ];
 
     // copy full_length frames to new_data
-    if ( loop_mode=="reverse" && (loops==0 || full_loop) ) {
+    if ( loop_mode==REVERSE && (loops==0 || full_loop) ) {
         if(full_loop) {
             // copy end => start
             for( int i=0, j=end_frame; i<full_length; i++, j-- ) new_data_l[i]=orig_data_l[j];
@@ -192,8 +193,8 @@ Sample* Sample::load_edit_wave(
     // copy the loops
     if( loops>0 ) {
         int x = full_length;
-        bool ping_pong = ( loop_mode=="pingpong" );
-        bool forward = ( (loop_mode=="forward") ? true : false );
+        bool ping_pong = (loop_mode==PINGPONG);
+        bool forward = ( (loop_mode==FORWARD) ? true : false );
         for( int i=0; i<loops; i++ ) {
             if (forward) {
                 // copy loop => end
@@ -417,7 +418,7 @@ Sample* Sample::load_edit_wave(
 	
 		pSample->__sample_rate = soundInfoRI.samplerate;
 		pSample->__sample_is_modified = true;
-		pSample->__sample_mode = loop_mode;
+		pSample->__loop_mode = loop_mode;
 		pSample->__start_frame = start_frame;
 		pSample->__loop_frame = loop_frame;
 		pSample->__end_frame = end_frame;
@@ -440,7 +441,7 @@ Sample* Sample::load_edit_wave(
 	
 		pSample->__sample_rate = sample_rate;
 		pSample->__sample_is_modified = true;
-		pSample->__sample_mode = loop_mode;
+		pSample->__loop_mode = loop_mode;
 		pSample->__start_frame = start_frame;
 		pSample->__loop_frame = loop_frame;
 		pSample->__end_frame = end_frame;
@@ -449,5 +450,14 @@ Sample* Sample::load_edit_wave(
 	}
 		return pSample;
 }
+
+Sample::loop_mode_t Sample::parse_loop_mode( const QString& loop_mode ) {
+	char* mode = loop_mode.toLocal8Bit().data();
+    for( int i=0; i<PINGPONG; i++) {
+	    if( 0 == strncasecmp( mode, __loop_modes[i], sizeof(__loop_modes[i]) ) ) return (loop_mode_t)i;
+    }
+    return (loop_mode_t)0;
+}
+
 };
 

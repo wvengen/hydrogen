@@ -608,7 +608,7 @@ Song* SongReader::readSong( const QString& filename )
 										  sLoopFrame,
 										  sEndframe,
 										  sLoops,
-										  sMode,
+										  Sample::parse_loop_mode(sMode),
 										  sUseRubber,
 										  sRubberDivider,
 										  sRubberCsettings,
