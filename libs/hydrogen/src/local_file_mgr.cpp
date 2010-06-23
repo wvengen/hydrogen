@@ -1019,7 +1019,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			if ( pSample == NULL ) continue;
 
 			QString sFilename = pSample->get_filename();
-			bool sIsModified = pSample->get_sample_is_modified(); 
+			bool sIsModified = pSample->get_is_modified();
 			QString sMode = pSample->get_sample_mode();
 			unsigned sStartframe = pSample->get_start_frame();
 			unsigned sLoopFrame =  pSample->get_loop_frame();

@@ -211,7 +211,7 @@ Instrument* Instrument::load_from( XMLNode* node ) {
         if( sFilename.isEmpty() ) {
             ERRORLOG( "filename back compability node is empty" );
         } else {
-            Sample *sample = new Sample( 0, sFilename, 0 );
+            Sample *sample = new Sample( sFilename, 0, 0 );
             InstrumentLayer *layer = new InstrumentLayer( sample );
             instrument->set_layer( layer, 0 );
         }

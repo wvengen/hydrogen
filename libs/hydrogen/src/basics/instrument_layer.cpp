@@ -43,7 +43,7 @@ InstrumentLayer::InstrumentLayer( InstrumentLayer* other )
     , __end_velocity( other->get_end_velocity() )
     , __pitch( other->get_pitch() )
     , __gain( other->get_gain() )
-    , __sample( new Sample( 0, other->get_sample()->get_filename(), 0 ) )       // is not a real sample, it contains only the filename information
+    , __sample( new Sample( other->get_sample()->get_filename(), 0, 0 ) )       // is not a real sample, it contains only the filename information
 {
 }
 
@@ -64,7 +64,7 @@ InstrumentLayer::~InstrumentLayer()
 }
 
 InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {
-    Sample* sample = new Sample( 0, node->read_string( "filename", "" ), 0 );
+    Sample* sample = new Sample( node->read_string( "filename", "" ), 0, 0 );
     InstrumentLayer* layer = new InstrumentLayer( sample );
     layer->set_start_velocity( node->read_float( "min", 0.0 ) );
     layer->set_end_velocity( node->read_float( "max", 1.0 ) );

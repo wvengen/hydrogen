@@ -24,326 +24,219 @@
 
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
-
-#include "../flac_file.h"
+#include <hydrogen/helpers/flac.h>
+#include <hydrogen/helpers/filesystem.h>
 
 #include <sndfile.h>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <vector>
-#include <cmath>
 
 using namespace std;
 
 namespace H2Core
 {
-
+    
 const char* Sample::__class_name = "Sample";
 
-Sample::Sample( unsigned frames,
+Sample::Sample(
 		const QString& filename, 
-		unsigned sample_rate,
+        int frames,
+		int sample_rate,
 		float* data_l,
 		float* data_r,
 		bool sample_is_modified,
 		const QString& sample_mode,
-		unsigned start_frame,
-		unsigned loop_frame,
+		int start_frame,
+		int end_frame,
+		int loop_frame,
 		int repeats,
-		unsigned end_frame,
 		SampleVeloPan velopan,
 		bool use_rubber_band,
+		float rubberband_pitch,
 		float rubberband_divider,
-		int rubberband_C_settings,
-		float rubberband_pitch)
+		int rubberband_C_settings )
+    : Object( __class_name ),
+    __filename( filename ),
+    __frames( frames ),
+    __sample_rate( sample_rate ),
+    __data_l( data_l ),
+    __data_r( data_r ),
+    __sample_is_modified( sample_is_modified ),
+    __sample_mode( sample_mode ),
+    __start_frame( start_frame ),
+    __end_frame( end_frame ),
+    __loop_frame( loop_frame ),
+    __repeats( repeats ),
+    __velo_pan( velopan ),
+    __use_rubber( use_rubber_band ),
+    __rubber_pitch( rubberband_pitch ),
+    __rubber_divider( rubberband_divider ),
+    __rubber_C_settings( rubberband_C_settings )
+{ }
 
-
-		: Object( __class_name )
-		, __data_l( data_l )
-		, __data_r( data_r )
-		, __sample_rate( sample_rate )
-		, __filename( filename )
-		, __n_frames( frames )
-		, __sample_is_modified( sample_is_modified )
-		, __sample_mode( sample_mode )
-		, __start_frame( start_frame )
-		, __loop_frame( loop_frame )
-		, __repeats( repeats )
-		, __end_frame( end_frame )
-		, __velo_pan( velopan )
-		, __use_rubber( use_rubber_band )
-		, __rubber_divider( rubberband_divider )
-		, __rubber_C_settings( rubberband_C_settings )
-		, __rubber_pitch( rubberband_pitch )
-{
-		//INFOLOG("INIT " + m_sFilename + ". nFrames: " + toString( nFrames ) );
+Sample::~Sample() {
+    if(__data_l!=0) delete[] __data_l;
+    if(__data_r!=0) delete[] __data_r;
 }
 
-
-
-Sample::~Sample()
-{
-	delete[] __data_l;
-	delete[] __data_r;
-	//INFOLOG( "DESTROY " + m_sFilename);
-}
-
-
-
-Sample* Sample::load( const QString& filename )
-{
-	// is it a flac file?
-	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
-		return load_flac( filename );
-	} else {
-		return load_wave( filename );
-	}
-}
-
-
-
-/// load a FLAC file
-Sample* Sample::load_flac( const QString& filename )
-{
-#ifdef H2CORE_HAVE_FLAC
-	FLACFile file;
-	return file.load( filename );
+Sample* Sample::load( const QString& filename ) {
+    if( !Filesystem::file_readable(filename)) {
+        ERRORLOG(QString("Unable to read %1").arg(filename));
+        return 0;
+    }
+#ifdef HAVE_LIBSNDFILE_FLAC_SUPPORT
+	return libsndfile_load( filename );
 #else
-	_ERRORLOG("[loadFLAC] FLAC support was disabled during compilation");
-	return NULL;
+	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
+#ifdef H2CORE_HAVE_FLAC
+	    FLACFile file;
+	    return file.load( filename );
+#else
+	    ERRORLOG("FLAC support was disabled during compilation");
+	    return 0;
+#endif
+    } else {
+		return libsndfile_load( filename );
+	}
 #endif
 }
 
-
-
-Sample* Sample::load_wave( const QString& filename )
-{
-	// file exists?
-	if ( QFile( filename ).exists() == false ) {
-		_ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
-		return NULL;
-	}
-
-
-	SF_INFO soundInfo;
-	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &soundInfo );
+Sample* Sample::libsndfile_load( const QString& filename ) {
+    SF_INFO sound_info;
+	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &sound_info );
 	if ( !file ) {
-		_ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
+		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
 	}
 
-
-	float *pTmpBuffer = new float[ soundInfo.frames * soundInfo.channels ];
-
-	//int res = sf_read_float( file, pTmpBuffer, soundInfo.frames * soundInfo.channels );
-	sf_read_float( file, pTmpBuffer, soundInfo.frames * soundInfo.channels );
+    float* buffer = new float[ sound_info.frames * sound_info.channels ];
+	sf_count_t count = sf_read_float( file, buffer, sound_info.frames * sound_info.channels );
 	sf_close( file );
+    if(count==0) WARNINGLOG(QString("%1 is an empty sample").arg(filename));
 
-	float *data_l = new float[ soundInfo.frames ];
-	float *data_r = new float[ soundInfo.frames ];
+	float *data_l = new float[ sound_info.frames ];
+	float *data_r = new float[ sound_info.frames ];
 
-
-	if ( soundInfo.channels == 1 ) {	// MONO sample
-		for ( long int i = 0; i < soundInfo.frames; i++ ) {
-			data_l[i] = pTmpBuffer[i];
-			data_r[i] = pTmpBuffer[i];
+    if ( sound_info.channels == 1 ) {
+        memcpy(data_l,buffer,sound_info.frames*sizeof(float));
+        memcpy(data_r,buffer,sound_info.frames*sizeof(float));
+	} else if ( sound_info.channels == 2 ) {
+		for ( int i = 0; i < sound_info.frames; i++ ) {
+			data_l[i] = buffer[i * 2];
+			data_r[i] = buffer[i * 2 + 1];
 		}
-	} else if ( soundInfo.channels == 2 ) { // STEREO sample
-		for ( long int i = 0; i < soundInfo.frames; i++ ) {
-			data_l[i] = pTmpBuffer[i * 2];
-			data_r[i] = pTmpBuffer[i * 2 + 1];
-		}
-	}
-	delete[] pTmpBuffer;
+	} else {
+        ERRORLOG(QString("can't handle %1 channels").arg(sound_info.channels));
+    }
+	delete[] buffer;
 
-	Sample *pSample = new Sample( soundInfo.frames, filename, soundInfo.samplerate, data_l, data_r );
-//	pSample->reverse_sample( pSample ); // test reverse
-	return pSample;
+	Sample *sample = new Sample( filename, sound_info.frames, sound_info.samplerate, data_l, data_r );
+	return sample;
 }
 
 
-Sample* Sample::load_edit_wave( const QString& filename,
-				const unsigned startframe,
-				const unsigned loppframe,
-				const unsigned endframe,
-				const int loops,
-				const QString loopmode,
-				bool use_rubberband,
-				float rubber_divider,
-				int rubberbandCsettings,
-				float rubber_pitch)
-{
-	//set the path to rubberband-cli
+Sample* Sample::load_edit_wave(
+    const QString& filename,
+    const int start_frame,
+    const int loop_frame,
+    const int end_frame,
+    const int loops,
+    const QString loop_mode,
+    bool use_rubberband,
+    float rubber_divider,
+    int rubberbandCsettings,
+    float rubber_pitch ) {
+
+    if( !Filesystem::file_readable(filename)) {
+        ERRORLOG(QString("Unable to read %1").arg(filename));
+        return 0;
+    }
+
 	QString program = Preferences::get_instance()->m_rubberBandCLIexecutable;
-	//test the path. if test fails return NULL
-	if ( QFile( program ).exists() == false && use_rubberband) {
-		_ERRORLOG( QString( "Rubberband executable: File %1 not found" ).arg( program ) );
-		return NULL;
+	if ( !Filesystem::file_executable( program ) && use_rubberband) {
+		_ERRORLOG( QString( "Rubberband executable %1 not found" ).arg( program ) );
+		return 0;
 	}
 
-	Hydrogen *pEngine = Hydrogen::get_instance();
+    Sample* orig_sample = Sample::load( filename );
 
-	// file exists?
-	if ( QFile( filename ).exists() == false ) {
-		_ERRORLOG( QString( "[Sample::load] Load sample: File %1 not found" ).arg( filename ) );
-		return NULL;
-	}
+    bool full_loop = start_frame==loop_frame;
+	int full_length =  end_frame - start_frame;
+	int loop_length =  end_frame - loop_frame;
+	int new_length = full_length + loop_length * loops;
 
+	int sample_rate = orig_sample->get_sample_rate();
+	float *orig_data_l = orig_sample->get_data_l();
+	float *orig_data_r = orig_sample->get_data_r();
 
-	SF_INFO soundInfo;
-	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &soundInfo );
-	if ( !file ) {
-		_INFOLOG( QString( "[Sample::load] File not found or flacfile %1" ).arg( filename ) );
-	}
+	float *new_data_l = new float[ new_length ];
+	float *new_data_r = new float[ new_length ];
 
-	unsigned onesamplelength =  endframe - startframe;
-	unsigned looplength =  endframe - loppframe;
-	unsigned repeatslength = looplength * loops;
-	unsigned newlength = 0;
-	if (onesamplelength == looplength){	
-		newlength = onesamplelength + onesamplelength * loops ;
-	}else
-	{
-		newlength =onesamplelength + repeatslength;
-	}
-
-	float *origdata_l;
-	float *origdata_r;
-
-	bool isflac = false;
-	unsigned samplerate = 0;
-	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" ) ) ){		
-		Sample *tmpSample = load_flac( filename );
-		_INFOLOG( QString( "File is flac" ) );
-		unsigned nframes = tmpSample->get_n_frames();
-		origdata_l = new float[ nframes ];
-		origdata_r = new float[ nframes ];
-		for ( unsigned i = 0; i < nframes; i++ ) {
-			origdata_l[i] = tmpSample->__data_l[i];
-			origdata_r[i] = tmpSample->__data_r[i];
-		}
-		samplerate = tmpSample->__sample_rate;
-		isflac = true;
-		delete tmpSample;
-	}else{
-		float *pTmpBuffer = new float[ soundInfo.frames * soundInfo.channels ];
-	
-		//int res = sf_read_float( file, pTmpBuffer, soundInfo.frames * soundInfo.channels );
-		sf_read_float( file, pTmpBuffer, soundInfo.frames * soundInfo.channels );
-		sf_close( file );
-		samplerate = soundInfo.samplerate;
-		origdata_l = new float[ soundInfo.frames ];
-		origdata_r = new float[ soundInfo.frames ];
-	
-	
-		if ( soundInfo.channels == 1 ) {	// MONO sample
-			for ( long int i = 0; i < soundInfo.frames; i++ ) {
-				origdata_l[i] = pTmpBuffer[i];
-				origdata_r[i] = pTmpBuffer[i];
-			}
-		} else if ( soundInfo.channels == 2 ) { // STEREO sample
-			for ( long int i = 0; i < soundInfo.frames; i++ ) {
-				origdata_l[i] = pTmpBuffer[i * 2];
-				origdata_r[i] = pTmpBuffer[i * 2 + 1];
-			}
-		}
-		delete[] pTmpBuffer;
-	}
-
-
-	float *tempdata_l = new float[ newlength ];
-	float *tempdata_r = new float[ newlength ];
-
-	float *looptempdata_l = new float[ looplength ];
-	float *looptempdata_r = new float[ looplength ];
-
-	long int z = loppframe;
-	long int y = startframe;
-
-	for ( unsigned i = 0; i < newlength; i++){ //first vector
-
-		tempdata_l[i] = 0;
-		tempdata_r[i] = 0;
-	}
-
-	for ( unsigned i = 0; i < onesamplelength; i++, y++){ //first vector
-
-		tempdata_l[i] = origdata_l[y];
-		tempdata_r[i] = origdata_r[y];
-	}
-
-	for ( unsigned i = 0; i < looplength; i++, z++){ //loop vector
-
-		looptempdata_l[i] = origdata_l[z];
-		looptempdata_r[i] = origdata_r[z];
-	}
-
-		
-	if ( loopmode == "reverse" ){
-		reverse(looptempdata_l, looptempdata_l + looplength);
-		reverse(looptempdata_r, looptempdata_r + looplength);
-	}
-
-	if ( loopmode == "reverse" && loops > 0 && startframe == loppframe ){
-		reverse( tempdata_l, tempdata_l + onesamplelength );
-		reverse( tempdata_r, tempdata_r + onesamplelength );		
-		}
-
-	if ( loopmode == "pingpong" &&  startframe == loppframe){
-		reverse(looptempdata_l, looptempdata_l + looplength);
-		reverse(looptempdata_r, looptempdata_r + looplength);
-	}
-	
-	for ( int i = 0; i< loops ;i++){
-			
-		unsigned tempdataend = onesamplelength + ( looplength * i );
-		if ( startframe == loppframe ){
-			copy( looptempdata_l, looptempdata_l+looplength ,tempdata_l+tempdataend );
-			copy( looptempdata_r, looptempdata_r+looplength ,tempdata_r+tempdataend );
-		}
-		if ( loopmode == "pingpong" && loops > 1){
-			reverse(looptempdata_l, looptempdata_l + looplength);
-			reverse(looptempdata_r, looptempdata_r + looplength);
-		}
-		if ( startframe != loppframe ){
-			copy( looptempdata_l, looptempdata_l+looplength ,tempdata_l+tempdataend );
-			copy( looptempdata_r, looptempdata_r+looplength ,tempdata_r+tempdataend );
-		}
-
-	}
-	
-	if ( loops == 0 && loopmode == "reverse" ){
-		reverse( tempdata_l + loppframe, tempdata_l + newlength);
-		reverse( tempdata_r + loppframe, tempdata_r + newlength);		
-		}
-
+    // copy full_length frames to new_data
+    if ( loop_mode=="reverse" && (loops==0 || full_loop) ) {
+        if(full_loop) {
+            // copy end => start
+            for( int i=0, j=end_frame; i<full_length; i++, j-- ) new_data_l[i]=orig_data_l[j];
+            for( int i=0, j=end_frame; i<full_length; i++, j-- ) new_data_r[i]=orig_data_r[j];
+        } else {
+            // copy start => loop
+            int to_loop = loop_frame - start_frame;
+            memcpy( new_data_l, orig_data_l+start_frame, sizeof(float)*to_loop );
+            memcpy( new_data_r, orig_data_r+start_frame, sizeof(float)*to_loop );
+            // copy end => loop
+            for( int i=to_loop, j=end_frame; i<full_length; i++, j-- ) new_data_l[i]=orig_data_l[j];
+            for( int i=to_loop, j=end_frame; i<full_length; i++, j-- ) new_data_r[i]=orig_data_r[j];
+        }
+    } else {
+        // copy start => end
+        memcpy( new_data_l, orig_data_l+start_frame, sizeof(float)*full_length );
+        memcpy( new_data_r, orig_data_r+start_frame, sizeof(float)*full_length );
+    }
+    // copy the loops
+    if( loops>0 ) {
+        int x = full_length;
+        bool ping_pong = ( loop_mode=="pingpong" );
+        bool forward = ( (loop_mode=="forward") ? true : false );
+        for( int i=0; i<loops; i++ ) {
+            if (forward) {
+                // copy loop => end
+                memcpy( &new_data_l[x], orig_data_l+loop_frame, sizeof(float)*loop_length );
+                memcpy( &new_data_r[x], orig_data_r+loop_frame, sizeof(float)*loop_length );
+            } else {
+                // copy end => loop
+                for( int i=end_frame, y=x; i>loop_frame; i--, y++ ) new_data_l[y]=orig_data_l[i];
+                for( int i=end_frame, y=x; i>loop_frame; i--, y++ ) new_data_r[y]=orig_data_r[i];
+            }
+            x+=loop_length;
+            if(ping_pong) forward=!forward;
+        }
+        assert(x==new_length);
+    }
 	//create new sample
-	Sample *pSample = new Sample( newlength, filename, samplerate );
-	
+	Sample *pSample = new Sample( filename, new_length, sample_rate );
+
+	Hydrogen *engine = Hydrogen::get_instance();
 
 	//check for volume vector
-	if ( (pEngine->m_volumen.size() > 2 )|| ( pEngine->m_volumen.size() == 2 &&  (pEngine->m_volumen[0].m_hyvalue > 0 || pEngine->m_volumen[1].m_hyvalue > 0 ))){
+	if ( (engine->m_volumen.size() > 2 )|| ( engine->m_volumen.size() == 2 &&  (engine->m_volumen[0].m_hyvalue > 0 || engine->m_volumen[1].m_hyvalue > 0 ))) {
 
 		//1. write velopan into sample
 		SampleVeloPan::SampleVeloVector velovec;
 		pSample->__velo_pan.m_Samplevolumen.clear();
-		for (int i = 0; i < static_cast<int>(pEngine->m_volumen.size()); i++){		
-			velovec.m_SampleVeloframe = pEngine->m_volumen[i].m_hxframe;
-			velovec.m_SampleVelovalue = pEngine->m_volumen[i].m_hyvalue;
+		for (int i = 0; i < static_cast<int>(engine->m_volumen.size()); i++){
+			velovec.m_SampleVeloframe = engine->m_volumen[i].m_hxframe;
+			velovec.m_SampleVelovalue = engine->m_volumen[i].m_hyvalue;
 			pSample->__velo_pan.m_Samplevolumen.push_back( velovec );
 		}
 		//2. compute volume
-		float divider = newlength / 841.0F;
-		for (int i = 1; i  < static_cast<int>(pEngine->m_volumen.size()); i++){
+		float divider = new_length / 841.0F;
+		for (int i = 1; i  < static_cast<int>(engine->m_volumen.size()); i++){
 			
-			double y =  (91 - static_cast<int>(pEngine->m_volumen[i - 1].m_hyvalue))/91.0F;
-			double k = (91 - static_cast<int>(pEngine->m_volumen[i].m_hyvalue))/91.0F;
+			double y =  (91 - static_cast<int>(engine->m_volumen[i - 1].m_hyvalue))/91.0F;
+			double k = (91 - static_cast<int>(engine->m_volumen[i].m_hyvalue))/91.0F;
 
-			unsigned deltastartframe = pEngine->m_volumen[i - 1].m_hxframe * divider;
-			unsigned deltaendframe = pEngine->m_volumen[i].m_hxframe * divider;
+			int deltastart_frame = engine->m_volumen[i - 1].m_hxframe * divider;
+			int deltaend_frame = engine->m_volumen[i].m_hxframe * divider;
 
-			if ( i == static_cast<int>(pEngine->m_volumen.size()) -1) deltaendframe = newlength;
-			unsigned deltaIdiff = deltaendframe - deltastartframe ;
+			if ( i == static_cast<int>(engine->m_volumen.size()) -1) deltaend_frame = new_length;
+			int deltaIdiff = deltaend_frame - deltastart_frame ;
 			double subtract = 0.0F;
 
 			if ( y > k ){
@@ -353,9 +246,9 @@ Sample* Sample::load_edit_wave( const QString& filename,
 				subtract = ( k - y) / deltaIdiff * (-1);
 			}
 
-			for ( int z = static_cast<int>(deltastartframe) ; z < static_cast<int>(deltaendframe); z++){			
-				tempdata_l[z] = tempdata_l[z] * y;
-				tempdata_r[z] = tempdata_r[z] * y;
+			for ( int z = static_cast<int>(deltastart_frame) ; z < static_cast<int>(deltaend_frame); z++){
+				new_data_l[z] = new_data_l[z] * y;
+				new_data_r[z] = new_data_r[z] * y;
 				y = y - subtract;
 			}
 		}
@@ -363,27 +256,27 @@ Sample* Sample::load_edit_wave( const QString& filename,
 	}
 
 	//check for pan vector
-	if ( (pEngine->m_pan.size() > 2 )|| ( pEngine->m_pan.size() == 2 &&  (pEngine->m_pan[0].m_hyvalue != 45 || pEngine->m_pan[1].m_hyvalue != 45 ))){
+	if ( (engine->m_pan.size() > 2 )|| ( engine->m_pan.size() == 2 &&  (engine->m_pan[0].m_hyvalue != 45 || engine->m_pan[1].m_hyvalue != 45 ))){
 		//first step write velopan into sample
 		SampleVeloPan::SamplePanVector panvec;
 		pSample->__velo_pan.m_SamplePan.clear();
-		for (int i = 0; i < static_cast<int>(pEngine->m_pan.size()); i++){		
-			panvec.m_SamplePanframe = pEngine->m_pan[i].m_hxframe;
-			panvec.m_SamplePanvalue = pEngine->m_pan[i].m_hyvalue;
+		for (int i = 0; i < static_cast<int>(engine->m_pan.size()); i++){
+			panvec.m_SamplePanframe = engine->m_pan[i].m_hxframe;
+			panvec.m_SamplePanvalue = engine->m_pan[i].m_hyvalue;
 			pSample->__velo_pan.m_SamplePan.push_back( panvec );
 		}
 
-		float divider = newlength / 841.0F;
-		for (int i = 1; i  < static_cast<int>(pEngine->m_pan.size()); i++){
+		float divider = new_length / 841.0F;
+		for (int i = 1; i  < static_cast<int>(engine->m_pan.size()); i++){
 			
-			double y =  (45 - static_cast<int>(pEngine->m_pan[i - 1].m_hyvalue))/45.0F;
-			double k = (45 - static_cast<int>(pEngine->m_pan[i].m_hyvalue))/45.0F;
+			double y =  (45 - static_cast<int>(engine->m_pan[i - 1].m_hyvalue))/45.0F;
+			double k = (45 - static_cast<int>(engine->m_pan[i].m_hyvalue))/45.0F;
 
-			unsigned deltastartframe = pEngine->m_pan[i - 1].m_hxframe * divider;
-			unsigned deltaendframe = pEngine->m_pan[i].m_hxframe * divider;
+			int deltastart_frame = engine->m_pan[i - 1].m_hxframe * divider;
+			int deltaend_frame = engine->m_pan[i].m_hxframe * divider;
 
-			if ( i == static_cast<int>(pEngine->m_pan.size()) -1) deltaendframe = newlength;
-			unsigned deltaIdiff = deltaendframe - deltastartframe ;
+			if ( i == static_cast<int>(engine->m_pan.size()) -1) deltaend_frame = new_length;
+			int deltaIdiff = deltaend_frame - deltastart_frame ;
 			double subtract = 0.0F;
 
 			
@@ -394,20 +287,20 @@ Sample* Sample::load_edit_wave( const QString& filename,
 				subtract = ( k - y) / deltaIdiff * (-1);
 			}
 
-			for ( int z = static_cast<int>(deltastartframe) ; z < static_cast<int>(deltaendframe); z++){
+			for ( int z = static_cast<int>(deltastart_frame) ; z < static_cast<int>(deltaend_frame); z++){
 				if( y < 0 ){
 					double k = 1 + y;
-					tempdata_l[z] = tempdata_l[z] * k;
-					tempdata_r[z] = tempdata_r[z];
+					new_data_l[z] = new_data_l[z] * k;
+					new_data_r[z] = new_data_r[z];
 				}
 				else if(y > 0){
 					double k = 1 - y;
-					tempdata_l[z] = tempdata_l[z];
-					tempdata_r[z] = tempdata_r[z] * k;
+					new_data_l[z] = new_data_l[z];
+					new_data_r[z] = new_data_r[z] * k;
 				}
 				else if(y == 0){
-					tempdata_l[z] = tempdata_l[z];
-					tempdata_r[z] = tempdata_r[z];
+					new_data_l[z] = new_data_l[z];
+					new_data_r[z] = new_data_r[z];
 				}
 				y = y - subtract;	
 			}
@@ -418,18 +311,18 @@ Sample* Sample::load_edit_wave( const QString& filename,
 ///rubberband
 	if( use_rubberband ){
 
-		unsigned rubberoutframes = 0;
+		int rubberoutframes = 0;
 		double ratio = 1.0;
-		double durationtime = 60.0 / pEngine->getNewBpmJTM() * rubber_divider/*beats*/;	
-		double induration = (double) newlength / (double) samplerate;
+		double durationtime = 60.0 / engine->getNewBpmJTM() * rubber_divider/*beats*/;
+		double induration = (double) new_length / (double) sample_rate;
 		if (induration != 0.0) ratio = durationtime / induration;
-		rubberoutframes = int(newlength * ratio + 0.1);
-//		_INFOLOG(QString("ratio: %1, rubberoutframes: %2, rubberinframes: %3").arg( ratio ).arg ( rubberoutframes ).arg ( newlength ));
+		rubberoutframes = int(new_length * ratio + 0.1);
+//		_INFOLOG(QString("ratio: %1, rubberoutframes: %2, rubberinframes: %3").arg( ratio ).arg ( rubberoutframes ).arg ( new_length ));
 	
 		//create new sample
 
 		SF_INFO rubbersoundInfo;
-		rubbersoundInfo.samplerate = samplerate;
+		rubbersoundInfo.samplerate = sample_rate;
 		rubbersoundInfo.frames = rubberoutframes;
 		rubbersoundInfo.channels = 2;
 		rubbersoundInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -441,10 +334,10 @@ Sample* Sample::load_edit_wave( const QString& filename,
 		QString outfilePath = QDir::tempPath() + "/tmp_rb_outfile.wav";
 		SNDFILE* m_file = sf_open( outfilePath.toLocal8Bit(), SFM_WRITE, &rubbersoundInfo);
 
-		float *infobf = new float[rubbersoundInfo.channels * newlength];
-			for (int i = 0; i < newlength; ++i) {
-			float value_l = tempdata_l[i];
-			float value_r = tempdata_r[i];
+		float *infobf = new float[rubbersoundInfo.channels * new_length];
+			for (int i = 0; i < new_length; ++i) {
+			float value_l = new_data_l[i];
+			float value_r = new_data_r[i];
 			if (value_l > 1.f) value_l = 1.f;
 			if (value_l < -1.f) value_l = -1.f;
 			if (value_r > 1.f) value_r = 1.f;
@@ -453,7 +346,7 @@ Sample* Sample::load_edit_wave( const QString& filename,
 			infobf[i * rubbersoundInfo.channels + 1] = value_r;
 		}
 
-		int res = sf_writef_float(m_file, infobf, newlength );
+		int res = sf_writef_float(m_file, infobf, new_length );
 		sf_close( m_file );
 		delete[] infobf;
 
@@ -504,10 +397,9 @@ Sample* Sample::load_edit_wave( const QString& filename,
 	
 		float *dataRI_l = new float[ soundInfoRI.frames ];
 		float *dataRI_r = new float[ soundInfoRI.frames ];
-	
-	
-		if ( soundInfoRI.channels == 1 ) {	// MONO sample
-			for ( long int i = 0; i < soundInfo.frames; i++ ) {
+
+        if ( soundInfoRI.channels == 1 ) {	// MONO sample
+			for ( long int i = 0; i < soundInfoRI.frames; i++ ) {
 				dataRI_l[i] = pTmpBufferRI[i];
 				dataRI_r[i] = pTmpBufferRI[i];
 			}
@@ -519,16 +411,16 @@ Sample* Sample::load_edit_wave( const QString& filename,
 		}
 		delete[] pTmpBufferRI;
 
-		pSample->set_new_sample_length_frames( soundInfoRI.frames );
+		pSample->set_frames( soundInfoRI.frames );
 		pSample->__data_l = dataRI_l;
 		pSample->__data_r = dataRI_r;
 	
-		pSample->__sample_rate = soundInfoRI.samplerate;	
+		pSample->__sample_rate = soundInfoRI.samplerate;
 		pSample->__sample_is_modified = true;
-		pSample->__sample_mode = loopmode;
-		pSample->__start_frame = startframe;
-		pSample->__loop_frame = loppframe;
-		pSample->__end_frame = endframe;
+		pSample->__sample_mode = loop_mode;
+		pSample->__start_frame = start_frame;
+		pSample->__loop_frame = loop_frame;
+		pSample->__end_frame = end_frame;
 		pSample->__repeats = loops;
 		pSample->__use_rubber = true;
 		pSample->__rubber_divider = rubber_divider;
@@ -543,15 +435,15 @@ Sample* Sample::load_edit_wave( const QString& filename,
 
 	}else///~rubberband
 	{
-		pSample->__data_l = tempdata_l;
-		pSample->__data_r = tempdata_r;
+		pSample->__data_l = new_data_l;
+		pSample->__data_r = new_data_r;
 	
-		pSample->__sample_rate = samplerate;	
+		pSample->__sample_rate = sample_rate;
 		pSample->__sample_is_modified = true;
-		pSample->__sample_mode = loopmode;
-		pSample->__start_frame = startframe;
-		pSample->__loop_frame = loppframe;
-		pSample->__end_frame = endframe;
+		pSample->__sample_mode = loop_mode;
+		pSample->__start_frame = start_frame;
+		pSample->__loop_frame = loop_frame;
+		pSample->__end_frame = end_frame;
 		pSample->__repeats = loops;
 	
 	}

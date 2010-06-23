@@ -30,10 +30,6 @@
 namespace H2Core
 {
 
-/**
-\ingroup H2CORE
-*/
-
 class SampleVeloPan
 {
 public:
@@ -72,180 +68,107 @@ public:
 
 };
 
-
 class Sample : public Object
 {
     H2_OBJECT
 public:
-	Sample( unsigned frames,
+	Sample(
 		const QString& filename, 
-		unsigned sample_rate,
-		float* data_L = NULL,
-		float* data_R = NULL,
+        int frames,
+		int sample_rate,
+		float* data_L = 0,
+		float* data_R = 0,
 		bool sample_is_modified = false,
 		const QString& sample_mode = "forward",
-		unsigned start_frame = 0,
-		unsigned loop_frame = 0,
+		int start_frame = 0,
+		int end_frame = 0,
+		int loop_frame = 0,
 		int repeats = 0,
-		unsigned end_frame = 0,
 		SampleVeloPan velopan = SampleVeloPan(),
 		bool use_rubber = false,
+		float rubber_pitch = 0.0,
 		float use_rubber_divider = 1.0,
-		int use_rubber_c_settings = 4,
-		float rubber_pitch = 0.0 );
-		
+		int use_rubber_c_settings = 4
+        );
 
 	~Sample();
 
-	float* get_data_l() {
-		return __data_l;
-	}
-	float* get_data_r() {
-		return __data_r;
-	}
-
-	unsigned get_sample_rate() {
-		return __sample_rate;
-	}
-
-	const QString get_filename() {
-		return __filename;
-	}
-
-
-	/// Returns the bytes number ( 2 channels )
-	unsigned get_size() {
-		return __n_frames * sizeof( float ) * 2;
-	}
-
-	/// Loads a sample from disk
+	/**
+     * load a sample from a file
+     * \param filename the file to load audio data from
+     */
 	static Sample* load( const QString& filename );
 
 	/// Loads an modified sample
-	static Sample* load_edit_wave( const QString& filename,
-				const unsigned startframe,
-				const unsigned loppframe,
-				const unsigned endframe,
-				const int loops,
-				const QString loopmode,
-				const bool use_rubberband,
-				const float rubber_divider,
-				const int rubber_c_settings,
-				const float rubber_pitch );
+	static Sample* load_edit_wave(
+        const QString& filename,
+        const int startframe,
+        const int loppframe,
+        const int endframe,
+        const int loops,
+        const QString loopmode,
+        const bool use_rubberband,
+        const float rubber_divider,
+        const int rubber_c_settings,
+        const float rubber_pitch );
 
-
-	void set_new_sample_length_frames( unsigned new_sample_length) {
-		__n_frames = new_sample_length;
-	}
-
-	unsigned get_n_frames() {
-		return __n_frames;
-	}
-
-	///beginn of sample edit 
-
-	void set_sample_is_modified( bool is_modified ) {
-		__sample_is_modified = is_modified;
-	}
-	bool get_sample_is_modified() const {
-		return __sample_is_modified;
-	}
-
-	void set_sample_mode( QString sample_mode ) {
-		__sample_mode = sample_mode;
-	}
-	QString get_sample_mode() const {
-		return __sample_mode;
-	}
-
-	void set_start_frame( unsigned start_frame ) {
-		__start_frame = start_frame;
-	}
-	unsigned get_start_frame() const {
-		return __start_frame;
-	}
-
-	void set_loop_frame( unsigned loop_frame ) {
-		 __loop_frame = loop_frame;
-	}
-	unsigned get_loop_frame() const {
-		return __loop_frame;
-	}
-
-	void set_repeats( int repeats ) {
-		__repeats = repeats;
-	}
-	int get_repeats() const {
-		return __repeats;
-	}
-
-	void set_end_frame( unsigned end_frame ) {
-		__end_frame = end_frame;
-	}
-	unsigned get_end_frame() const {
-		return __end_frame;
-	}
-
-	void set_use_rubber( bool use_rubber ) {
-		__use_rubber = use_rubber;
-	}
-	bool get_use_rubber() const {
-		return __use_rubber;
-	}
-
-	void set_rubber_divider( float use_rubber_divider ) {
-		__rubber_divider = use_rubber_divider;
-	}
-	float get_rubber_divider() const {
-		return __rubber_divider;
-	}
-
-	void set_rubber_C_settings( int use_rubber_c_settings) {
-		__rubber_C_settings = use_rubber_c_settings;
-	}
-	float get_rubber_C_settings() const {
-		return __rubber_C_settings;
-	}
-
-	void set_rubber_pitch( float rubber_pitch ) {
-		__rubber_pitch = rubber_pitch;
-	}
-	float get_rubber_pitch() const {
-		return __rubber_pitch;
-	}
-
-	void sampleEditProzess( Sample* Sample );
-	void setmod();
-
-	SampleVeloPan __velo_pan;	///< volume and pan vector
+	const QString get_filename() const          { return __filename; }
+	void set_frames( int frames )               { __frames = frames; }
+	int get_frames() const                      { return __frames; }
+	int get_sample_rate() const                 { return __sample_rate; }
+	int get_size() const                        { return __frames * sizeof( float ) * 2; }
+	float* get_data_l() const                   { return __data_l; }
+	float* get_data_r() const                   { return __data_r; }
+	void set_is_modified( bool is_modified )    { __sample_is_modified = is_modified; }
+	bool get_is_modified() const                { return __sample_is_modified; }
+	//void set_sample_mode( QString sample_mode )         { __sample_mode = sample_mode; }
+	QString get_sample_mode() const                     { return __sample_mode; }
+	void set_start_frame( int start_frame )             { __start_frame = start_frame; }
+	int get_start_frame() const                         { return __start_frame; }
+	void set_end_frame( int end_frame )                 { __end_frame = end_frame; }
+	int get_end_frame() const                           { return __end_frame; }
+	void set_loop_frame( int loop_frame )               {  __loop_frame = loop_frame; }
+	int get_loop_frame() const                          { return __loop_frame; }
+	void set_repeats( int repeats )                     { __repeats = repeats; }
+	int get_repeats() const                             { return __repeats; }
+	void set_use_rubber( bool use_rubber )              { __use_rubber = use_rubber; }
+	bool get_use_rubber() const                         { return __use_rubber; }
+	void set_rubber_pitch( float rubber_pitch )         { __rubber_pitch = rubber_pitch; }
+	float get_rubber_pitch() const                      { return __rubber_pitch; }
+	void set_rubber_divider( float use_rubber_divider ) {__rubber_divider = use_rubber_divider; }
+	float get_rubber_divider() const                    { return __rubber_divider; }
+	void set_rubber_C_settings( int use_rubber_c_settings) { __rubber_C_settings = use_rubber_c_settings; }
+	float get_rubber_C_settings() const                 { return __rubber_C_settings; }
+	//void sampleEditProzess( Sample* Sample );
+	//void setmod();
 
 private:
-
-	float *__data_l;	///< Left channel data
-	float *__data_r;	///< Right channel data
-	unsigned __sample_rate;		///< samplerate for this sample
-	QString __filename;		///< filename associated with this sample
-	unsigned __n_frames;		///< Total number of frames in this sample.
+    // TODO relative or absolute path ??
+	QString __filename;		    ///< filename associated with this sample
+	int __frames;		        ///< number of frames in this sample.
+	int __sample_rate;		    ///< samplerate for this sample
+	float *__data_l;	        ///< left channel data
+	float *__data_r;	        ///< right channel data
 	bool __sample_is_modified;	///< true if sample is modified
 	QString __sample_mode;		///< loop mode
-	unsigned __start_frame;		///< start frame
-	unsigned __loop_frame;		///< beginn of the loop section
-	int __repeats;			///< repeats from the loop section
-	unsigned __end_frame; 		///< sample end frame
-	bool __use_rubber;		///< use the rubberband bin
+	int __start_frame;		    ///< start frame
+	int __end_frame; 		    ///< sample end frame
+	int __loop_frame;		    ///< beginn of the loop section
+	int __repeats;			    ///< repeats from the loop section
+public:
+	SampleVeloPan __velo_pan;	///< volume and pan vector
+private:
+	bool __use_rubber;		    ///< use the rubberband bin
+	float __rubber_pitch;		///< rubberband pitch
 	float __rubber_divider;		///< the divider to calculate the ratio
 	int __rubber_C_settings;	///< the rubberband "crispness" levels
-	float __rubber_pitch;		///< rubberband pitch 
-
-
 	//static int __total_used_bytes;
 
-	/// loads a wave file
-	static Sample* load_wave( const QString& filename );
-
-	/// loads a FLAC file
-	static Sample* load_flac( const QString& filename );
-	Sample *tempsample;
+	/**
+     * load sample data using libsndfile
+     * \param filename the file to load audio data from
+     */
+	static Sample* libsndfile_load( const QString& filename );
 
 };
 
