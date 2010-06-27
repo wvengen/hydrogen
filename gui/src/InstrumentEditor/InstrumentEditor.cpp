@@ -584,12 +584,9 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 	}
 	else if ( pButton == m_pSamleEditorBtn ){
 		if ( m_pInstrument ) {
-			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
-			if ( pLayer ) {
-				Sample* pSample = pLayer->get_sample();
-                // TODO name is no more an absolute path
-				QString name = pSample->get_filename();
-				HydrogenApp::get_instance()->showSampleEditor( name, m_nSelectedLayer );
+			H2Core::InstrumentLayer* layer = m_pInstrument->get_layer( m_nSelectedLayer );
+			if ( layer ) {
+				HydrogenApp::get_instance()->showSampleEditor( m_nSelectedLayer );
 			}
 		}
 		
@@ -865,7 +862,7 @@ void InstrumentEditor::midiOutNoteBtnClicked(Button *pRef)
                                 Sample::loop_mode_t mode = pSample->get_loop_mode();
 								bool userubber = pSample->get_use_rubber();
 								float rd = pSample->get_rubber_divider();
-								int csettings = pSample->get_rubber_C_settings();
+								int csettings = pSample->get_rubber_c_settings();
 								float rpitch = pSample->get_rubber_pitch();
 
 								Hydrogen::HVeloVector velovector;

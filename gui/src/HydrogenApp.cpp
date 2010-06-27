@@ -356,7 +356,7 @@ void HydrogenApp::showMetroBlinker()
 }
 
 
-void HydrogenApp::showSampleEditor( QString name, int mSelectedLayer )
+void HydrogenApp::showSampleEditor( int mSelectedLayer )
 {
 
 	if ( m_pSampleEditor ){
@@ -367,7 +367,7 @@ void HydrogenApp::showSampleEditor( QString name, int mSelectedLayer )
 		QApplication::restoreOverrideCursor();
 	}
 	QApplication::setOverrideCursor(Qt::WaitCursor);	
-	m_pSampleEditor = new SampleEditor( 0, mSelectedLayer, name);
+	m_pSampleEditor = new SampleEditor( 0, mSelectedLayer );
 	m_pSampleEditor->show();
 	QApplication::restoreOverrideCursor();
 }

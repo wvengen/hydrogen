@@ -148,7 +148,7 @@ SoundLibraryPanel::~SoundLibraryPanel()
 
 void SoundLibraryPanel::updateDrumkitList()
 {
-	QString currentSL = Hydrogen::get_instance()->m_currentDrumkit ; 
+	QString currentSL = Hydrogen::get_instance()->getCurrentDrumkitname();
 
 	LocalFileMng mng;
 
@@ -550,7 +550,7 @@ void SoundLibraryPanel::restore_background_color()
 
 void SoundLibraryPanel::change_background_color()
 {
-	QString curlib =  Hydrogen::get_instance()->m_currentDrumkit;
+	QString curlib =  Hydrogen::get_instance()->getCurrentDrumkitname();
  
 	for (int i = 0; i < __system_drumkits_item->childCount() ; i++){
 		if ( ( __system_drumkits_item->child( i ) )->text( 0 ) == curlib ){

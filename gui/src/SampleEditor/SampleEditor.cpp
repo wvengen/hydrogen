@@ -36,6 +36,7 @@
 #include <hydrogen/basics/sample.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/hydrogen.h>
+#include <hydrogen/helpers/filesystem.h>
 
 #include <QModelIndex>
 #include <QTreeWidget>
@@ -47,7 +48,7 @@ using namespace std;
 
 const char* SampleEditor::__class_name = "SampleEditor";
 
-SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer, QString mSamplefilename )
+SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer )
 		: QDialog ( pParent )
 		, Object ( __class_name )
 {
@@ -59,10 +60,13 @@ SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer, QString mSamp
 	m_pTargetDisplayTimer = new QTimer(this);
 	connect(m_pTargetDisplayTimer, SIGNAL(timeout()), this, SLOT(updateTargetsamplePostionRuler()));
 
+	Hydrogen *engine = Hydrogen::get_instance();
+	Sample* sample = engine->getSong()->get_instrument_list()->get( engine->getSelectedInstrumentNumber() )->get_layer( nSelectedLayer )->get_sample();
+
 	m_pSampleEditorStatus = true;
 	m_pSamplefromFile = NULL;
 	m_pSelectedLayer = nSelectedLayer;
-	m_samplename = mSamplefilename;
+	m_samplefilename = Filesystem::drumkit_path( engine->getCurrentDrumkitname() )+"/"+sample->get_filename();  // TODO realy ugly
 	m_pzoomfactor = 1;
 	m_pdetailframe = 0;
 	m_plineColor = "default";
@@ -76,19 +80,19 @@ SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer, QString mSamp
 	m_ppitch = 0.0;
 	m_pRubberbandCsettings = 4;
 
-	QString newfilename = mSamplefilename.section( '/', -1 );
+	//QString newfilename = mSamplefilename.section( '/', -1 );
 
 	//init Displays
 	m_pMainSampleWaveDisplay = new MainSampleWaveDisplay( mainSampleview );
 	m_pSampleAdjustView = new DetailWaveDisplay( mainSampleAdjustView );
 	m_pTargetSampleView = new TargetWaveDisplay( targetSampleView );
 
-	setWindowTitle ( QString( "SampleEditor " + newfilename) );
+	setWindowTitle ( QString( "SampleEditor " + sample->get_filename() ) );
 	setFixedSize ( width(), height() );
 
 //this new sample give us the not changed real samplelength 
-	m_pSamplefromFile = Sample::load( mSamplefilename );
-	if (!m_pSamplefromFile) reject();
+	m_pSamplefromFile = Sample::load( m_samplefilename );
+	if (!m_pSamplefromFile) reject();   // FIXME doesn't work
 
 	unsigned slframes = m_pSamplefromFile->get_frames();
 
@@ -160,10 +164,10 @@ void SampleEditor::getAllFrameInfos()
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	H2Core::Instrument *pInstrument = NULL;
 	Sample* pSample = NULL;
-	Song *pSong = Hydrogen::get_instance()->getSong();
+	Song *pSong = pEngine->getSong();
 	if (pSong != NULL) {
 		InstrumentList *pInstrList = pSong->get_instrument_list();
-		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
+		int nInstr = pEngine->getSelectedInstrumentNumber();
 		if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 			nInstr = -1;
 		}
@@ -191,7 +195,7 @@ void SampleEditor::getAllFrameInfos()
 	m_pUseRubber = pSample->get_use_rubber();
 	m_pRubberDivider = pSample->get_rubber_divider();
 	m_pSamplerate = pSample->get_sample_rate();
-	m_pRubberbandCsettings = pSample->get_rubber_C_settings();
+	m_pRubberbandCsettings = pSample->get_rubber_c_settings();
 	m_ppitch = pSample->get_rubber_pitch();
 
 	Hydrogen::HVeloVector velovector;
@@ -317,10 +321,10 @@ void SampleEditor::openDisplays()
 
 // wavedisplays
 	m_divider = m_pSamplefromFile->get_frames() / 574.0F;
-	m_pMainSampleWaveDisplay->updateDisplay( m_samplename );
+	m_pMainSampleWaveDisplay->updateDisplay( m_samplefilename );
 	m_pMainSampleWaveDisplay->move( 1, 1 );
 
-	m_pSampleAdjustView->updateDisplay( m_samplename );
+	m_pSampleAdjustView->updateDisplay( m_samplefilename );
 	m_pSampleAdjustView->move( 1, 1 );
 
 	m_pTargetSampleView->move( 1, 1 );
@@ -376,7 +380,7 @@ void SampleEditor::createNewLayer()
 
 	if ( !m_pSampleEditorStatus ){
 
-		Sample *editSample = Sample::load_edit_wave( m_samplename,
+		Sample *editSample = Sample::load_edit_wave( m_samplefilename,
 							    m_start_frame,
 							    m_loop_frame,
 							    m_end_frame,
@@ -592,7 +596,7 @@ void SampleEditor::on_PlayOrigPushButton_clicked()
 		testpTimer();
 		return;
 	}
-	Sample *pNewSample = Sample::load( m_samplename );
+	Sample *pNewSample = Sample::load( m_samplefilename );
 	if ( pNewSample ){
 		int length = ( ( pNewSample->get_frames() / pNewSample->get_sample_rate() + 1) * 100 );
 		AudioEngine::get_instance()->get_sampler()->preview_sample( pNewSample, length );
