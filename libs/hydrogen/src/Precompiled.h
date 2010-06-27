@@ -21,7 +21,7 @@
 /*
 // Hyd
 #include <hydrogen/Object.h>
-#include <hydrogen/Song.h>
+#include <hydrogen/basics/song.h>
 #include <hydrogen/Instrument.h>
 #include <hydrogen/basics/pattern.h>
 #include <hydrogen/Note.h>

@@ -26,7 +26,7 @@
 #include "ui_SoundLibraryExportDialog_UI.h"
 
 #include <hydrogen/Object.h>
-#include <hydrogen/Song.h>
+#include <hydrogen/basics/song.h>
 #include <hydrogen/basics/drumkit.h>
 
 #include <vector>

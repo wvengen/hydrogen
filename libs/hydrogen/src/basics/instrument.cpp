@@ -24,7 +24,7 @@
 
 #include <hydrogen/adsr.h>
 #include <hydrogen/basics/sample.h>
-#include <hydrogen/Song.h>
+#include <hydrogen/basics/song.h>
 #include <hydrogen/basics/drumkit.h>
 #include <hydrogen/helpers/filesystem.h>
 #include <hydrogen/audio_engine.h>

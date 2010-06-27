@@ -69,7 +69,7 @@ HEADERS += src/flac_file.h \
            include/hydrogen/playlist.h \
            include/hydrogen/Preferences.h \
            include/hydrogen/sample.h \
-           include/hydrogen/Song.h \
+           include/hydrogen/basics/song.h \
            include/hydrogen/SoundLibrary.h \
            include/hydrogen/timehelper.h \
 	   include/hydrogen/util.h \
