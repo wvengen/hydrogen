@@ -20,10 +20,9 @@
  *
  */
 
-#ifndef SAMPLE_BUFFER_H
-#define SAMPLE_BUFFER_H
+#ifndef H2_SAMPLE_H
+#define H2_SAMPLE_H
 
-#include <string>
 #include <hydrogen/globals.h>
 #include <hydrogen/Object.h>
 
@@ -104,7 +103,7 @@ public:
 	static Sample* load_edit_wave(
         const QString& path,
         const int startframe,
-        const int loppframe,
+        const int loopframe,
         const int endframe,
         const int loops,
         const loop_mode_t loopmode,
@@ -178,4 +177,4 @@ private:
 
 };
 
-#endif
+#endif // H2_SAMPLE_H
