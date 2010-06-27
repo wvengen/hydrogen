@@ -1027,7 +1027,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			unsigned sEndframe =  pSample->get_end_frame();
 			bool sUseRubber = pSample->get_use_rubber();
 			float sRubberDivider = pSample->get_rubber_divider();
-			int sRubberbandCsettings = pSample->get_rubber_C_settings();
+			int sRubberbandCsettings = pSample->get_rubber_c_settings();
 			float sRubberPitch = pSample->get_rubber_pitch();
 
 			QDomNode layerNode = doc.createElement( "layer" );

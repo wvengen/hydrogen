@@ -54,9 +54,34 @@ Sample::Sample( const QString& filename,  int frames, int sample_rate, float* da
     __use_rubber( false ),
     __rubber_pitch( 0.0 ),
     __rubber_divider( 1.0 ),
-    __rubber_C_settings( 4 )
+    __rubber_c_settings( 4 )
 {
     assert( filename.lastIndexOf("/")<0);
+}
+
+Sample::Sample( Sample* other )
+    : Object( __class_name ),
+    __filename( other->get_filename() ),
+    __frames( other->get_frames() ),
+    __sample_rate( other->get_sample_rate() ),
+    __data_l( 0 ),
+    __data_r( 0 ),
+    __sample_is_modified( other->get_is_modified() ),
+    __loop_mode( other->get_loop_mode() ),
+    __start_frame( other->get_start_frame() ),
+    __end_frame( other->get_end_frame() ),
+    __loop_frame( other->get_loop_frame() ),
+    __repeats( other->get_repeats() ),
+    __velo_pan( other->__velo_pan ),
+    __use_rubber( other->get_use_rubber() ),
+    __rubber_pitch( other->get_rubber_pitch() ),
+    __rubber_divider( other->get_rubber_divider() ),
+    __rubber_c_settings( other->get_rubber_c_settings() )
+{
+    __data_l = new float[__frames];
+    __data_r = new float[__frames];
+    memcpy( __data_l, other->get_data_l(), __frames);
+    memcpy( __data_r, other->get_data_r(), __frames);
 }
 
 Sample::~Sample() {
@@ -414,7 +439,7 @@ Sample* Sample::load_edit_wave(
 		pSample->__repeats = loops;
 		pSample->__use_rubber = true;
 		pSample->__rubber_divider = rubber_divider;
-		pSample->__rubber_C_settings = rubberbandCsettings;
+		pSample->__rubber_c_settings = rubberbandCsettings;
 		pSample->__rubber_pitch = rubber_pitch;
 
 		//delete the tmp files

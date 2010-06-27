@@ -89,7 +89,9 @@ public:
      * \param data_l the right channel array of data
      */
 	Sample( const QString& filename, int frames, int sample_rate, float* data_l=0, float* data_r=0 );
-
+    /** copy constructor */
+    Sample( Sample *other );
+    /** destructor */
 	~Sample();
 
 	/**
@@ -138,8 +140,8 @@ public:
 	float get_rubber_pitch() const                      { return __rubber_pitch; }
 	void set_rubber_divider( float use_rubber_divider ) {__rubber_divider = use_rubber_divider; }
 	float get_rubber_divider() const                    { return __rubber_divider; }
-	void set_rubber_C_settings( int use_rubber_c_settings) { __rubber_C_settings = use_rubber_c_settings; }
-	float get_rubber_C_settings() const                 { return __rubber_C_settings; }
+	void set_rubber_c_settings( int use_rubber_c_settings) { __rubber_c_settings = use_rubber_c_settings; }
+	float get_rubber_c_settings() const                 { return __rubber_c_settings; }
 	//void sampleEditProzess( Sample* Sample );
 	//void setmod();
     static loop_mode_t parse_loop_mode( const QString& loop_mode );
@@ -162,7 +164,7 @@ private:
     bool __use_rubber;          ///< use the rubberband bin
     float __rubber_pitch;       ///< rubberband pitch
     float __rubber_divider;     ///< the divider to calculate the ratio
-    int __rubber_C_settings;    ///< the rubberband "crispness" levels
+    int __rubber_c_settings;    ///< the rubberband "crispness" levels
     //static int __total_used_bytes;
     static const char* __loop_modes[];
 
