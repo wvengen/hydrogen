@@ -74,14 +74,7 @@ InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {
 }
 
 void InstrumentLayer::save_to( XMLNode* node ) {
-    // TODO have to do this cause in Sample::load_wave, a new sample is created with an absolute path instead of relative path
-    QString path = get_sample()->get_filename();
-    int idx = path.lastIndexOf("/");
-    if(idx>=0) {
-        node->write_string( "filename", path.right( path.size()-1-path.lastIndexOf("/") ) );
-    } else {
-        node->write_string( "filename", path );
-    }
+    node->write_string( "filename", get_sample()->get_filename() );
     node->write_float( "min", __start_velocity );
     node->write_float( "max", __end_velocity );
     node->write_float( "gain", __gain );

@@ -587,6 +587,7 @@ void InstrumentEditor::buttonClicked( Button* pButton )
 			H2Core::InstrumentLayer *pLayer = m_pInstrument->get_layer( m_nSelectedLayer );
 			if ( pLayer ) {
 				Sample* pSample = pLayer->get_sample();
+                // TODO name is no more an absolute path
 				QString name = pSample->get_filename();
 				HydrogenApp::get_instance()->showSampleEditor( name, m_nSelectedLayer );
 			}

@@ -37,80 +37,67 @@ namespace H2Core
 const char* Sample::__class_name = "Sample";
 const char* Sample::__loop_modes[] = { "forward", "reverse", "pingpong" };
 
-Sample::Sample(
-		const QString& filename, 
-        int frames,
-		int sample_rate,
-		float* data_l,
-		float* data_r,
-		bool sample_is_modified,
-		loop_mode_t loop_mode,
-		int start_frame,
-		int end_frame,
-		int loop_frame,
-		int repeats,
-		SampleVeloPan velopan,
-		bool use_rubber_band,
-		float rubberband_pitch,
-		float rubberband_divider,
-		int rubberband_C_settings )
+Sample::Sample( const QString& filename,  int frames, int sample_rate, float* data_l, float* data_r )
     : Object( __class_name ),
     __filename( filename ),
     __frames( frames ),
     __sample_rate( sample_rate ),
     __data_l( data_l ),
     __data_r( data_r ),
-    __sample_is_modified( sample_is_modified ),
-    __loop_mode( loop_mode ),
-    __start_frame( start_frame ),
-    __end_frame( end_frame ),
-    __loop_frame( loop_frame ),
-    __repeats( repeats ),
-    __velo_pan( velopan ),
-    __use_rubber( use_rubber_band ),
-    __rubber_pitch( rubberband_pitch ),
-    __rubber_divider( rubberband_divider ),
-    __rubber_C_settings( rubberband_C_settings )
-{ }
+    __sample_is_modified( false ),
+    __loop_mode( FORWARD ),
+    __start_frame( 0 ),
+    __end_frame( 0 ),
+    __loop_frame( 0 ),
+    __repeats( 0 ),
+    __velo_pan( SampleVeloPan() ),
+    __use_rubber( false ),
+    __rubber_pitch( 0.0 ),
+    __rubber_divider( 1.0 ),
+    __rubber_C_settings( 4 )
+{
+    assert( filename.lastIndexOf("/")<0);
+}
 
 Sample::~Sample() {
     if(__data_l!=0) delete[] __data_l;
     if(__data_r!=0) delete[] __data_r;
 }
 
-Sample* Sample::load( const QString& filename ) {
-    if( !Filesystem::file_readable(filename)) {
-        ERRORLOG(QString("Unable to read %1").arg(filename));
+Sample* Sample::load( const QString& path ) {
+    if( !Filesystem::file_readable(path)) {
+        ERRORLOG(QString("Unable to read %1").arg(path));
+        sleep(1);
         return 0;
     }
 #ifdef HAVE_LIBSNDFILE_FLAC_SUPPORT
-	return libsndfile_load( filename );
+	return libsndfile_load( path );
 #else
-	if ( ( filename.endsWith( "flac") ) || ( filename.endsWith( "FLAC" )) ) {
+	if ( ( path.endsWith( "flac") ) || ( path.endsWith( "FLAC" )) ) {
 #ifdef H2CORE_HAVE_FLAC
 	    FLACFile file;
-	    return file.load( filename );
+	    return file.load( path );
 #else
 	    ERRORLOG("FLAC support was disabled during compilation");
 	    return 0;
 #endif
     } else {
-		return libsndfile_load( filename );
+		return libsndfile_load( path );
 	}
 #endif
 }
 
-Sample* Sample::libsndfile_load( const QString& filename ) {
+Sample* Sample::libsndfile_load( const QString& path ) {
     SF_INFO sound_info;
-	SNDFILE* file = sf_open( filename.toLocal8Bit(), SFM_READ, &sound_info );
+	SNDFILE* file = sf_open( path.toLocal8Bit(), SFM_READ, &sound_info );
 	if ( !file ) {
-		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( filename ) );
+		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( path ) );
 	}
 
     float* buffer = new float[ sound_info.frames * sound_info.channels ];
 	sf_count_t count = sf_read_float( file, buffer, sound_info.frames * sound_info.channels );
 	sf_close( file );
-    if(count==0) WARNINGLOG(QString("%1 is an empty sample").arg(filename));
+    if(count==0) WARNINGLOG(QString("%1 is an empty sample").arg(path));
 
 	float *data_l = new float[ sound_info.frames ];
 	float *data_r = new float[ sound_info.frames ];
@@ -128,13 +115,15 @@ Sample* Sample::libsndfile_load( const QString& filename ) {
     }
 	delete[] buffer;
 
+    int idx = path.lastIndexOf("/");
+    QString filename( (idx>=0) ? path.right( path.size()-1-path.lastIndexOf("/") ) : path );
 	Sample *sample = new Sample( filename, sound_info.frames, sound_info.samplerate, data_l, data_r );
 	return sample;
 }
 
 
 Sample* Sample::load_edit_wave(
-    const QString& filename,
+    const QString& path,
     const int start_frame,
     const int loop_frame,
     const int end_frame,
@@ -145,8 +134,8 @@ Sample* Sample::load_edit_wave(
     int rubberbandCsettings,
     float rubber_pitch ) {
 
-    if( !Filesystem::file_readable(filename)) {
-        ERRORLOG(QString("Unable to read %1").arg(filename));
+    if( !Filesystem::file_readable(path)) {
+        ERRORLOG(QString("Unable to read %1").arg(path));
         return 0;
     }
 
@@ -156,7 +145,7 @@ Sample* Sample::load_edit_wave(
 		return 0;
 	}
 
-    Sample* orig_sample = Sample::load( filename );
+    Sample* orig_sample = Sample::load( path );
 
     bool full_loop = start_frame==loop_frame;
 	int full_length =  end_frame - start_frame;
@@ -211,7 +200,7 @@ Sample* Sample::load_edit_wave(
         assert(x==new_length);
     }
 	//create new sample
-	Sample *pSample = new Sample( filename, new_length, sample_rate );
+	Sample *pSample = new Sample( orig_sample->get_filename(), new_length, sample_rate );
 
 	Hydrogen *engine = Hydrogen::get_instance();
 
