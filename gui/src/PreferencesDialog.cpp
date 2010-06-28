@@ -649,7 +649,22 @@ void PreferencesDialog::on_sampleRateComboBox_editTextChanged( const QString&  )
 
 void PreferencesDialog::on_restartDriverBtn_clicked()
 {
-	Hydrogen::get_instance()->restartDrivers();
+        Preferences *pPref = Preferences::get_instance();
+        if( pPref->get_sendMidiClock() ){
+#ifdef H2CORE_HAVE_ALSA
+                Hydrogen::get_instance()->getMidiClockTimer()->stop();
+#endif // H2CORE_HAVE_ALSA
+        }
+
+        Hydrogen::get_instance()->restartDrivers();
+
+        if( pPref->get_sendMidiClock() ){
+#ifdef H2CORE_HAVE_ALSA
+                Hydrogen::get_instance()->getMidiClockTimer()->setNewTimeval( Hydrogen::get_instance()->getSong()->__bpm );
+                Hydrogen::get_instance()->getMidiClockTimer()->start();
+#endif // H2CORE_HAVE_ALSA
+        }
+
 	m_bNeedDriverRestart = false;
 }
 
