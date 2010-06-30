@@ -292,7 +292,7 @@ private:
 	static Hydrogen* __instance;
 
 	// used for song export
-	Song::SongMode m_oldEngineMode;
+	Song::song_mode_t m_oldEngineMode;
 	bool m_bOldLoopEnabled;
 
 	std::list<Instrument*> __instrument_death_row; /// Deleting instruments too soon leads to potential crashes.

@@ -689,9 +689,9 @@ void MasterMixerLine::updateMixerLine()
 
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if ( pSong ) {
-		m_pHumanizeTimeRotary->setValue( pSong->get_humanize_time_value() );
-		m_pHumanizeVelocityRotary->setValue( pSong->get_humanize_velocity_value() );
-		m_pSwingRotary->setValue( pSong->get_swing_factor() );
+		m_pHumanizeTimeRotary->setValue( pSong->get_humanize_time() );
+		m_pHumanizeVelocityRotary->setValue( pSong->get_humanize_velocity() );
+		m_pSwingRotary->setValue( pSong->get_humanize_swing() );
 	}
 	else {
 		WARNINGLOG( "pSong == NULL ");
@@ -710,15 +710,15 @@ void MasterMixerLine::rotaryChanged( Rotary *pRef )
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	if ( pRef == m_pHumanizeTimeRotary ) {
-		pEngine->getSong()->set_humanize_time_value( fVal );
+		pEngine->getSong()->set_humanize_time( fVal );
 		sMsg = trUtf8( "Set humanize time parameter [%1]").arg( sVal );
 	}
 	else if ( pRef == m_pHumanizeVelocityRotary ) {
-		pEngine->getSong()->set_humanize_velocity_value( fVal );
+		pEngine->getSong()->set_humanize_velocity( fVal );
 		sMsg = trUtf8( "Set humanize velocity parameter [%1]").arg( sVal );
 	}
 	else if ( pRef == m_pSwingRotary ) {
-		pEngine->getSong()->set_swing_factor( fVal );
+		pEngine->getSong()->set_humanize_swing( fVal );
 		sMsg = trUtf8( "Set swing factor [%1]").arg( sVal );
 	}
 	else {

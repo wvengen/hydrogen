@@ -38,6 +38,17 @@ class Pattern;
 class Song;
 class PatternList;
 
+#define VOLUME_MIN              0.0f
+#define VOLUME_MAX              1.0f
+#define CLICK_VOLUME_MIN        0.0f
+#define CLICK_VOLUME_MAX        1.0f
+#define HUMANIZE_SWING_MIN      0.0f
+#define HUMANIZE_SWING_MAX      1.0f
+#define HUMANIZE_TIME_MIN       0.0f
+#define HUMANIZE_TIME_MAX       1.0f
+#define HUMANIZE_VELOCITY_MIN   0.0f
+#define HUMANIZE_VELOCITY_MAX   1.0f
+
 /**
 \ingroup H2CORE
 \brief	Song class
@@ -46,10 +57,11 @@ class Song : public Object
 {
     H2_OBJECT
 public:
-    enum SongMode {
+    /** possible song playing modes */
+    typedef enum _song_mode {
         PATTERN_MODE,
         SONG_MODE
-    }; 
+    } song_mode_t;
 
     /*
     // internal delay FX
@@ -83,68 +95,67 @@ public:
      */
     void purge_instrument( Instrument* instrument );
 
-    void set_volume( float volume )                     { __volume = volume; }
-    float get_volume() const                            { return __volume; }
-    void set_metronome_volume( float volume )           { __metronome_volume = volume; }
-    float get_metronome_volume() const                  { return __metronome_volume; }
-
-    void set_notes( const QString& notes )              { __notes = notes; }
-    const QString& get_notes() const                    { return __notes; }
-    void set_title( const QString& title )                { __title = title; }
-    const QString& get_title() const                     { return __title; }
-    void set_author( const QString& author )            { __author = author; }
-    const QString& get_author() const                   { return __author; }
-    void set_license( const QString& license )          { __license = license; }
-    const QString& get_license() const                  { return __license; }
-    void set_filename( const QString& filename )        { __filename = filename; }
-    const QString& get_filename() const                 { return __filename; }
-    void set_loop_enabled( bool enabled )               { __is_loop_enabled = enabled; }
-    bool is_loop_enabled() const                        { return __is_loop_enabled; }
-    void set_is_modified( bool modified )               { __is_modified = modified; }
-    bool is_modified() const                            { return __is_modified; }
-    void set_is_muted( bool muted )                     { __is_muted = muted; }
-    bool is_muted() const                               { return __is_muted; }
     void set_bpm( float bpm )                           { __bpm = bpm; }
     float get_bpm() const                               { return __bpm; }
     void set_resolution( int resolution )               { __resolution = resolution; }
     float get_resolution() const                        { return __resolution; }
-    void set_humanize_time_value( float value )         { __humanize_time_value = value; }
-    float get_humanize_time_value() const               { return __humanize_time_value; }
-    void set_humanize_velocity_value( float value )     { __humanize_velocity_value = value; }
-    float get_humanize_velocity_value() const           { return __humanize_velocity_value; }
-    void set_swing_factor( float factor );
-    float get_swing_factor() const                      { return __swing_factor; }
-    void set_mode( SongMode mode )                      { __song_mode = mode; }
-    SongMode get_mode() const                           { return __song_mode; }
+    void set_volume( float volume );
+    float get_volume() const                            { return __volume; }
+    void set_click_volume( float volume );
+    float get_click_volume() const                      { return __click_volume; }
+    void set_is_muted( bool muted )                     { __is_muted = muted; }
+    bool is_muted() const                               { return __is_muted; }
+    void set_is_modified( bool modified )               { __is_modified = modified; }
+    bool is_modified() const                            { return __is_modified; }
+    void set_loop_enabled( bool enabled )               { __is_loop_enabled = enabled; }
+    bool is_loop_enabled() const                        { return __is_loop_enabled; }
+    void set_mode( song_mode_t mode )                   { __song_mode = mode; }
+    song_mode_t get_mode() const                        { return __song_mode; }
+    void set_humanize_time( float humanize );
+    float get_humanize_time() const                     { return __humanize_time; }
+    void set_humanize_velocity( float humanize );
+    float get_humanize_velocity() const                 { return __humanize_velocity; }
+    void set_humanize_swing( float factor );
+    float get_humanize_swing() const                    { return __humanize_swing; }
+    void set_title( const QString& title )              { __title = title; }
+    const QString& get_title() const                    { return __title; }
+    void set_author( const QString& author )            { __author = author; }
+    const QString& get_author() const                   { return __author; }
+    void set_notes( const QString& notes )              { __notes = notes; }
+    const QString& get_notes() const                    { return __notes; }
+    void set_license( const QString& license )          { __license = license; }
+    const QString& get_license() const                  { return __license; }
+    void set_filename( const QString& filename )        { __filename = filename; }
+    const QString& get_filename() const                 { return __filename; }
 
-    void set_pattern_group_vector( std::vector<PatternList*>* vect )    { __pattern_group_sequence = vect; }
-    std::vector<PatternList*>* get_pattern_group_vector() const         { return __pattern_group_sequence; }
     void set_instruments( InstrumentList* instruments )                 { __instruments = instruments; }
     InstrumentList* get_instruments() const                             { return __instruments; }
     void set_patterns( PatternList* patterns )                          { __patterns = patterns; }
     PatternList* get_patterns() const                                   { return __patterns; }
+    // TODO
+    void set_pattern_group_vector( std::vector<PatternList*>* vect )    { __pattern_group_sequence = vect; }
+    std::vector<PatternList*>* get_pattern_group_vector() const         { return __pattern_group_sequence; }
 
 private:
     float __bpm;			            ///< beats per minute
-    float __volume;						///< volume of the song (0.0..1.0)
     int __resolution;	                ///< resolution of the song (ticks per quarter)
+    float __volume;						///< volume of the song [0.0;1.0]
+    float __click_volume;			    ///< click (metronome) volume
     bool __is_muted;                    ///< true if song is muted
     bool __is_modified;                 ///< true if songis modified
-    float __swing_factor;               ///< 
     bool __is_loop_enabled;             ///< true if song is in loop mode
-    float __metronome_volume;			///< metronome volume
-    float __humanize_time_value;        ///<
-    float __humanize_velocity_value;    ///<
-
+    song_mode_t __song_mode;            ///< song mode pattern / song
+    float __humanize_time;              ///< random note timing [0.0;1.0]
+    float __humanize_swing;             ///< factor used to shift a few notes back or forward [0.0;1.0]
+    float __humanize_velocity;          ///< random velocity [0.0;1.0]
     InstrumentList *__instruments;		///< Instrument list
     PatternList *__patterns;			///< Pattern list
-    std::vector<PatternList*>* __pattern_group_sequence;	///< Sequence of pattern groups
-    SongMode __song_mode;
-    QString __title;		///< title of the song
-    QString __author;	    ///< author of the song
-    QString __license;	    ///< license of the song
-    QString __notes;        ///< textual notes about the song
-    QString __filename;     ///< 
+    std::vector<PatternList*>* __pattern_group_sequence;	///< TODO sequence of pattern groups
+    QString __title;		            ///< title of the song
+    QString __author;	                ///< author of the song
+    QString __notes;                    ///< textual notes about the song
+    QString __license;	                ///< license of the song
+    QString __filename;                 ///< 
 };
 
 #include <QDomNode>

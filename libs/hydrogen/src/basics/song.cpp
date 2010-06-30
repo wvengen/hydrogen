@@ -48,59 +48,62 @@ namespace H2Core
 const char* Song::__class_name = "Song";
 
 Song::Song( const QString& title, const QString& author, float bpm, float volume )
-		: Object( __class_name )
-		, __is_muted( false )
-		, __resolution( 48 )
-		, __bpm( bpm )
-		, __is_modified( false )
-		, __title( title )
-		, __author( author )
-		, __volume( volume )
-		, __metronome_volume( 0.5 )
-		, __patterns( NULL )
-		, __pattern_group_sequence( NULL )
-		, __instruments( NULL )
-		, __filename( "" )
-		, __is_loop_enabled( false )
-		, __humanize_time_value( 0.0 )
-		, __humanize_velocity_value( 0.0 )
-		, __swing_factor( 0.0 )
-		, __song_mode( PATTERN_MODE )
+    : Object( __class_name ),
+    __bpm( bpm ),
+    __resolution( 48 ),
+    __volume( volume ),
+    __click_volume( 0.5 ),
+    __is_muted( false ),
+    __is_modified( false ),
+    __is_loop_enabled( false ),
+    __song_mode( PATTERN_MODE ),
+    __humanize_time( 0.0 ),
+    __humanize_swing( 0.0 ),
+    __humanize_velocity( 0.0 ),
+    __instruments( 0 ),
+    __patterns( 0 ),
+    __pattern_group_sequence( 0 ),
+    __title( title ),
+    __author( author ),
+    __notes(""),
+    __license(""),
+    __filename( "" )
 {
-	INFOLOG( QString( "INIT '%1'" ).arg( __title ) );
-
-	//m_bDelayFXEnabled = false;
-	//m_fDelayFXWetLevel = 0.8;
-	//m_fDelayFXFeedback = 0.5;
-	//m_nDelayFXTime = MAX_NOTES / 8;
+    INFOLOG( QString( "INIT '%1'" ).arg( __title ) );
 }
 
-
-
-Song::~Song()
-{
-	// delete all patterns
+Song::~Song() {
 	delete __patterns;
-
+	delete __instruments;
 	if ( __pattern_group_sequence ) {
 		for ( unsigned i = 0; i < __pattern_group_sequence->size(); ++i ) {
-			PatternList *pPatternList = ( *__pattern_group_sequence )[i];
-			pPatternList->clear();	// pulisco tutto, i pattern non vanno distrutti qua
-			delete pPatternList;
+			PatternList* group = ( *__pattern_group_sequence )[i];
+			group->clear();
+			delete group;
 		}
 		delete __pattern_group_sequence;
 	}
-
-	delete __instruments;
-
 	INFOLOG( QString( "DESTROY '%1'" ).arg( __title ) );
 }
 
-void Song::purge_instrument( Instrument * I )
-{
-	for ( int nPattern = 0; nPattern < (int)__patterns->size(); ++nPattern ) {
-		__patterns->get( nPattern )->purge_instrument( I );
-	}
+static inline float check_boundary( float v, float min, float max ) {
+    if (v>max) return max;
+    if (v<min) return min;
+    return v;
+}
+
+void Song::set_volume( float volume ) { __volume = check_boundary( volume, VOLUME_MIN, VOLUME_MAX ); }
+
+void Song::set_click_volume( float click_volume ) { __click_volume = check_boundary( click_volume, CLICK_VOLUME_MIN, CLICK_VOLUME_MAX ); }
+
+void Song::set_humanize_time( float humanize ) { __humanize_time = check_boundary( humanize, HUMANIZE_TIME_MIN, HUMANIZE_TIME_MAX ); }
+
+void Song::set_humanize_swing( float humanize ) { __humanize_swing = check_boundary( humanize, HUMANIZE_SWING_MIN, HUMANIZE_SWING_MAX ); }
+
+void Song::set_humanize_velocity( float humanize ) { __humanize_velocity = check_boundary( humanize, HUMANIZE_VELOCITY_MIN, HUMANIZE_VELOCITY_MAX ); }
+
+void Song::purge_instrument( Instrument* instrument ) {
+    for( int i=0; i<__patterns->size(); i++ ) __patterns->get(i)->purge_instrument( instrument );
 }
 
 
@@ -136,14 +139,14 @@ Song* Song::get_default_song(){
 
 	Song *song = new Song( "empty", "hydrogen", 120, 0.5 );
 
-	song->set_metronome_volume( 0.5 );
+	song->set_click_volume( 0.5 );
 	song->set_notes( "..." );
 	song->set_license( "" );
 	song->set_loop_enabled( false );
 	song->set_mode( Song::PATTERN_MODE );
-	song->set_humanize_time_value( 0.0 );
-	song->set_humanize_velocity_value( 0.0 );
-	song->set_swing_factor( 0.0 );
+	song->set_humanize_time( 0.0 );
+	song->set_humanize_swing( 0.0 );
+	song->set_humanize_velocity( 0.0 );
 
 	InstrumentList* pList = new InstrumentList();
 	Instrument *pNewInstr = new Instrument(EMPTY_INSTR_ID, "New instrument", new ADSR());
@@ -193,19 +196,6 @@ Song* Song::get_empty_song()
 	}
 
 	return song;
-}
-
-
-
-void Song::set_swing_factor( float factor )
-{
-	if ( factor < 0.0 ) {
-		factor = 0.0;
-	} else if ( factor > 1.0 ) {
-		factor = 1.0;
-	}
-
-	__swing_factor = factor;
 }
 
 
@@ -403,7 +393,7 @@ Song* SongReader::readSong( const QString& filename )
 	QString sLicense( LocalFileMng::readXmlString( songNode, "license", "Unknown license" ) );
 	bool bLoopEnabled = LocalFileMng::readXmlBool( songNode, "loopEnabled", false );
 
-	Song::SongMode nMode = Song::PATTERN_MODE;	// Mode (song/pattern)
+	Song::song_mode_t nMode = Song::PATTERN_MODE;	// Mode (song/pattern)
 	QString sMode = LocalFileMng::readXmlString( songNode, "mode", "pattern" );
 	if ( sMode == "song" ) {
 		nMode = Song::SONG_MODE;
@@ -414,14 +404,14 @@ Song* SongReader::readSong( const QString& filename )
 	float fSwingFactor = LocalFileMng::readXmlFloat( songNode, "swing_factor", 0.0 );
 
 	song = new Song( sName, sAuthor, fBpm, fVolume );
-	song->set_metronome_volume( fMetronomeVolume );
+	song->set_click_volume( fMetronomeVolume );
 	song->set_notes( sNotes );
 	song->set_license( sLicense );
 	song->set_loop_enabled( bLoopEnabled );
 	song->set_mode( nMode );
-	song->set_humanize_time_value( fHumanizeTimeValue );
-	song->set_humanize_velocity_value( fHumanizeVelocityValue );
-	song->set_swing_factor( fSwingFactor );
+	song->set_humanize_time( fHumanizeTimeValue );
+	song->set_humanize_velocity( fHumanizeVelocityValue );
+	song->set_humanize_swing( fSwingFactor );
 	
 	
 

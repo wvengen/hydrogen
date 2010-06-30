@@ -947,7 +947,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	LocalFileMng::writeXmlString( songNode, "version", QString( get_version().c_str() ) );
 	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song->get_bpm() ) );
 	LocalFileMng::writeXmlString( songNode, "volume", QString("%1").arg( song->get_volume() ) );
-	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song->get_metronome_volume() ) );
+	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song->get_click_volume() ) );
 	LocalFileMng::writeXmlString( songNode, "name", song->get_title() );
 	LocalFileMng::writeXmlString( songNode, "author", song->get_author() );
 	LocalFileMng::writeXmlString( songNode, "notes", song->get_notes() );
@@ -960,9 +960,9 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 		LocalFileMng::writeXmlString( songNode, "mode", QString( "pattern" ) );
 	}
 
-	LocalFileMng::writeXmlString( songNode, "humanize_time", QString("%1").arg( song->get_humanize_time_value() ) );
-	LocalFileMng::writeXmlString( songNode, "humanize_velocity", QString("%1").arg( song->get_humanize_velocity_value() ) );
-	LocalFileMng::writeXmlString( songNode, "swing_factor", QString("%1").arg( song->get_swing_factor() ) );
+	LocalFileMng::writeXmlString( songNode, "humanize_time", QString("%1").arg( song->get_humanize_time() ) );
+	LocalFileMng::writeXmlString( songNode, "humanize_velocity", QString("%1").arg( song->get_humanize_velocity() ) );
+	LocalFileMng::writeXmlString( songNode, "swing_factor", QString("%1").arg( song->get_humanize_swing() ) );
 
 	/*	LocalFileMng::writeXmlBool( &songNode, "delayFXEnabled", song->m_bDelayFXEnabled );
 		LocalFileMng::writeXmlString( &songNode, "delayFXWetLevel", QString("%1").arg( song->m_fDelayFXWetLevel ) );

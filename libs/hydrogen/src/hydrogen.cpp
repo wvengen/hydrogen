@@ -527,13 +527,13 @@ inline void audioEngine_process_playNotes( unsigned long nframes )
 		bool isOldNote = noteStartInFrames < framepos;
 		if ( isNoteStart || isOldNote ) {
 			// Humanize - Velocity parameter
-			if ( m_pSong->get_humanize_velocity_value() != 0 ) {
-				float random = m_pSong->get_humanize_velocity_value()
+			if ( m_pSong->get_humanize_velocity() != 0 ) {
+				float random = m_pSong->get_humanize_velocity()
 					       * getGaussian( 0.2 );
 				pNote->set_velocity(
 					pNote->get_velocity()
 					+ ( random
-					    - ( m_pSong->get_humanize_velocity_value() / 2.0 ) ) 
+					    - ( m_pSong->get_humanize_velocity() / 2.0 ) ) 
 					);
 				if ( pNote->get_velocity() > 1.0 ) {
 					pNote->set_velocity( 1.0 );
@@ -1346,7 +1346,7 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 						int nOffset = 0;
 
 						// Swing
-						float fSwingFactor = m_pSong->get_swing_factor();
+						float fSwingFactor = m_pSong->get_humanize_swing();
 						
 						if ( ( ( m_nPatternTickPosition % 12 ) == 0 )
 						     && ( ( m_nPatternTickPosition % 24 ) != 0 ) ) {
@@ -1359,10 +1359,10 @@ inline int audioEngine_updateNoteQueue( unsigned nFrames )
 						}
 
 						// Humanize - Time parameter
-						if ( m_pSong->get_humanize_time_value() != 0 ) {
+						if ( m_pSong->get_humanize_time() != 0 ) {
 							nOffset += ( int )(
 								getGaussian( 0.3 )
-								* m_pSong->get_humanize_time_value()
+								* m_pSong->get_humanize_time()
 								* nMaxTimeHumanize
 								);
 						}
