@@ -94,6 +94,21 @@ Note::Note( Note* other )
 
 Note::~Note() { }
 
+static inline float check_boundary( float v, float min, float max ) {
+    if (v>max) return max;
+    if (v<min) return min;
+    return v;
+}
+
+void Note::set_velocity( float velocity ) { __velocity = check_boundary( velocity, VELOCITY_MIN, VELOCITY_MAX ); }
+
+void Note::set_lead_lag( float lead_lag ) { __lead_lag = check_boundary( lead_lag, LEAD_LAG_MIN, LEAD_LAG_MAX ); }
+
+void Note::set_pan_l( float pan ) { __pan_l = check_boundary( pan, PAN_MIN, PAN_MAX ); }
+
+void Note::set_pan_r( float pan ) { __pan_r = check_boundary( pan, PAN_MIN, PAN_MAX ); }
+
+
 void Note::set_instrument( Instrument* instrument ) {
     if ( instrument == 0 ) return;
     __instrument = instrument;

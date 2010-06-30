@@ -37,12 +37,12 @@
 
 #define MIDI_FACTOR         127
 
-#define VELOCITY_MIN        0.0
-#define VELOCITY_MAX        1.0
-#define PAN_MIN             0.0
-#define PAN_MAX             0.5
-#define LEAD_LAG_MIN        -1.0
-#define LEAD_LAG_MAX        1.0
+#define VELOCITY_MIN        0.0f
+#define VELOCITY_MAX        1.0f
+#define PAN_MIN             0.0f
+#define PAN_MAX             0.5f
+#define LEAD_LAG_MIN        -1.0f
+#define LEAD_LAG_MAX        1.0f
 
 namespace H2Core
 {
@@ -96,51 +96,19 @@ class Note : public Object
         /** \brief get the position of the note */
 	    int get_position() const                        { return __position; }
         /** brief set the velocity of the note */
-	    void set_velocity( float velocity ) {
-		    if ( velocity > VELOCITY_MAX ) {
-			    __velocity = VELOCITY_MAX;
-		    } else if ( velocity < VELOCITY_MIN ) {
-			    __velocity = VELOCITY_MIN;
-		    } else {
-		        __velocity = velocity;
-            }
-	    }
+	    void set_velocity( float velocity );
         /** brief get the velocity of the note */
 	    float get_velocity() const                      { return __velocity; }
         /** brief set the left pan of the note */
-	    void set_pan_l( float pan ) {
-		    if ( pan > PAN_MAX ) {
-			    __pan_l = PAN_MAX;
-		    } else if ( pan < PAN_MIN ) {
-                __pan_l = PAN_MIN;
-            } else {
-		        __pan_l = pan;
-            }
-        }
+	    void set_pan_l( float pan );
         /** brief get the left pan of the note */
         float get_pan_l() const                         { return __pan_l; }
         /** brief set the right pan of the note */
-	    void set_pan_r( float pan ) {
-		    if ( pan > PAN_MAX ) {
-			    __pan_r = PAN_MAX;
-		    } else if ( pan < PAN_MIN ) {
-                __pan_r = PAN_MIN;
-            } else {
-		        __pan_r = pan;
-            }
-	    }
+	    void set_pan_r( float pan );
         /** brief get the right pan of the note */
         float get_pan_r() const                         { return __pan_r; }
         /** brief set the lead lag of the note */
-        void set_lead_lag( float lead_lag ) {
-		    if(lead_lag > LEAD_LAG_MAX) {
-			    __lead_lag = LEAD_LAG_MAX;
-		    } else if (lead_lag < LEAD_LAG_MIN) {
-			    __lead_lag = LEAD_LAG_MIN;
-		    } else {
-			    __lead_lag = lead_lag;
-		    }
-    	}
+        void set_lead_lag( float lead_lag );
         /** brief get the lead lag of the note */
 	    float get_lead_lag() const                      { return __lead_lag; }
         
