@@ -12,7 +12,9 @@
     - sample.cpp 252... chose sample from velocity => Instrument:: ??
     - remove brief from doxygen
 
-sample.cpp
+Sample*
+    Sample::apply_loop( mode, count, start_frame, loop_frame, end_frame );
+    class SampleEnvelope instead of VeloPanVector, don't need it in hydorgen, only Sample and SampleEditor
     - use rubberband API instead of binary !!!!!
 
 - what todo with globals.h ???
@@ -24,6 +26,9 @@ sample.cpp
 - is it nessecary to have 2 queues, the priority one and the sampler one
 
 GUI
+- SampleEditor
+    - should have Sample* fs_sample, live_sample, edit_sample and work with it, that's all
+    - use #define for WaveDisplay width and height
 - SongEditor Pattern management
     - void SongEditorPatternList::patternPopup_delete()
         - useless :
