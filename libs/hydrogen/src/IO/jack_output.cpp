@@ -246,7 +246,7 @@ void JackOutput::relocateBBT()
 		Hydrogen * H = Hydrogen::get_instance();
 		Song * S = H->getSong();
 	
-		float hydrogen_TPB = ( float )( S->__resolution / m_JackTransportPos.beat_type * 4 );
+		float hydrogen_TPB = ( float )( S->get_resolution() / m_JackTransportPos.beat_type * 4 );
 	
 		long bar_ticks = 0;
 		//long beat_ticks = 0;
@@ -259,7 +259,7 @@ void JackOutput::relocateBBT()
 // 		INFOLOG( QString( "Position from Time Master: BBT [%1,%2,%3]" ) . arg( m_JackTransportPos.bar ) . arg( m_JackTransportPos.beat ) . arg( m_JackTransportPos.tick ) );
 // 		WARNINGLOG( QString(bbt) + " -- Tx/Beat = "+to_string(m_JackTransportPos.ticks_per_beat)+", Meter "+to_string(m_JackTransportPos.beats_per_bar)+"/"+to_string(m_JackTransportPos.beat_type)+" =>tick " + to_string( hydrogen_ticks_to_locate ) );
 	
-		float fNewTickSize = getSampleRate() * 60.0 /  m_transport.m_nBPM / S->__resolution;
+		float fNewTickSize = getSampleRate() * 60.0 /  m_transport.m_nBPM / S->get_resolution();
 		// not S->m_fBPM !??
 	
 		if ( fNewTickSize == 0 ) return; // ??!?

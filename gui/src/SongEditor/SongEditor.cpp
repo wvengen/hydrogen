@@ -268,7 +268,7 @@ void SongEditor::addPattern( int nColumn , int nRow )
 	    }
 	    pColumn->add( pPattern );
 	}
-	pSong->__is_modified = true;
+	pSong->set_is_modified(true);
 	AudioEngine::get_instance()->unlock();
 	m_bSequenceChanged = true;
 	update();
@@ -300,7 +300,7 @@ void SongEditor::deletePattern( int nColumn , int nRow, unsigned nColumnIndex )
 			break;
 		}
 	}
-	pSong->__is_modified = true;
+	pSong->set_is_modified(true);
 	AudioEngine::get_instance()->unlock();
 	m_bSequenceChanged = true;
 	update();
@@ -500,7 +500,7 @@ void SongEditor::movePatternCellAction( std::vector<QPoint> movingCells, std::ve
 		}
 	}
 
-	pEngine->getSong()->__is_modified = true;
+	pEngine->getSong()->set_is_modified(true);
 	AudioEngine::get_instance()->unlock();
 
 	m_bIsMoving = false;
@@ -757,7 +757,7 @@ void SongEditor::clearThePatternSequenseVector( QString filename )
 	}
 	pPatternGroupsVect->clear();
 
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	AudioEngine::get_instance()->unlock();
 	m_bSequenceChanged = true;
 	update();
@@ -765,7 +765,7 @@ void SongEditor::clearThePatternSequenseVector( QString filename )
 
 void SongEditor::updateEditorandSetTrue()
 {
-	Hydrogen::get_instance()->getSong()->__is_modified = true;
+	Hydrogen::get_instance()->getSong()->set_is_modified(true);
 	m_bSequenceChanged = true;
 	update();
 }
@@ -1184,7 +1184,7 @@ void SongEditorPatternList::loadPatternAction( QString afilename, int position)
 		pPatternList->add( pNewPattern );
 		pPatternList->move( pPatternList->size()-1, position );
 		engine->setSelectedPatternNumber( position );
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		createBackground();
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 	}
@@ -1260,7 +1260,7 @@ void SongEditorPatternList::acceptPatternPropertiesDialogSettings(QString newPat
 	H2Core::Pattern *pattern = patternList->get( patternNr );
 	pattern->set_name( newPatternName );
 	pattern->set_category( newPatternCategory );
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 	createBackground();
 	update();
@@ -1275,7 +1275,7 @@ void SongEditorPatternList::revertPatternPropertiesDialogSettings(QString oldPat
 	H2Core::Pattern *pattern = patternList->get( patternNr );
 	pattern->set_name( oldPatternName );
 	pattern->set_category( oldPatternCategory );
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
 	createBackground();
 	update();
@@ -1384,7 +1384,7 @@ void SongEditorPatternList::deletePatternFromList( QString patternFilename, QStr
     pSongPatternList->compute_flattened_virtual_patterns();
 
 	delete pattern;
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 
 }
@@ -1407,7 +1407,7 @@ void SongEditorPatternList::restoreDeletedPatternsFromList( QString patternFilen
 		H2Core::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
 		pPatternList->move( pPatternList->size()-1, patternPosition );
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		createBackground();
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );	
@@ -1469,7 +1469,7 @@ void SongEditorPatternList::patternPopup_copyAction( QString patternFilename )
 	}else{
 		H2Core::Pattern *pNewPattern = err;
 		pPatternList->add( pNewPattern );
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		createBackground();
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 		EventQueue::get_instance()->push_event( EVENT_SELECTED_PATTERN_CHANGED, -1 );
@@ -1567,7 +1567,7 @@ void SongEditorPatternList::fillRangeWithPattern( FillRange* pRange, int nPatter
 
 
 	// Update
-	pSong->__is_modified = true;
+	pSong->set_is_modified(true);
 	HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
 }
 
@@ -1641,7 +1641,7 @@ void SongEditorPatternList::movePatternLine( int nSourcePattern , int nTargetPat
 		pSong->get_pattern_list()->move(nSourcePattern, nTargetPattern );
 		engine->setSelectedPatternNumber( nTargetPattern );
 		HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
-		pSong->__is_modified = true;
+		pSong->set_is_modified(true);
 }
 
 

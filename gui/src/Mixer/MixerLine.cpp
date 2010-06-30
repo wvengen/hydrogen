@@ -225,11 +225,11 @@ void MixerLine::click(Button *ref) {
 	Song *song = (Hydrogen::get_instance())->getSong();
 
 	if (ref == m_pMuteBtn) {
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		emit muteBtnClicked(this);
 	}
 	else if (ref == m_pSoloBtn) {
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		emit soloBtnClicked(this);
 	}
 	else if (ref == m_pPlaySampleBtn) {
@@ -252,7 +252,7 @@ void MixerLine::rightClick(Button *ref)
 void MixerLine::faderChanged(Fader *ref)
 {
 	Song *song = (Hydrogen::get_instance())->getSong();
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	emit volumeChanged(this);
 
 	char m_pFaderPos[100];
@@ -380,7 +380,7 @@ void MixerLine::nameSelected() {
 void MixerLine::panChanged(Rotary *ref)
 {
 	Song *song = Hydrogen::get_instance()->getSong();
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	emit panChanged( this );
 
 	float panValue = ref->getValue();
@@ -565,7 +565,7 @@ MasterMixerLine::~MasterMixerLine()
 
 void MasterMixerLine::muteClicked(Button* pBtn)
 {
-	Hydrogen::get_instance()->getSong()->__is_muted = pBtn->isPressed();
+	Hydrogen::get_instance()->getSong()->set_is_muted(pBtn->isPressed());
 }
 
 
@@ -577,7 +577,7 @@ void MasterMixerLine::faderChanged(MasterFader *ref)
 	emit volumeChanged(this);
 
 	Song *song = Hydrogen::get_instance()->getSong();
-	song->__is_modified = true;
+	song->set_is_modified(true);
 
 	char m_pMasterFaderPos[100];
 	float value = ref->getValue();
@@ -813,7 +813,7 @@ void FxMixerLine::click(Button *ref) {
 	Song *song = Hydrogen::get_instance()->getSong();
 
 	if (ref == activeBtn ) {
-		song->__is_modified = true;
+		song->set_is_modified(true);
 		emit activeBtnClicked( this );
 	}
 }
@@ -837,7 +837,7 @@ void FxMixerLine::faderChanged(Fader *ref)
 
 
 	Song *song = Hydrogen::get_instance()->getSong();
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	emit volumeChanged( this );
 
 }
@@ -1119,7 +1119,7 @@ void LadspaFXMixerLine::rotaryChanged(Rotary *ref)
 //	m_pVolumeLbl->setText(tmp);
 
 	Song *song = Hydrogen::get_instance()->getSong();
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	emit volumeChanged(this);
 }
 

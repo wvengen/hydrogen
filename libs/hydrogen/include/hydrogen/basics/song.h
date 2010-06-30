@@ -20,18 +20,11 @@
  *
  */
 
-#ifndef SONG_H
-#define SONG_H
-
-
-#include <QString>
-#include <QDomNode>
-#include <vector>
-#include <map>
+#ifndef H2_SONG_H
+#define H2_SONG_H
 
 #include <hydrogen/Object.h>
-
-class TiXmlNode;
+#include <QDomNode>
 
 namespace H2Core
 {
@@ -53,153 +46,98 @@ class Song : public Object
 {
     H2_OBJECT
 public:
-	enum SongMode {
-		PATTERN_MODE,
-		SONG_MODE
-	};
+    enum SongMode {
+        PATTERN_MODE,
+        SONG_MODE
+    }; 
+    
+    /*
+    // internal delay FX
+    bool m_bDelayFXEnabled;
+    float m_fDelayFXWetLevel;
+    float m_fDelayFXFeedback;
+    unsigned m_nDelayFXTime;
+    //~ internal delay fx
+    */
+    
+    static Song* get_empty_song();
+    static Song* get_default_song();
+    Song( const QString& name, const QString& author, float bpm, float volume );
+    ~Song();
 
-	bool __is_muted;
-	unsigned __resolution;		///< Resolution of the song (number of ticks per quarter)
-	float __bpm;			///< Beats per minute
-	bool __is_modified;
-	QString __name;		///< song name
-	QString __author;	///< author of the song
-	QString __license;	///< license of the song
+    /**
+     * Remove all the notes in the song that play on instrument I.
+     * The function is real-time safe (it locks the audio data while deleting notes)
+     */
+    void purge_instrument( Instrument* I );
+    static Song* load( const QString& sFilename );
+    bool save( const QString& sFilename );
+    void readTempPatternList( QString filename );
 
-	/*
-	// internal delay FX
-	bool m_bDelayFXEnabled;
-	float m_fDelayFXWetLevel;
-	float m_fDelayFXFeedback;
-	unsigned m_nDelayFXTime;
-	//~ internal delay fx
-	*/
+    void set_volume( float volume )                     { __volume = volume; }
+    float get_volume() const                            { return __volume; }
+    void set_metronome_volume( float volume )           { __metronome_volume = volume; }
+    float get_metronome_volume() const                  { return __metronome_volume; }
+    void set_pattern_list( PatternList* patterns )      { __pattern_list = patterns; }
+    PatternList* get_pattern_list() const               { return __pattern_list; }
 
-	static Song* get_empty_song();
-	static Song* get_default_song();
+    void set_notes( const QString& notes )              { __notes = notes; }
+    const QString& get_notes() const                    { return __notes; }
+    void set_name( const QString& name )                { __name = name; }
+    const QString& get_name() const                     { return __name; }
+    void set_author( const QString& author )            { __author = author; }
+    const QString& get_author() const                   { return __author; }
+    void set_license( const QString& license )          { __license = license; }
+    const QString& get_license() const                  { return __license; }
+    void set_filename( const QString& filename )        { __filename = filename; }
+    const QString& get_filename() const                 { return __filename; }
+    void set_loop_enabled( bool enabled )               { __is_loop_enabled = enabled; }
+    bool is_loop_enabled() const                        { return __is_loop_enabled; }
+    void set_is_modified( bool modified )               { __is_modified = modified; }
+    bool is_modified() const                            { return __is_modified; }
+    void set_is_muted( bool muted )                     { __is_muted = muted; }
+    bool is_muted() const                               { return __is_muted; }
+    void set_bpm( float bpm )                           { __bpm = bpm; }
+    float get_bpm() const                               { return __bpm; }
+    void set_resolution( int resolution )               { __resolution = resolution; }
+    float get_resolution() const                        { return __resolution; }
+    void set_humanize_time_value( float value )         { __humanize_time_value = value; }
+    float get_humanize_time_value() const               { return __humanize_time_value; }
+    void set_humanize_velocity_value( float value )     { __humanize_velocity_value = value; }
+    float get_humanize_velocity_value() const           { return __humanize_velocity_value; }
+    void set_swing_factor( float factor );
+    float get_swing_factor() const                      { return __swing_factor; }
+    void set_mode( SongMode mode )                      { __song_mode = mode; }
+    SongMode get_mode() const                           { return __song_mode; }
 
-	Song( const QString& name, const QString& author, float bpm, float volume );
-	~Song();
-	
-	/**
-	  Remove all the notes in the song that play on instrument I.
-	  The function is real-time safe (it locks the audio data while deleting notes)
-	*/
-	void purge_instrument( Instrument* I );
-
-	void set_volume( float volume ) {
-		__volume = volume;
-	}
-	float get_volume() {
-		return __volume;
-	}
-
-	void set_metronome_volume( float volume ) {
-		__metronome_volume = volume;
-	}
-	float get_metronome_volume() {
-		return __metronome_volume;
-	}
-
-	PatternList* get_pattern_list() {
-		return __pattern_list;
-	}
-	void set_pattern_list( PatternList *pattern_list ) {
-		__pattern_list = pattern_list;
-	}
-
-	std::vector<PatternList*>* get_pattern_group_vector() {
-		return __pattern_group_sequence;
-	}
-	void set_pattern_group_vector( std::vector<PatternList*>* vect ) {
-		__pattern_group_sequence = vect;
-	}
-
-	static Song* load( const QString& sFilename );
-	bool save( const QString& sFilename );
-
-	InstrumentList* get_instrument_list() {
-		return __instrument_list;
-	}
-	void set_instrument_list( InstrumentList *list ) {
-		__instrument_list = list;
-	}
-
-
-	void set_notes( const QString& notes ) {
-		__notes = notes;
-	}
-	const QString& get_notes() {
-		return __notes;
-	}
-
-	void set_license( const QString& license ) {
-		__license = license;
-	}
-	const QString& get_license() {
-		return __license;
-	}
-
-	const QString& get_filename() {
-		return __filename;
-	}
-	void set_filename( const QString& filename ) {
-		__filename = filename;
-	}
-
-	bool is_loop_enabled() {
-		return __is_loop_enabled;
-	}
-	void set_loop_enabled( bool enabled ) {
-		__is_loop_enabled = enabled;
-	}
-
-	float get_humanize_time_value() {
-		return __humanize_time_value;
-	}
-	void set_humanize_time_value( float value ) {
-		__humanize_time_value = value;
-	}
-
-	float get_humanize_velocity_value() {
-		return __humanize_velocity_value;
-	}
-	void set_humanize_velocity_value( float value ) {
-		__humanize_velocity_value = value;
-	}
-
-	float get_swing_factor() {
-		return __swing_factor;
-	}
-	void set_swing_factor( float factor );
-
-	SongMode get_mode() {
-		return __song_mode;
-	}
-	void set_mode( SongMode mode ) {
-		__song_mode = mode;
-	}
-
-	void readTempPatternList( QString filename );
-
+    void set_pattern_group_vector( std::vector<PatternList*>* vect )    { __pattern_group_sequence = vect; }
+    std::vector<PatternList*>* get_pattern_group_vector() const         { return __pattern_group_sequence; }
+    void set_instrument_list( InstrumentList* instruments )             { __instrument_list = instruments; }
+    InstrumentList* get_instrument_list() const                         { return __instrument_list; }
 
 private:
-	float __volume;						///< volume of the song (0.0..1.0)
-	float __metronome_volume;				///< Metronome volume
-	QString __notes;
-	PatternList *__pattern_list;				///< Pattern list
-	std::vector<PatternList*>* __pattern_group_sequence;	///< Sequence of pattern groups
-	InstrumentList *__instrument_list;			///< Instrument list
-	QString __filename;
-	bool __is_loop_enabled;
-	float __humanize_time_value;
-	float __humanize_velocity_value;
-	float __swing_factor;
-
-	SongMode __song_mode;
+    float __volume;						///< volume of the song (0.0..1.0)
+    float __metronome_volume;				///< Metronome volume
+    QString __notes;
+    PatternList *__pattern_list;				///< Pattern list
+    std::vector<PatternList*>* __pattern_group_sequence;	///< Sequence of pattern groups
+    InstrumentList *__instrument_list;			///< Instrument list
+    QString __filename;
+    bool __is_loop_enabled;
+    float __humanize_time_value;
+    float __humanize_velocity_value;
+    float __swing_factor;
+    SongMode __song_mode;
+    int __resolution;	///< resolution of the song (number of ticks per quarter)
+    float __bpm;			///< beats per minute
+    bool __is_muted;        ///< 
+    bool __is_modified;     //<< 
+    QString __name;		    ///< song name
+    QString __author;	    ///< author of the song
+    QString __license;	    ///< license of the song
 };
 
-
+#include <QDomNode>
 
 /**
 \ingroup H2CORE
@@ -209,22 +147,17 @@ class SongReader : public Object
 {
     H2_OBJECT
 public:
-	SongReader();
-	~SongReader();
-	Song* readSong( const QString& filename );
+        SongReader();
+        ~SongReader();
+        Song* readSong( const QString& filename );
 
 private:
-	QString m_sSongVersion;
-
-	/// Dato un XmlNode restituisce un oggetto Pattern
-	Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
+        QString m_sSongVersion;
+        /// Dato un XmlNode restituisce un oggetto Pattern
+        Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
 };
 
-
 };
 
-
-
-#endif
-
+#endif // H2_SONG_H
 

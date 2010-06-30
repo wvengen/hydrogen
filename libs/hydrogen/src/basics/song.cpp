@@ -884,7 +884,7 @@ Song* SongReader::readSong( const QString& filename )
 	}
 
 
-	song->__is_modified = false;
+	song->set_is_modified( false );
 	song->set_filename( filename );
 	
 

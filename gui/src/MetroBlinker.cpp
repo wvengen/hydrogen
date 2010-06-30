@@ -79,7 +79,7 @@ MetroBlinker::MetroBlinker ( QWidget* pParent )
 	p_wechselblink = 0;
 	n_bsongload = false;
 
-	p_bpm = Hydrogen::get_instance()->getSong()->__bpm;
+	p_bpm = Hydrogen::get_instance()->getSong()->get_bpm();
 	timer = new QTimer( this );
 	connect( timer, SIGNAL( timeout() ), this, SLOT( updateMetronomBackground() ) );
 }
@@ -104,7 +104,7 @@ void MetroBlinker::metronomeEvent( int nValue )
 	n_bsongload = false;
 
 	//bpm
-	p_bpm = Hydrogen::get_instance()->getSong()->__bpm; 
+	p_bpm = Hydrogen::get_instance()->getSong()->get_bpm(); 
 	//bar
 	p_bar = Hydrogen::get_instance()->getPatternPos() +1;
 	if ( p_bar <= 0 )

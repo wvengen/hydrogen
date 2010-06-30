@@ -146,7 +146,7 @@ void* diskWriterDriver_thread( void* param )
 		nSongSize += nPatternSize;
 	}
 
-	float ticksize = pDriver->m_nSampleRate * 60.0 /  Hydrogen::get_instance()->getSong()->__bpm / 192 *4;
+	float ticksize = pDriver->m_nSampleRate * 60.0 /  Hydrogen::get_instance()->getSong()->get_bpm() / 192 *4;
 	 //here we have the song length in frames dependent from bpm and samplerate
 	unsigned songLengthInFrames = ticksize * nSongSize;
 

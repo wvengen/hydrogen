@@ -62,7 +62,7 @@ ExportSongDialog::ExportSongDialog(QWidget* parent)
 
 	QString defaultFilename( Hydrogen::get_instance()->getSong()->get_filename() );
 	if( Hydrogen::get_instance()->getSong()->get_filename().isEmpty() )
-		defaultFilename = Hydrogen::get_instance()->getSong()->__name;
+		defaultFilename = Hydrogen::get_instance()->getSong()->get_name();
 	defaultFilename.replace( '*', "_" );
 	defaultFilename.replace( ".h2song", "" );	
 	defaultFilename += ".wav";

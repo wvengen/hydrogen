@@ -209,17 +209,17 @@ bool ActionManager::handleAction( Action * pAction ){
 
 	if( sActionString == "MUTE" ){
 		//mutes the master, not a single strip
-		pEngine->getSong()->__is_muted = true;
+		pEngine->getSong()->set_is_muted( true );
 		return true;
 	}
 
 	if( sActionString == "UNMUTE" ){
-		pEngine->getSong()->__is_muted = false;
+		pEngine->getSong()->set_is_muted( false );
 		return true;
 	}
 
 	if( sActionString == "MUTE_TOGGLE" ){
-		pEngine->getSong()->__is_muted = !Hydrogen::get_instance()->getSong()->__is_muted;
+		pEngine->getSong()->set_is_muted( !Hydrogen::get_instance()->getSong()->is_muted() );
 		return true;
 	}
 
@@ -530,13 +530,13 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 		
-		if ( cc_param == 1 && pSong->__bpm  < 300) {
-			pEngine->setBPM( pSong->__bpm + 1*mult );
+		if ( cc_param == 1 && pSong->get_bpm()  < 300) {
+			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
 
 
-		if ( cc_param != 1 && pSong->__bpm  > 40 ) {
-			pEngine->setBPM( pSong->__bpm - 1*mult );
+		if ( cc_param != 1 && pSong->get_bpm()  > 40 ) {
+			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
 
 
@@ -556,8 +556,8 @@ bool ActionManager::handleAction( Action * pAction ){
 
 
 		Song* pSong = pEngine->getSong();
-		if (pSong->__bpm  < 300) {
-			pEngine->setBPM( pSong->__bpm + 1*mult );
+		if (pSong->get_bpm()  < 300) {
+			pEngine->setBPM( pSong->get_bpm() + 1*mult );
 		}
 		AudioEngine::get_instance()->unlock();
 
@@ -575,8 +575,8 @@ bool ActionManager::handleAction( Action * pAction ){
 		mult = pAction->getParameter1().toInt(&ok,10);
 
 		Song* pSong = pEngine->getSong();
-		if (pSong->__bpm  > 40 ) {
-			pEngine->setBPM( pSong->__bpm - 1*mult );
+		if (pSong->get_bpm()  > 40 ) {
+			pEngine->setBPM( pSong->get_bpm() - 1*mult );
 		}
 		AudioEngine::get_instance()->unlock();
 		

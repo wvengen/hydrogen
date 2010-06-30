@@ -254,7 +254,7 @@ void updateTickSize()
 {
 	float sampleRate = ( float )m_pAudioDriver->getSampleRate();
 	m_pAudioDriver->m_transport.m_nTickSize =
-		( sampleRate * 60.0 /  m_pSong->__bpm / m_pSong->__resolution );
+		( sampleRate * 60.0 /  m_pSong->get_bpm() / m_pSong->get_resolution() );
 }
 
 
@@ -453,7 +453,7 @@ void audioEngine_stop( bool bLockEngine )
 }
 
 //
-///  Update Tick size and frame position in the audio driver from Song->__bpm
+///  Update Tick size and frame position in the audio driver from Song->get_bpm()
 //
 inline void audioEngine_process_checkBPMChanged()
 {
@@ -462,8 +462,8 @@ inline void audioEngine_process_checkBPMChanged()
 
 		float fNewTickSize =
 			m_pAudioDriver->getSampleRate() * 60.0
-			/ m_pSong->__bpm
-			/ m_pSong->__resolution;
+			/ m_pSong->get_bpm()
+			/ m_pSong->get_resolution();
 
 		if ( fNewTickSize != m_pAudioDriver->m_transport.m_nTickSize ) {
 			// cerco di convertire ...
@@ -635,13 +635,13 @@ inline void audioEngine_process_transport()
 				audioEngine_start( false, nNewFrames );	// no engine lock
 			}
 
-			if ( m_pSong->__bpm != m_pAudioDriver->m_transport.m_nBPM ) {
+			if ( m_pSong->get_bpm() != m_pAudioDriver->m_transport.m_nBPM ) {
 				___INFOLOG(
 					QString( "song bpm: (%1) gets transport bpm: (%2)" )
-					.arg( m_pSong->__bpm )
+					.arg( m_pSong->get_bpm() )
 					.arg( m_pAudioDriver->m_transport.m_nBPM ) );
 
-				m_pSong->__bpm = m_pAudioDriver->m_transport.m_nBPM;
+				m_pSong->set_bpm( m_pAudioDriver->m_transport.m_nBPM );
 			}
 
 			m_nRealtimeFrames = m_pAudioDriver->m_transport.m_nFrames;
@@ -653,8 +653,8 @@ inline void audioEngine_process_transport()
 				audioEngine_stop( false );	// no engine lock
 			}
 
-			if ( m_pSong->__bpm != m_pAudioDriver->m_transport.m_nBPM ) {
-				m_pSong->__bpm = m_pAudioDriver->m_transport.m_nBPM;
+			if ( m_pSong->get_bpm() != m_pAudioDriver->m_transport.m_nBPM ) {
+				m_pSong->set_bpm( m_pAudioDriver->m_transport.m_nBPM );
 			}
 
 			// go ahead and increment the realtimeframes by buffersize
@@ -773,9 +773,9 @@ int audioEngine_process( uint32_t nframes, void* /*arg*/ )
 		m_nBufferSize = nframes;
 	}
 
-	// m_pAudioDriver->bpm updates Song->__bpm. (!!(Calls audioEngine_seek))
+	// m_pAudioDriver->bpm updates Song->get_bpm(). (!!(Calls audioEngine_seek))
 	audioEngine_process_transport();
-	audioEngine_process_checkBPMChanged(); // m_pSong->__bpm decides tick size
+	audioEngine_process_checkBPMChanged(); // m_pSong->get_bpm() decides tick size
 
 	bool sendPatternChange = false;
 	// always update note queue.. could come from pattern or realtime input
@@ -985,7 +985,7 @@ void audioEngine_renameJackPorts()
 
 void audioEngine_setSong( Song *newSong )
 {
-	___WARNINGLOG( QString( "Set song: %1" ).arg( newSong->__name ) );
+	___WARNINGLOG( QString( "Set song: %1" ).arg( newSong->get_name() ) );
 
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
@@ -1027,7 +1027,7 @@ void audioEngine_setSong( Song *newSong )
 
 	audioEngine_renameJackPorts();
 
-	m_pAudioDriver->setBpm( m_pSong->__bpm );
+	m_pAudioDriver->setBpm( m_pSong->get_bpm() );
 
 	// change the current audio engine state
 	m_audioEngineState = STATE_READY;
@@ -1670,7 +1670,7 @@ void audioEngine_startAudioDrivers()
 
 
 	if ( m_pSong ) {
-		m_pAudioDriver->setBpm( m_pSong->__bpm );
+		m_pAudioDriver->setBpm( m_pSong->get_bpm() );
 	}
 
 	if ( m_audioEngineState == STATE_PREPARED ) {
@@ -2169,7 +2169,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				}
 	
 				note->set_just_recorded(true);
-				song->__is_modified = true;
+				song->set_is_modified(true);
 	
 				EventQueue::get_instance()->push_event( EVENT_PATTERN_MODIFIED, -1 );
 			}
@@ -2199,7 +2199,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 				}
 
 				note->set_just_recorded(true);
-				song->__is_modified = true;
+				song->set_is_modified(true);
 	
 				EventQueue::get_instance()->push_event( EVENT_PATTERN_MODIFIED, -1 );				
 			}
@@ -2389,7 +2389,7 @@ void Hydrogen::startExportSong( const QString& filename, int rate, int depth )
 	
 	// reset
 	m_pAudioDriver->m_transport.m_nFrames = 0;	// reset total frames
-	m_pAudioDriver->setBpm( m_pSong->__bpm );
+	m_pAudioDriver->setBpm( m_pSong->get_bpm() );
 	m_nSongPos = 0;
 	m_nPatternTickPosition = 0;
 	m_audioEngineState = STATE_PLAYING;
@@ -2441,7 +2441,7 @@ void Hydrogen::stopExportSong()
 	audioEngine_startAudioDrivers();
 
 	if ( m_pAudioDriver ) {
-		m_pAudioDriver->setBpm( m_pSong->__bpm );
+		m_pAudioDriver->setBpm( m_pSong->get_bpm() );
 	} else {
 		ERRORLOG( "m_pAudioDriver = NULL" );
 	}
@@ -2663,7 +2663,7 @@ void Hydrogen::removeInstrument( int instrumentnumber, bool conditional )
 	// delete the instrument from the instruments list
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	getSong()->get_instrument_list()->del( instrumentnumber );
-	getSong()->__is_modified = true;
+	getSong()->set_is_modified(true);
 	AudioEngine::get_instance()->unlock();
 	
 	// At this point the instrument has been removed from both the
@@ -2882,7 +2882,7 @@ void Hydrogen::setBPM( float fBPM )
 {
 	if ( m_pAudioDriver && m_pSong ) {
 		m_pAudioDriver->setBpm( fBPM );
-		m_pSong->__bpm = fBPM;
+		m_pSong->set_bpm( fBPM );
 		m_nNewBpmJTM = fBPM;
 //		audioEngine_process_checkBPMChanged();
 	}
@@ -3331,7 +3331,7 @@ void Hydrogen::setTimelineBpm()
 {
 	//time line test
 	if ( Preferences::get_instance()->__usetimeline ){
-		float bpm = m_pSong->__bpm;
+		float bpm = m_pSong->get_bpm();
 		for ( int i = 0; i < static_cast<int>(m_timelinevector.size() ); i++){
 			if( m_timelinevector[i].m_htimelinebeat > getPatternPos() ){
 				break;

@@ -91,7 +91,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	if ( drumkitinfo != NULL && ( !saveChanges_checkBox->isChecked() ) ){
 		if ( Hydrogen::get_instance()->getCurrentDrumkitname() != drumkitinfo->get_name() ){
 			Hydrogen::get_instance()->loadDrumkit( drumkitinfo );
-			Hydrogen::get_instance()->getSong()->__is_modified = true;	
+			Hydrogen::get_instance()->getSong()->set_is_modified(true);	
 		}
 	}
 		
@@ -125,7 +125,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	if ( predrumkit != NULL ){
 		if ( predrumkit->get_name() !=  Hydrogen::get_instance()->getCurrentDrumkitname() ){
 			Hydrogen::get_instance()->loadDrumkit( predrumkit );
-			Hydrogen::get_instance()->getSong()->__is_modified = true;
+			Hydrogen::get_instance()->getSong()->set_is_modified(true);
 		}
 	}
 

@@ -396,7 +396,7 @@ void SongEditorPanel::addEmptyPattern( QString newPatternName , QString newPatte
 	emptyPattern->set_category( newPatternCategory );
 	patternList->add( emptyPattern );
 	patternList->move( patternList->size()-1, patternPosition );
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	updateAll();
 }
 
@@ -414,7 +414,7 @@ void SongEditorPanel::revertaddEmptyPattern( int patternPosition )
 	patternList->del(pattern);
 	delete pattern;
 	pattern = NULL;
-	song->__is_modified = true;
+	song->set_is_modified(true);
 	updateAll();
 }
 

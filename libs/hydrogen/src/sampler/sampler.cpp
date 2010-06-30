@@ -300,7 +300,7 @@ unsigned Sampler::__render_note( Note* pNote, unsigned nBufferSize, Song* pSong 
 	float fSendFXLevel_L = 1.0f;
 	float fSendFXLevel_R = 1.0f;
 
-	if ( pInstr->is_muted() || pSong->__is_muted ) {	// is instrument muted?
+	if ( pInstr->is_muted() || pSong->is_muted() ) {	// is instrument muted?
 		cost_L = 0.0;
 		cost_R = 0.0;
                 if ( Preferences::get_instance()->m_nJackTrackOutputMode == 0 ) {
@@ -831,7 +831,7 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 									if ( ticks >  patternsize ) 
 										ticks = patternsize - noteOnTick;
 									pNote->set_length( ticks );
-									Hydrogen::get_instance()->getSong()->__is_modified = true;
+									Hydrogen::get_instance()->getSong()->set_is_modified(true);
 									AudioEngine::get_instance()->unlock(); // unlock the audio engine
 								}
 							}else
@@ -842,7 +842,7 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 									if ( ticks >  patternsize ) 
 										ticks = patternsize - noteOnTick;
 									pNote->set_length( ticks );
-									Hydrogen::get_instance()->getSong()->__is_modified = true;
+									Hydrogen::get_instance()->getSong()->set_is_modified(true);
 									AudioEngine::get_instance()->unlock(); // unlock the audio engine	
 								}	
 							}
