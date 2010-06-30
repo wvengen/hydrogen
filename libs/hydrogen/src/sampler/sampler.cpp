@@ -407,7 +407,7 @@ int Sampler::__render_note_no_resample(
 	int nInitialSamplePos = ( int )pNote->get_sample_position();
 	int nSamplePos = nInitialSamplePos;
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
+	int nInstrument = pSong->get_instruments()->index( pNote->get_instrument() );
 
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
@@ -563,7 +563,7 @@ int Sampler::__render_note_resample(
 	float fInitialSamplePos = pNote->get_sample_position();
 	double fSamplePos = pNote->get_sample_position();
 	int nTimes = nInitialBufferPos + nAvail_bytes;
-	int nInstrument = pSong->get_instrument_list()->index( pNote->get_instrument() );
+	int nInstrument = pSong->get_instruments()->index( pNote->get_instrument() );
 
 	float *pSample_data_L = pSample->get_data_l();
 	float *pSample_data_R = pSample->get_data_r();
@@ -794,7 +794,7 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 
 		if ( mSong->get_mode() == Song::PATTERN_MODE ||
 		( pEngine->getState() != STATE_PLAYING )){
-			PatternList *pPatternList = mSong->get_pattern_list();
+			PatternList *pPatternList = mSong->get_patterns();
 			if ( ( selectedpattern != -1 )
 			&& ( selectedpattern < ( int )pPatternList->size() ) ) {
 				currentPattern = pPatternList->get( selectedpattern );
@@ -836,7 +836,7 @@ void Sampler::setPlayingNotelength( Instrument* instrument, unsigned long ticks,
 								}
 							}else
 							{
-								if ( pNote->get_instrument() == pEngine->getSong()->get_instrument_list()->get( pEngine->getSelectedInstrumentNumber())
+								if ( pNote->get_instrument() == pEngine->getSong()->get_instruments()->get( pEngine->getSelectedInstrumentNumber())
 								&& pNote->get_position() == noteOnTick ) {
 									AudioEngine::get_instance()->lock( RIGHT_HERE );
 									if ( ticks >  patternsize ) 

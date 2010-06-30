@@ -362,7 +362,7 @@ void InstrumentEditor::selectedInstrumentChangedEvent()
 
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if (pSong != NULL) {
-		InstrumentList *pInstrList = pSong->get_instrument_list();
+		InstrumentList *pInstrList = pSong->get_instruments();
 		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		if ( nInstr >= (int)pInstrList->size() ) {
 			nInstr = -1;
@@ -642,7 +642,7 @@ void InstrumentEditor::loadLayer()
 	
 			AudioEngine::get_instance()->lock( RIGHT_HERE );
 			Song *song = engine->getSong();
-			InstrumentList *instrList = song->get_instrument_list();
+			InstrumentList *instrList = song->get_instruments();
 			pInstr = instrList->get( engine->getSelectedInstrumentNumber() );
 	
 			/* 
@@ -840,7 +840,7 @@ void InstrumentEditor::midiOutNoteBtnClicked(Button *pRef)
 	Song *song = pEngine->getSong();
 	assert(song);
 	if(song){
-		InstrumentList *songInstrList = song->get_instrument_list();
+		InstrumentList *songInstrList = song->get_instruments();
 		assert(songInstrList);
 		for ( unsigned nInstr = 0; nInstr < songInstrList->size(); ++nInstr ) {
 			Instrument *pInstr = songInstrList->get( nInstr );

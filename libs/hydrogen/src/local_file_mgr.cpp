@@ -125,7 +125,7 @@ QString LocalFileMng::getPatternNameFromPatternDir( const QString& patternDirNam
 Pattern* LocalFileMng::loadPattern( const QString& directory )
 {
 
-	InstrumentList* instrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
+	InstrumentList* instrList = Hydrogen::get_instance()->getSong()->get_instruments();
 	Pattern *pPattern = NULL;
 	QString patternInfoFile = directory;
 
@@ -214,10 +214,10 @@ int LocalFileMng::savePattern( Song *song , const QString& drumkit_name, int sel
 	//int mode = 1 save, int mode = 2 save as
 	// INSTRUMENT NODE
 
-	Instrument *instr = song->get_instrument_list()->get( 0 );
+	Instrument *instr = song->get_instruments()->get( 0 );
 	assert( instr );
 
-	Pattern *pat = song->get_pattern_list()->get( selectedpattern );
+	Pattern *pat = song->get_patterns()->get( selectedpattern );
 
 	QString sPatternDir = Preferences::get_instance()->getDataDirectory() + "patterns/" +  drumkit_name;
 
@@ -856,11 +856,11 @@ int LocalFileMng::writeTempPatternList(Song *song, const QString& filename)
 
 	QDomNode tempPatternListNode = doc.createElement( "tempPatternList" );
 
-	unsigned nPatterns = song->get_pattern_list()->size();
+	unsigned nPatterns = song->get_patterns()->size();
 	
 	QDomNode virtualPatternListNode = doc.createElement( "virtualPatternList" );
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
-		Pattern *pat = song->get_pattern_list()->get( i );
+		Pattern *pat = song->get_patterns()->get( i );
 
 		// pattern
 		if (pat->virtual_patterns_empty() == false) {
@@ -948,7 +948,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	LocalFileMng::writeXmlString( songNode, "bpm", QString("%1").arg( song->get_bpm() ) );
 	LocalFileMng::writeXmlString( songNode, "volume", QString("%1").arg( song->get_volume() ) );
 	LocalFileMng::writeXmlString( songNode, "metronomeVolume", QString("%1").arg( song->get_metronome_volume() ) );
-	LocalFileMng::writeXmlString( songNode, "name", song->get_name() );
+	LocalFileMng::writeXmlString( songNode, "name", song->get_title() );
 	LocalFileMng::writeXmlString( songNode, "author", song->get_author() );
 	LocalFileMng::writeXmlString( songNode, "notes", song->get_notes() );
 	LocalFileMng::writeXmlString( songNode, "license", song->get_license() );
@@ -972,11 +972,11 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 
 	// instrument list
 	QDomNode instrumentListNode = doc.createElement( "instrumentList" );
-	unsigned nInstrument = song->get_instrument_list()->size();
+	unsigned nInstrument = song->get_instruments()->size();
 
 	// INSTRUMENT NODE
 	for ( unsigned i = 0; i < nInstrument; i++ ) {
-		Instrument *instr = song->get_instrument_list()->get( i );
+		Instrument *instr = song->get_instruments()->get( i );
 		assert( instr );
 
 		QDomNode instrumentNode = doc.createElement( "instrument" );
@@ -1073,9 +1073,9 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	// pattern list
 	QDomNode patternListNode = doc.createElement( "patternList" );
 
-	unsigned nPatterns = song->get_pattern_list()->size();
+	unsigned nPatterns = song->get_patterns()->size();
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
-		Pattern *pat = song->get_pattern_list()->get( i );
+		Pattern *pat = song->get_patterns()->get( i );
 
 		// pattern
 		QDomNode patternNode = doc.createElement( "pattern" );
@@ -1116,7 +1116,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	
 	QDomNode virtualPatternListNode = doc.createElement( "virtualPatternList" );
 	for ( unsigned i = 0; i < nPatterns; i++ ) {
-		Pattern *pat = song->get_pattern_list()->get( i );
+		Pattern *pat = song->get_patterns()->get( i );
 
 		// pattern
 		if (pat->virtual_patterns_empty() == false) {

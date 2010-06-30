@@ -236,7 +236,7 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 	if ( nInstrument > ( MAX_INSTRUMENTS -1 ) ) {
 		nInstrument = MAX_INSTRUMENTS - 1;
 	}
-	Instrument *pInstr = pSong->get_instrument_list()->get( nInstrument );
+	Instrument *pInstr = pSong->get_instruments()->get( nInstrument );
 
 	float fStep = pow( 1.0594630943593, (nNote -36) );
 	if ( !Preferences::get_instance()->__playselectedinstrument ) 
@@ -244,7 +244,7 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 
 	if ( Preferences::get_instance()->__playselectedinstrument ){
 		nInstrument = pEngine->getSelectedInstrumentNumber();
-		pInstr= pEngine->getSong()->get_instrument_list()->get( pEngine->getSelectedInstrumentNumber());
+		pInstr= pEngine->getSong()->get_instruments()->get( pEngine->getSelectedInstrumentNumber());
 	}
 
 	bool use_note_off = AudioEngine::get_instance()->get_sampler()->is_instrument_playing( pInstr );
@@ -253,7 +253,7 @@ void MidiInput::handleNoteOffMessage( const MidiMessage& msg )
 			AudioEngine::get_instance()->get_sampler()->midi_keyboard_note_off( msg.m_nData1 );
 		}else
 		{
-			if ( pSong->get_instrument_list()->size() < nInstrument +1 )
+			if ( pSong->get_instruments()->size() < nInstrument +1 )
 				return;
 			Note *offnote = new Note( pInstr,
 						0.0,

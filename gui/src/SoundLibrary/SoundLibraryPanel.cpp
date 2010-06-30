@@ -716,7 +716,7 @@ void SoundLibraryPanel::on_patternLoadAction()
 	QString drumkitname = __sound_library_tree->currentItem()->toolTip ( 0 );
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	PatternList *pPatternList = song->get_pattern_list();
+	PatternList *pPatternList = song->get_patterns();
 	
 	QString sDirectory;
 

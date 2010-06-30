@@ -200,7 +200,7 @@ void Mixer::muteClicked(MixerLine* ref)
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 
 	Instrument *pInstr = instrList->get(nLine);
 	pInstr->set_muted( isMuteClicked);
@@ -214,7 +214,7 @@ void Mixer::soloClicked(MixerLine* ref)
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
-	InstrumentList *pInstrList = pSong->get_instrument_list();
+	InstrumentList *pInstrList = pSong->get_instruments();
 	int nInstruments = pInstrList->size();
 
 	int nLine = findMixerLineByRef(ref);
@@ -252,7 +252,7 @@ void Mixer::soloClicked(uint nLine)
 	soloClicked( L );
 // 	Hydrogen *pEngine = Hydrogen::get_instance();
 // 	Song *pSong = pEngine->getSong();
-// 	InstrumentList *pInstrList = pSong->get_instrument_list();
+// 	InstrumentList *pInstrList = pSong->get_instruments();
 // 	int nInstruments = pInstrList->get_size();
 // 
 // 	bool isSoloClicked = m_pMixerLine[ nLine ]->isSoloClicked();
@@ -292,7 +292,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get(nLine), 0, 1.0, 0.5f, 0.5f, -1, fPitch );
@@ -311,7 +311,7 @@ void Mixer::noteOnClicked( MixerLine* ref )
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 
 	const float fPitch = 0.0f;
 	Note *note = new Note( instrList->get( nLine ), 0, 1.0, 0.5, 0.5, -1, fPitch );
@@ -341,7 +341,7 @@ void Mixer::volumeChanged(MixerLine* ref)
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 
 	Instrument *instr = instrList->get(nLine);
 
@@ -369,7 +369,7 @@ void Mixer::updateMixer()
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
-	InstrumentList *pInstrList = pSong->get_instrument_list();
+	InstrumentList *pInstrList = pSong->get_instruments();
 
 	uint nSelectedInstr = pEngine->getSelectedInstrumentNumber();
 
@@ -626,7 +626,7 @@ void Mixer::panChanged(MixerLine* ref) {
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 
 	Instrument *instr = instrList->get(nLine);
 	instr->set_pan_l( pan_L );
@@ -644,7 +644,7 @@ void Mixer::knobChanged(MixerLine* ref, int nKnob) {
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 	Instrument *pInstr = instrList->get(nLine);
 	pInstr->set_fx_level( ref->getFXLevel(nKnob), nKnob );
 	QString sInfo = trUtf8( "Set FX %1 level ").arg( nKnob + 1 );

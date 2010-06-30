@@ -127,7 +127,7 @@ void PianoRollEditor::selectedPatternChangedEvent()
 	//INFOLOG( "updating m_pPattern pointer" );
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->size() ) ) {
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );
@@ -402,7 +402,7 @@ void PianoRollEditor::drawNote( Note *pNote, QPainter *pPainter )
 	static const QColor noteoffColor( pStyle->m_patternEditor_noteoffColor.getRed(), pStyle->m_patternEditor_noteoffColor.getGreen(), pStyle->m_patternEditor_noteoffColor.getBlue() );
 
 	int nInstrument = -1;
-	InstrumentList * pInstrList = Hydrogen::get_instance()->getSong()->get_instrument_list();
+	InstrumentList * pInstrList = Hydrogen::get_instance()->getSong()->get_instruments();
 	for ( uint nInstr = 0; nInstr < pInstrList->size(); ++nInstr ) {
 		Instrument *pInstr = pInstrList->get( nInstr );
 		if ( pInstr == pNote->get_instrument() ) {
@@ -484,7 +484,7 @@ void PianoRollEditor::mousePressEvent(QMouseEvent *ev) {
 	int pressedline = ((int) ev->y()) / ((int) m_nRowHeight);
 	Instrument *pSelectedInstrument = NULL;
 	int nSelectedInstrumentnumber = Hydrogen::get_instance()->getSelectedInstrumentNumber();
-	pSelectedInstrument = pSong->get_instrument_list()->get( nSelectedInstrumentnumber );
+	pSelectedInstrument = pSong->get_instruments()->get( nSelectedInstrumentnumber );
 	assert(pSelectedInstrument);
     //ERRORLOG(QString("pressedline: %1, column %2, event ev: %3, editorhight %4").arg(pressedline).arg(nColumn).arg(ev->y()).arg(m_nEditorHeight));
 	
@@ -612,11 +612,11 @@ void PianoRollEditor::addOrDeleteNoteAction( int nColumn,
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 	H2Core::Pattern *pPattern;
 
 	Instrument *pSelectedInstrument = NULL;
-	pSelectedInstrument = pSong->get_instrument_list()->get( selectedinstrument );
+	pSelectedInstrument = pSong->get_instruments()->get( selectedinstrument );
 	assert(pSelectedInstrument);
 
 	if ( ( selectedPatternNumber != -1 ) && ( (uint)selectedPatternNumber < pPatternList->size() ) ) {
@@ -678,11 +678,11 @@ void PianoRollEditor::addNoteRightClickAction( int nColumn, int pressedLine, int
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	Song *pSong = pEngine->getSong();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 	H2Core::Pattern *pPattern;
 
 	Instrument *pSelectedInstrument = NULL;
-	pSelectedInstrument = pSong->get_instrument_list()->get( selectedinstrument );
+	pSelectedInstrument = pSong->get_instruments()->get( selectedinstrument );
 	assert(pSelectedInstrument);
 
 	if ( ( selectedPatternNumber != -1 ) && ( (uint)selectedPatternNumber < pPatternList->size() ) ) {
@@ -942,7 +942,7 @@ void PianoRollEditor::editNoteLenghtAction( int nColumn,  int nRealColumn,  int 
 {
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 
 	H2Core::Pattern *pPattern;
 	if ( (selectedPatternNumber != -1) && ( (uint)selectedPatternNumber < pPatternList->size() ) ) {
@@ -952,8 +952,8 @@ void PianoRollEditor::editNoteLenghtAction( int nColumn,  int nRealColumn,  int 
 	}
 
 	Song *pSong = pEngine->getSong();
-	int nInstruments = pSong->get_instrument_list()->size();
-	Instrument *pSelectedInstrument = pSong->get_instrument_list()->get( nSelectedInstrumentnumber );
+	int nInstruments = pSong->get_instruments()->size();
+	Instrument *pSelectedInstrument = pSong->get_instruments()->get( nSelectedInstrumentnumber );
 
 	int pressedoctave = 3 - (pressedline / 12 );
     Note::Key pressednotekey = Note::C;
@@ -999,7 +999,7 @@ void PianoRollEditor::editNotePropertiesAction( int nColumn,
 {
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 
 	H2Core::Pattern *pPattern;
 	if ( (selectedPatternNumber != -1) && ( (uint)selectedPatternNumber < pPatternList->size() ) ) {
@@ -1017,8 +1017,8 @@ void PianoRollEditor::editNotePropertiesAction( int nColumn,
 	}
 
 	Song *pSong = pEngine->getSong();
-	int nInstruments = pSong->get_instrument_list()->size();
-	Instrument *pSelectedInstrument = pSong->get_instrument_list()->get( selectedInstrumentnumber );
+	int nInstruments = pSong->get_instruments()->size();
+	Instrument *pSelectedInstrument = pSong->get_instruments()->get( selectedInstrumentnumber );
 
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 

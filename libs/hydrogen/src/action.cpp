@@ -135,7 +135,7 @@ bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
+	InstrumentList *instrList = song->get_instruments();
 	Instrument *instr = instrList->get( nLine );
 	if ( instr == NULL) return false;
 
@@ -236,8 +236,8 @@ bool ActionManager::handleAction( Action * pAction ){
 	if( sActionString == "SELECT_INSTRUMENT" ){
 		bool ok;
 		int  instrument_number = pAction->getParameter2().toInt(&ok,10) ;
-		if ( pEngine->getSong()->get_instrument_list()->size() < instrument_number )
-			instrument_number = pEngine->getSong()->get_instrument_list()->size() -1;
+		if ( pEngine->getSong()->get_instruments()->size() < instrument_number )
+			instrument_number = pEngine->getSong()->get_instruments()->size() -1;
 		pEngine->setSelectedInstrumentNumber( instrument_number );
 		return true;
 	}
@@ -336,7 +336,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Hydrogen *engine = Hydrogen::get_instance();
 		Song *song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		InstrumentList *instrList = song->get_instruments();
 
 		Instrument *instr = instrList->get( nLine );
 
@@ -368,7 +368,7 @@ bool ActionManager::handleAction( Action * pAction ){
 
 		Hydrogen *engine = Hydrogen::get_instance();
 		Song *song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		InstrumentList *instrList = song->get_instruments();
 
 		Instrument *instr = instrList->get( nLine );
 
@@ -400,7 +400,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		Hydrogen *engine = Hydrogen::get_instance();
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		InstrumentList *instrList = song->get_instruments();
 
 		Instrument *instr = instrList->get( nLine );
 		
@@ -458,7 +458,7 @@ bool ActionManager::handleAction( Action * pAction ){
 		Hydrogen *engine = Hydrogen::get_instance();
 		engine->setSelectedInstrumentNumber( nLine );
 		Song *song = engine->getSong();
-		InstrumentList *instrList = song->get_instrument_list();
+		InstrumentList *instrList = song->get_instruments();
 
 		Instrument *instr = instrList->get( nLine );
 		

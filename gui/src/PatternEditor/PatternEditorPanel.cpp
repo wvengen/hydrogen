@@ -668,7 +668,7 @@ void PatternEditorPanel::gridResolutionChanged( QString str )
 
 void PatternEditorPanel::selectedPatternChangedEvent()
 {
-	PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_pattern_list();
+	PatternList *pPatternList = Hydrogen::get_instance()->getSong()->get_patterns();
 	int nSelectedPatternNumber = Hydrogen::get_instance()->getSelectedPatternNumber();
 
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->size() ) ) {
@@ -932,7 +932,7 @@ void PatternEditorPanel::moveUpBtnClicked(Button *)
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
-	InstrumentList *pInstrumentList = pSong->get_instrument_list();
+	InstrumentList *pInstrumentList = pSong->get_instruments();
 
 	if ( ( nSelectedInstrument - 1 ) >= 0 ) {
 		pInstrumentList->swap( nSelectedInstrument -1, nSelectedInstrument );
@@ -957,7 +957,7 @@ void PatternEditorPanel::moveDownBtnClicked(Button *)
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 	Song *pSong = engine->getSong();
-	InstrumentList *pInstrumentList = pSong->get_instrument_list();
+	InstrumentList *pInstrumentList = pSong->get_instruments();
 
 	if ( ( nSelectedInstrument + 1 ) < (int)pInstrumentList->size() ) {
 		pInstrumentList->swap( nSelectedInstrument, nSelectedInstrument + 1 );

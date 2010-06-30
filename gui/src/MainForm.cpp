@@ -471,7 +471,7 @@ void MainForm::action_file_save_as()
 	QString lastFilename = song->get_filename();
 
 	if ( lastFilename.isEmpty() ) {
-		defaultFilename = Hydrogen::get_instance()->getSong()->get_name();
+		defaultFilename = Hydrogen::get_instance()->getSong()->get_title();
 		defaultFilename += ".h2song";
 	}
 	else {
@@ -570,9 +570,9 @@ void MainForm::action_file_export_pattern_as()
 	Hydrogen *engine = Hydrogen::get_instance();
 	int selectedpattern = engine->getSelectedPatternNumber();
 	Song *song = engine->getSong();
-	Pattern *pat = song->get_pattern_list()->get ( selectedpattern );
+	Pattern *pat = song->get_patterns()->get ( selectedpattern );
 
-	Instrument *instr = song->get_instrument_list()->get ( 0 );
+	Instrument *instr = song->get_instruments()->get ( 0 );
 	assert ( instr );
 
 	QDir dir  = Preferences::get_instance()->__lastspatternDirectory;
@@ -681,9 +681,9 @@ void MainForm::action_file_openPattern()
 
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	PatternList *pPatternList = song->get_pattern_list();
+	PatternList *pPatternList = song->get_patterns();
 
-	Instrument *instr = song->get_instrument_list()->get ( 0 );
+	Instrument *instr = song->get_instruments()->get ( 0 );
 	assert ( instr );
 
 	QDir dirPattern( Preferences::get_instance()->getDataDirectory() + "/patterns" );
@@ -841,7 +841,7 @@ void MainForm::action_instruments_clearAll()
 	// Remove all layers
 	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = Hydrogen::get_instance()->getSong();
-	InstrumentList* pList = pSong->get_instrument_list();
+	InstrumentList* pList = pSong->get_instruments();
 	for (uint i = 0; i < pList->size(); i++) {
 		Instrument* pInstr = pList->get( i );
 		pInstr->set_name( (QString( trUtf8( "Instrument %1" ) ).arg( i + 1 )) );
@@ -1575,11 +1575,11 @@ void MainForm::onPlaylistDisplayTimer()
 	if ( songnumber == -1 )
 			return;
 
-	if ( Hydrogen::get_instance()->getSong()->get_name() == "Untitled Song" ){
+	if ( Hydrogen::get_instance()->getSong()->get_title() == "Untitled Song" ){
 		songname = Hydrogen::get_instance()->getSong()->get_filename(); 
 	}else
 	{
-		songname = Hydrogen::get_instance()->getSong()->get_name();
+		songname = Hydrogen::get_instance()->getSong()->get_title();
 	}
 	QString message = (trUtf8("Playlist: Song No. %1").arg( songnumber + 1)) + QString("  ---  Songname: ") + songname + QString("  ---  Author: ") + Hydrogen::get_instance()->getSong()->get_author();
 	HydrogenApp::get_instance()->setScrollStatusBarMessage( message, 2000 );

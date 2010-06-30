@@ -599,7 +599,7 @@ void JackOutput::makeTrackOutputs( Song * song )
 			return;
 	///
 
-	InstrumentList * instruments = song->get_instrument_list();
+	InstrumentList * instruments = song->get_instruments();
 	Instrument * instr;
 	int nInstruments = ( int )instruments->size();
 

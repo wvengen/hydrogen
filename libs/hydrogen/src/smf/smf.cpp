@@ -237,7 +237,7 @@ void SMFWriter::save( const QString& sFilename, Song *pSong )
 	SMFTrack *pTrack1 = new SMFTrack( "Hydrogen song!!" );
 	smf.addTrack( pTrack1 );
 
-	InstrumentList *iList = pSong->get_instrument_list();
+	InstrumentList *iList = pSong->get_instruments();
 	// ogni pattern sara' una diversa traccia
 	int nTick = 1;
 	for ( unsigned nPatternList = 0 ;

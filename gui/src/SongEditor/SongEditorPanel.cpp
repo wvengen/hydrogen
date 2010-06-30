@@ -359,7 +359,7 @@ void SongEditorPanel::newPatBtnClicked( Button* btn)
 	UNUSED( btn );
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	PatternList *patternList = song->get_pattern_list();
+	PatternList *patternList = song->get_patterns();
 	int emptyPatternNo = patternList->size() + 1;
 
 	Pattern *emptyPattern = Pattern::get_empty_pattern();
@@ -389,7 +389,7 @@ void SongEditorPanel::addEmptyPattern( QString newPatternName , QString newPatte
 {
 	Hydrogen *engine = Hydrogen::get_instance();
 	Song *song = engine->getSong();
-	PatternList *patternList = song->get_pattern_list();
+	PatternList *patternList = song->get_patterns();
 
 	Pattern *emptyPattern = Pattern::get_empty_pattern();
 	emptyPattern->set_name( newPatternName );
@@ -407,7 +407,7 @@ void SongEditorPanel::revertaddEmptyPattern( int patternPosition )
 	Hydrogen *engine = Hydrogen::get_instance();
 
 	Song *song = engine->getSong();
-	PatternList *patternList = song->get_pattern_list();
+	PatternList *patternList = song->get_patterns();
 	H2Core::Pattern *pattern = patternList->get( patternPosition -1 );
 
 	if(patternPosition -1 == engine->getSelectedPatternNumber() )engine->setSelectedPatternNumber( patternPosition -2 );
@@ -439,7 +439,7 @@ void SongEditorPanel::downBtnClicked( Button* btn )
 	UNUSED( btn );
 	Hydrogen *engine = Hydrogen::get_instance();
 	int idx = engine->getSelectedPatternNumber();
-	if( idx+1>=engine->getSong()->get_pattern_list()->size() ) return;
+	if( idx+1>=engine->getSong()->get_patterns()->size() ) return;
 	HydrogenApp::get_instance()->m_undoStack->push( new SE_movePatternListItemAction( idx, idx+1 ) );
 }
 

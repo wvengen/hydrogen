@@ -129,7 +129,7 @@ void NotePropertiesRuler::wheelEvent(QWheelEvent *ev )
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( (int)pNote->get_position() == column );
-		if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+		if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 			continue;
 		}
 		if ( m_mode == VELOCITY && !pNote->get_note_off() ) {
@@ -253,7 +253,7 @@ void NotePropertiesRuler::pressAction( int x, int y)
 		Note *pNote = pos->second;
 		assert( pNote );
 		assert( (int)pNote->get_position() == column );
-		if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+		if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 			continue;
 		}
 
@@ -334,7 +334,7 @@ void NotePropertiesRuler::pressAction( int x, int y)
 			Note *pNote = pos->second;
 			assert( pNote );
 			assert( (int)pNote->get_position() == column );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 				continue;
 			}
 	
@@ -608,7 +608,7 @@ void NotePropertiesRuler::createVelocityBackground(QPixmap *pixmap)
 			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
-				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+				if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 					continue;
 				}
 
@@ -771,7 +771,7 @@ void NotePropertiesRuler::createPanBackground(QPixmap *pixmap)
 			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
-				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+				if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 					continue;
 				}
 
@@ -940,7 +940,7 @@ void NotePropertiesRuler::createLeadLagBackground(QPixmap *pixmap)
 			for ( copos = m_pPattern->get_notes()->lower_bound( pos ); copos != m_pPattern->get_notes()->upper_bound( pos ); ++copos ) {
 				Note *pNote = copos->second;
 				assert( pNote );
-				if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+				if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 					continue;
 				}
 
@@ -1148,7 +1148,7 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 				continue;
 			}
             if ( !pNote->get_note_off() ) {
@@ -1169,7 +1169,7 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 		for ( pos = m_pPattern->get_notes()->begin(); pos != m_pPattern->get_notes()->end(); ++pos ) {
 			Note *pNote = pos->second;
 			assert( pNote );
-			if ( pNote->get_instrument() != pSong->get_instrument_list()->get( nSelectedInstrument ) ) {
+			if ( pNote->get_instrument() != pSong->get_instruments()->get( nSelectedInstrument ) ) {
 				continue;
 			}
 			if ( !pNote->get_note_off() ) {
@@ -1203,7 +1203,7 @@ void NotePropertiesRuler::createNoteKeyBackground(QPixmap *pixmap)
 void NotePropertiesRuler::updateEditor()
 {
 	Hydrogen *pEngine = Hydrogen::get_instance();
-	PatternList *pPatternList = pEngine->getSong()->get_pattern_list();
+	PatternList *pPatternList = pEngine->getSong()->get_patterns();
 	int nSelectedPatternNumber = pEngine->getSelectedPatternNumber();
 	if ( (nSelectedPatternNumber != -1) && ( (uint)nSelectedPatternNumber < pPatternList->size() ) ) {
 		m_pPattern = pPatternList->get( nSelectedPatternNumber );

@@ -47,19 +47,19 @@ namespace H2Core
 
 const char* Song::__class_name = "Song";
 
-Song::Song( const QString& name, const QString& author, float bpm, float volume )
+Song::Song( const QString& title, const QString& author, float bpm, float volume )
 		: Object( __class_name )
 		, __is_muted( false )
 		, __resolution( 48 )
 		, __bpm( bpm )
 		, __is_modified( false )
-		, __name( name )
+		, __title( title )
 		, __author( author )
 		, __volume( volume )
 		, __metronome_volume( 0.5 )
-		, __pattern_list( NULL )
+		, __patterns( NULL )
 		, __pattern_group_sequence( NULL )
-		, __instrument_list( NULL )
+		, __instruments( NULL )
 		, __filename( "" )
 		, __is_loop_enabled( false )
 		, __humanize_time_value( 0.0 )
@@ -67,7 +67,7 @@ Song::Song( const QString& name, const QString& author, float bpm, float volume 
 		, __swing_factor( 0.0 )
 		, __song_mode( PATTERN_MODE )
 {
-	INFOLOG( QString( "INIT '%1'" ).arg( __name ) );
+	INFOLOG( QString( "INIT '%1'" ).arg( __title ) );
 
 	//m_bDelayFXEnabled = false;
 	//m_fDelayFXWetLevel = 0.8;
@@ -80,7 +80,7 @@ Song::Song( const QString& name, const QString& author, float bpm, float volume 
 Song::~Song()
 {
 	// delete all patterns
-	delete __pattern_list;
+	delete __patterns;
 
 	if ( __pattern_group_sequence ) {
 		for ( unsigned i = 0; i < __pattern_group_sequence->size(); ++i ) {
@@ -91,15 +91,15 @@ Song::~Song()
 		delete __pattern_group_sequence;
 	}
 
-	delete __instrument_list;
+	delete __instruments;
 
-	INFOLOG( QString( "DESTROY '%1'" ).arg( __name ) );
+	INFOLOG( QString( "DESTROY '%1'" ).arg( __title ) );
 }
 
 void Song::purge_instrument( Instrument * I )
 {
-	for ( int nPattern = 0; nPattern < (int)__pattern_list->size(); ++nPattern ) {
-		__pattern_list->get( nPattern )->purge_instrument( I );
+	for ( int nPattern = 0; nPattern < (int)__patterns->size(); ++nPattern ) {
+		__patterns->get( nPattern )->purge_instrument( I );
 	}
 }
 
@@ -148,7 +148,7 @@ Song* Song::get_default_song(){
 	InstrumentList* pList = new InstrumentList();
 	Instrument *pNewInstr = new Instrument(EMPTY_INSTR_ID, "New instrument", new ADSR());
 	pList->add( pNewInstr );
-	song->set_instrument_list( pList );
+	song->set_instruments( pList );
 	
 	#ifdef H2CORE_HAVE_JACK
 	Hydrogen::get_instance()->renameJackPorts();
@@ -159,7 +159,7 @@ Song* Song::get_default_song(){
 	emptyPattern->set_name( QString("Pattern 1") ); 
 	emptyPattern->set_category( QString("not_categorized") );
 	patternList->add( emptyPattern );
-	song->set_pattern_list( patternList );
+	song->set_patterns( patternList );
 	std::vector<PatternList*>* pPatternGroupVector = new std::vector<PatternList*>;
 	PatternList *patternSequence = new PatternList();
 	patternSequence->add( emptyPattern );
@@ -245,9 +245,9 @@ void Song::readTempPatternList( QString filename )
 		sName = LocalFileMng::readXmlString(virtualPatternNode, "name", sName);
 		
 		Pattern *curPattern = NULL;
-		unsigned nPatterns = song->get_pattern_list()->size();
+		unsigned nPatterns = song->get_patterns()->size();
 		for ( unsigned i = 0; i < nPatterns; i++ ) {
-		    Pattern *pat = song->get_pattern_list()->get( i );
+		    Pattern *pat = song->get_patterns()->get( i );
 		    
 		    if (pat->get_name() == sName) {
 			curPattern = pat;
@@ -262,7 +262,7 @@ void Song::readTempPatternList( QString filename )
 			
 			Pattern *virtPattern = NULL;
 			for ( unsigned i = 0; i < nPatterns; i++ ) {
-			    Pattern *pat = song->get_pattern_list()->get( i );
+			    Pattern *pat = song->get_patterns()->get( i );
 		    
 			    if (pat->get_name() == virtName) {
 				virtPattern = pat;
@@ -284,7 +284,7 @@ void Song::readTempPatternList( QString filename )
 	    }//while
 	}//if
 
-    song->get_pattern_list()->compute_flattened_virtual_patterns();
+    song->get_patterns()->compute_flattened_virtual_patterns();
 
 	// Pattern sequence
 	QDomNode patternSequenceNode = songNode.firstChildElement( "patternSequence" );
@@ -301,8 +301,8 @@ void Song::readTempPatternList( QString filename )
 			QString patId = patternId.firstChild().nodeValue();
 
 			Pattern *pat = NULL;
-			for ( unsigned i = 0; i < song->get_pattern_list()->size(); i++ ) {
-				Pattern *tmp = song->get_pattern_list()->get( i );
+			for ( unsigned i = 0; i < song->get_patterns()->size(); i++ ) {
+				Pattern *tmp = song->get_patterns()->get( i );
 				if ( tmp ) {
 					if ( tmp->get_name() == patId ) {
 						pat = tmp;
@@ -639,7 +639,7 @@ Song* SongReader::readSong( const QString& filename )
 			WARNINGLOG( "0 instruments?" );
 		}
 
-		song->set_instrument_list( instrumentList );
+		song->set_instruments( instrumentList );
 	} else {
 		ERRORLOG( "Error reading song: instrumentList node not found" );
 		delete song;
@@ -671,7 +671,7 @@ Song* SongReader::readSong( const QString& filename )
 	if ( pattern_count == 0 ) {
 		WARNINGLOG( "0 patterns?" );
 	}
-	song->set_pattern_list( patternList );
+	song->set_patterns( patternList );
 	
 	 // Virtual Patterns
 	QDomNode  virtualPatternListNode = songNode.firstChildElement( "virtualPatternList" ); 

@@ -108,7 +108,7 @@ void SoundLibraryPropertiesDialog::on_saveBtn_clicked()
 	}
 
 	//save the drumkit	
-	if( !H2Core::Drumkit::save( nameTxt->text(), authorTxt->text(), infoTxt->toHtml(), licenseTxt->text(), H2Core::Hydrogen::get_instance()->getSong()->get_instrument_list(), true ) ) {
+	if( !H2Core::Drumkit::save( nameTxt->text(), authorTxt->text(), infoTxt->toHtml(), licenseTxt->text(), H2Core::Hydrogen::get_instance()->getSong()->get_instruments(), true ) ) {
         QMessageBox::information( this, "Hydrogen", trUtf8 ( "Saving of this drumkit failed."));
     }
 	

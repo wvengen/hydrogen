@@ -61,7 +61,7 @@ SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer )
 	connect(m_pTargetDisplayTimer, SIGNAL(timeout()), this, SLOT(updateTargetsamplePostionRuler()));
 
 	Hydrogen *engine = Hydrogen::get_instance();
-	Sample* sample = engine->getSong()->get_instrument_list()->get( engine->getSelectedInstrumentNumber() )->get_layer( nSelectedLayer )->get_sample();
+	Sample* sample = engine->getSong()->get_instruments()->get( engine->getSelectedInstrumentNumber() )->get_layer( nSelectedLayer )->get_sample();
 
 	m_pSampleEditorStatus = true;
 	m_pSamplefromFile = NULL;
@@ -166,7 +166,7 @@ void SampleEditor::getAllFrameInfos()
 	Sample* pSample = NULL;
 	Song *pSong = pEngine->getSong();
 	if (pSong != NULL) {
-		InstrumentList *pInstrList = pSong->get_instrument_list();
+		InstrumentList *pInstrList = pSong->get_instruments();
 		int nInstr = pEngine->getSelectedInstrumentNumber();
 		if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 			nInstr = -1;
@@ -302,7 +302,7 @@ void SampleEditor::openDisplays()
 	H2Core::Instrument *pInstrument = NULL;
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	if (pSong != NULL) {
-		InstrumentList *pInstrList = pSong->get_instrument_list();
+		InstrumentList *pInstrList = pSong->get_instruments();
 		int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 		if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 			nInstr = -1;
@@ -400,7 +400,7 @@ void SampleEditor::createNewLayer()
 		H2Core::Instrument *pInstrument = NULL;
 		Song *pSong = Hydrogen::get_instance()->getSong();
 		if (pSong != NULL) {
-			InstrumentList *pInstrList = pSong->get_instrument_list();
+			InstrumentList *pInstrList = pSong->get_instruments();
 			int nInstr = Hydrogen::get_instance()->getSelectedInstrumentNumber();
 			if ( nInstr >= static_cast<int>(pInstrList->size()) ) {
 				nInstr = -1;
@@ -554,7 +554,7 @@ void SampleEditor::on_PlayPushButton_clicked()
 	const float fPitch = 0.0f;
 	Song *pSong = Hydrogen::get_instance()->getSong();
 	
-	Instrument *pInstr = pSong->get_instrument_list()->get( Hydrogen::get_instance()->getSelectedInstrumentNumber() );
+	Instrument *pInstr = pSong->get_instruments()->get( Hydrogen::get_instance()->getSelectedInstrumentNumber() );
 	
 	Note *pNote = new Note( pInstr, 0, pInstr->get_layer( selectedlayer )->get_end_velocity() - 0.01, pan_L, pan_R, nLength, fPitch);
 	AudioEngine::get_instance()->get_sampler()->note_on(pNote);

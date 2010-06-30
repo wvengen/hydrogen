@@ -50,7 +50,7 @@ public:
         PATTERN_MODE,
         SONG_MODE
     }; 
-    
+
     /*
     // internal delay FX
     bool m_bDelayFXEnabled;
@@ -59,32 +59,39 @@ public:
     unsigned m_nDelayFXTime;
     //~ internal delay fx
     */
-    
+
     static Song* get_empty_song();
     static Song* get_default_song();
-    Song( const QString& name, const QString& author, float bpm, float volume );
-    ~Song();
 
     /**
-     * Remove all the notes in the song that play on instrument I.
-     * The function is real-time safe (it locks the audio data while deleting notes)
+     * constructor
+     * \param title the song title
+     * \param author the author of the song
+     * \param bpm beat per minute of he song
+     * \parama volume the volume of the song
      */
-    void purge_instrument( Instrument* I );
+    Song( const QString& title, const QString& author, float bpm, float volume );
+    /** destructor */
+    ~Song();
+
     static Song* load( const QString& sFilename );
     bool save( const QString& sFilename );
     void readTempPatternList( QString filename );
+    /**
+     * Remove all the notes in the song that play on instrument.
+     * The function is real-time safe (it locks the audio data while deleting notes)
+     */
+    void purge_instrument( Instrument* instrument );
 
     void set_volume( float volume )                     { __volume = volume; }
     float get_volume() const                            { return __volume; }
     void set_metronome_volume( float volume )           { __metronome_volume = volume; }
     float get_metronome_volume() const                  { return __metronome_volume; }
-    void set_pattern_list( PatternList* patterns )      { __pattern_list = patterns; }
-    PatternList* get_pattern_list() const               { return __pattern_list; }
 
     void set_notes( const QString& notes )              { __notes = notes; }
     const QString& get_notes() const                    { return __notes; }
-    void set_name( const QString& name )                { __name = name; }
-    const QString& get_name() const                     { return __name; }
+    void set_title( const QString& title )                { __title = title; }
+    const QString& get_title() const                     { return __title; }
     void set_author( const QString& author )            { __author = author; }
     const QString& get_author() const                   { return __author; }
     void set_license( const QString& license )          { __license = license; }
@@ -112,29 +119,32 @@ public:
 
     void set_pattern_group_vector( std::vector<PatternList*>* vect )    { __pattern_group_sequence = vect; }
     std::vector<PatternList*>* get_pattern_group_vector() const         { return __pattern_group_sequence; }
-    void set_instrument_list( InstrumentList* instruments )             { __instrument_list = instruments; }
-    InstrumentList* get_instrument_list() const                         { return __instrument_list; }
+    void set_instruments( InstrumentList* instruments )                 { __instruments = instruments; }
+    InstrumentList* get_instruments() const                             { return __instruments; }
+    void set_patterns( PatternList* patterns )                          { __patterns = patterns; }
+    PatternList* get_patterns() const                                   { return __patterns; }
 
 private:
+    float __bpm;			            ///< beats per minute
     float __volume;						///< volume of the song (0.0..1.0)
-    float __metronome_volume;				///< Metronome volume
-    QString __notes;
-    PatternList *__pattern_list;				///< Pattern list
+    int __resolution;	                ///< resolution of the song (ticks per quarter)
+    bool __is_muted;                    ///< true if song is muted
+    bool __is_modified;                 ///< true if songis modified
+    float __swing_factor;               ///< 
+    bool __is_loop_enabled;             ///< true if song is in loop mode
+    float __metronome_volume;			///< metronome volume
+    float __humanize_time_value;        ///<
+    float __humanize_velocity_value;    ///<
+
+    InstrumentList *__instruments;		///< Instrument list
+    PatternList *__patterns;			///< Pattern list
     std::vector<PatternList*>* __pattern_group_sequence;	///< Sequence of pattern groups
-    InstrumentList *__instrument_list;			///< Instrument list
-    QString __filename;
-    bool __is_loop_enabled;
-    float __humanize_time_value;
-    float __humanize_velocity_value;
-    float __swing_factor;
     SongMode __song_mode;
-    int __resolution;	///< resolution of the song (number of ticks per quarter)
-    float __bpm;			///< beats per minute
-    bool __is_muted;        ///< 
-    bool __is_modified;     //<< 
-    QString __name;		    ///< song name
+    QString __title;		///< title of the song
     QString __author;	    ///< author of the song
     QString __license;	    ///< license of the song
+    QString __notes;        ///< textual notes about the song
+    QString __filename;     ///< 
 };
 
 #include <QDomNode>
