@@ -50,10 +50,10 @@ class Drumkit : public Object {
         static Drumkit* load( const QString& dk_path );
         /**
          * \brief save a drumkit
-         * \oaram overwrite allows to write over existing drumkit files
+         * \param overwrite allows to write over existing drumkit files
          * \return true on success
          */
-        bool save( bool override=false );
+        bool save( bool overwrite=false );
         /**
          * \brief save a drumkit using given parameters and an instrument list
          * \param name the name of the drumkit
