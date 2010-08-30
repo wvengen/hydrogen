@@ -184,23 +184,26 @@ Instrument* Instrument::load_from( XMLNode* node ) {
     Instrument *instrument = new Instrument( id, node->read_string( "name", "" ), 0 );
     instrument->set_volume( node->read_float( "volume", 1.0f ) );
     instrument->set_muted( node->read_bool( "isMuted", false ) );
-    instrument->set_pan_l( node->read_float( "pan_L", 1.0f ) );
-    instrument->set_pan_r( node->read_float( "pan_R", 1.0f ) );
+    instrument->set_pan_l( node->read_float( "pan_L", 1.0f ) );     // TODO 0.5f ???
+    instrument->set_pan_r( node->read_float( "pan_R", 1.0f ) );     // TODO 0.5f ???
     // may not exist, but can't be empty
     instrument->set_filter_active( node->read_bool( "filterActive", true, false ) );
     instrument->set_filter_cutoff( node->read_float( "filterCutoff", 1.0f, true, false ) );
     instrument->set_filter_resonance( node->read_float( "filterResonance", 0.0f, true, false ) );
     instrument->set_random_pitch_factor( node->read_float( "randomPitchFactor", 0.0f, true, false ) );
-    float fAttack = node->read_float( "Attack", 0, true, false );
-    float fDecay = node->read_float( "Decay", 0, true, false  );
-    float fSustain = node->read_float( "Sustain", 1.0, true, false );
-    float fRelease = node->read_float( "Release", 1000, true, false );
-    instrument->set_adsr( new ADSR( fAttack, fDecay, fSustain, fRelease ) );
+    float attack = node->read_float( "Attack", 0.0f, true, false );
+    float decay = node->read_float( "Decay", 0.0f, true, false  );
+    float sustain = node->read_float( "Sustain", 1.0f, true, false );
+    float release = node->read_float( "Release", 1000.0f, true, false );
+    instrument->set_adsr( new ADSR( attack, decay, sustain, release ) );
     instrument->set_gain( node->read_float( "gain", 1.0f, true, false ) );
     instrument->set_mute_group( node->read_int( "muteGroup", -1, true, false ) );
     instrument->set_midi_out_channel( node->read_int( "midiOutChannel", -1, true, false ) );
     instrument->set_midi_out_note( node->read_int( "midiOutNote", 60, true, false ) );
     instrument->set_stop_note( node->read_bool( "isStopNote", true ,false ) );
+    for ( int i=0; i<MAX_FX; i++ ) {
+        instrument->set_fx_level( node->read_float( QString("FX%1Level").arg(i+1), 0.0 ), i );
+    }
 
     QDomNode filename_node = node->firstChildElement( "filename" );
     if ( !filename_node.isNull() ) {
@@ -238,19 +241,22 @@ void Instrument::save_to( XMLNode* node ) {
     node->write_bool( "isMuted", __muted );
     node->write_float( "pan_L", __pan_l );
     node->write_float( "pan_R", __pan_r );
-    node->write_float( "randomPitchFactor", __random_pitch_factor );
-    node->write_float( "gain", __gain );
     node->write_bool( "filterActive", __filter_active );
     node->write_float( "filterCutoff", __filter_cutoff );
     node->write_float( "filterResonance", __filter_resonance );
+    node->write_float( "randomPitchFactor", __random_pitch_factor );
     node->write_float( "Attack", __adsr->__attack );
     node->write_float( "Decay", __adsr->__decay );
     node->write_float( "Sustain", __adsr->__sustain );
     node->write_float( "Release", __adsr->__release );
+    node->write_float( "gain", __gain );
     node->write_int( "muteGroup", __mute_group );
-    node->write_bool( "isStopNote", __stop_notes );
     node->write_int( "midiOutChannel", __midi_out_channel );
     node->write_int( "midiOutNote", __midi_out_note );
+    node->write_bool( "isStopNote", __stop_notes );
+    for ( int i=0; i<MAX_FX; i++ ) {
+        node->write_float( QString("FX%1Level").arg(i+1), __fx_level[i] );
+    }
     for ( int n = 0; n < MAX_LAYERS; n++ ) {
         XMLNode layer_node = XMLDoc().createElement( "layer" );
         InstrumentLayer* layer = get_layer(n);
