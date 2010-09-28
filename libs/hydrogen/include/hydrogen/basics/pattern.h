@@ -49,6 +49,25 @@ class Pattern : public Object
         /** \brief destructor */
 	    ~Pattern();
 
+        /*
+         * \brief save the pattern within the given XMLNode
+         * \param node the XMLNode to feed
+         */
+        void save_to( XMLNode* node );
+        /**
+         * \brief load a pattern from an XMLNode
+         * \param node the XMLDode to read from
+         * \param instruments the current instrument list to search instrument into
+         * \return a new Pattern instance
+         */
+        static Pattern* load_from( XMLNode *node, InstrumentList* instruments );
+        /**
+         * \brief load the virtual patterns
+         * \param node the XMLDode to read from
+         * \param patterns the current pattern list to search pattern into
+         */
+        static void load_virtuals_from( XMLNode *node, PatternList* patterns );
+
 	    /**
          * delete notes that pertain to instrument I.
          * the function is thread safe (it locks the audio data while deleting notes)

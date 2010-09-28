@@ -49,31 +49,67 @@ Pattern::Pattern( Pattern *other)
     __category( other->get_category() )
 {
     for( notes_cst_it_t it=other->get_notes()->begin(); it!=other->get_notes()->end(); ++it ) {
-        Note *pNote = new Note( it->second );
-        __notes.insert( std::make_pair( it->first, pNote ) );
+        Note* note = new Note( it->second );
+        __notes.insert( std::make_pair( it->first, note ) );
     }
+}
+
+void Pattern::save_to( XMLNode* node ) {
+    node->write_string( "name", __name );
+    node->write_string( "category", __category );
+    node->write_int( "size", __length );
+    XMLNode note_list_node = XMLDoc().createElement( "noteList" );
+    for( notes_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
+        Note* note = it->second;
+        if(note) {
+            XMLNode note_node = XMLDoc().createElement( "note" );
+            note->save_to( &note_node );
+            note_list_node.appendChild( note_node );
+        }
+    }
+    node->appendChild( note_list_node );
+}
+
+Pattern* Pattern::load_from( XMLNode *node, InstrumentList *instruments ) {
+    Pattern *pattern = new Pattern(
+            node->read_string( "name", "unknown", false, false ),
+            node->read_string( "category", "unknown", false, false ),
+            node->read_int( "size", -1, false, false )
+            );
+    XMLNode note_list_node = node->firstChildElement( "noteList" );
+	if ( !note_list_node.isNull() ) {
+        XMLNode note_node = note_list_node.firstChildElement( "note" );
+        while ( !note_node.isNull() ) {
+            Note *note = Note::load_from( &note_node, instruments );
+            if(note) {
+                pattern->get_notes()->insert( std::make_pair( note->get_position(), note ) );
+            }
+            note_node = note_node.nextSiblingElement( "note" );
+        }
+    }
+    return pattern;
 }
 
 Pattern::~Pattern() {
     for( notes_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
-        Note *pNote = it->second;
-        delete pNote;
+        Note* note = it->second;
+        delete note;
     }
 }
 
-void Pattern::purge_instrument( Instrument * I ) {
+void Pattern::purge_instrument( Instrument* I ) {
     bool locked = false;
     std::list< Note* > slate;
     notes_it_t it = __notes.begin();
     while ( it!=__notes.end() ) {
-        Note *pNote = it->second;
-        assert( pNote );
-        if ( pNote->get_instrument() == I ) {
+        Note *note = it->second;
+        assert( note );
+        if ( note->get_instrument() == I ) {
             if ( !locked ) {
                 H2Core::AudioEngine::get_instance()->lock( RIGHT_HERE );
                 locked = true;
             }
-            slate.push_back( pNote );
+            slate.push_back( note );
             __notes.erase( it++ );
         } else {
             ++it;
@@ -90,9 +126,9 @@ void Pattern::purge_instrument( Instrument * I ) {
 
 bool Pattern::references_instrument( Instrument * I ) {
     for( notes_cst_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
-        Note *pNote = it->second;
-        assert( pNote );
-        if ( pNote->get_instrument() == I ) {
+        Note *note = it->second;
+        assert( note );
+        if ( note->get_instrument() == I ) {
             return true;
         }
     }
@@ -101,9 +137,9 @@ bool Pattern::references_instrument( Instrument * I ) {
 
 void Pattern::set_to_old() {
     for( notes_cst_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
-        Note *pNote = it->second;
-        assert( pNote );
-        pNote->set_just_recorded( false );
+        Note *note = it->second;
+        assert( note );
+        note->set_just_recorded( false );
     }
 }
 
