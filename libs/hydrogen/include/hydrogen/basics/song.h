@@ -24,7 +24,7 @@
 #define H2_SONG_H
 
 #include <hydrogen/Object.h>
-#include <QDomNode>
+#include <hydrogen/helpers/xml.h>
 
 namespace H2Core
 {
@@ -86,8 +86,8 @@ public:
     /** destructor */
     ~Song();
 
-    static Song* load( const QString& sFilename );
-    bool save( const QString& sFilename );
+    static Song* load( const QString& song_path );
+    bool save( const QString& song_path, bool overwrite=false );
     void readTempPatternList( QString filename );
     /**
      * Remove all the notes in the song that play on instrument.
@@ -156,26 +156,18 @@ private:
     QString __notes;                    ///< textual notes about the song
     QString __license;	                ///< license of the song
     QString __filename;                 ///< 
-};
 
-#include <QDomNode>
-
-/**
-\ingroup H2CORE
-\brief	Read XML file of a song
-*/
-class SongReader : public Object
-{
-    H2_OBJECT
-public:
-        SongReader();
-        ~SongReader();
-        Song* readSong( const QString& filename );
-
-private:
-        QString m_sSongVersion;
-        /// Dato un XmlNode restituisce un oggetto Pattern
-        Pattern* getPattern( QDomNode pattern, InstrumentList* instrList );
+    /*
+     * \brief save the song within the given XMLNode
+     * \param node the XMLNode to feed
+     */
+    void save_to( XMLNode* node );
+    /**
+     * \brief load a song from an XMLNode
+     * \param node the XMLDode to read from
+     * \return a new Instrument instance
+    */
+    static Song* load_from( XMLNode *node );
 };
 
 };
