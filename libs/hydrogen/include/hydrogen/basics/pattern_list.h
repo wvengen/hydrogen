@@ -94,6 +94,13 @@ class PatternList : public Object
         void set_to_old();
 
         /**
+         * \brief find a pattern within the patterns
+         * \param name the name of the pattern to find
+         * \return 0 if not found
+         */
+	    Pattern* find( const QString& name );
+
+        /**
          * \brief swap the patterns of two different indexes
          * \param idx_a the first index
          * \param idx_b the second index
@@ -115,6 +122,24 @@ class PatternList : public Object
          * \param pattern the pattern to remove where it's found
          */
         void del_virtual_pattern( Pattern* pattern);
+
+        /*
+         * \brief save the pattern list within the given XMLNode
+         * \param node the XMLNode to feed
+         */
+        void save_to( XMLNode* node );
+        /**
+         * \brief load a pattern list from an XMLNode
+         * \param node the XMLDode to read from
+         * \param instruments the current instrument list to search instrument into
+         * \return a new PatternList instance
+         */
+        static PatternList* load_from( XMLNode* node, InstrumentList* instruments );
+        /**
+         * \brief load the virtual patterns
+         * \param node the XMLDode to read from
+         */
+        void load_virtuals_from( XMLNode* node );
 
     private:
         std::vector<Pattern*> __patterns;

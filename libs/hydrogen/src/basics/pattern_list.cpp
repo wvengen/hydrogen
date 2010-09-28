@@ -40,6 +40,48 @@ PatternList::PatternList( PatternList* other) : Object( __class_name ) {
         //(*this) << ( new Pattern( (*other)[i] ) );    // TODO should we ?!
 }
 
+PatternList* PatternList::load_from( XMLNode* node, InstrumentList* instruments ) {
+    PatternList *patterns = new PatternList();
+    XMLNode pattern_node = node->firstChildElement( "pattern" );
+    while ( !pattern_node.isNull() ) {
+        Pattern *pattern = Pattern::load_from( &pattern_node, instruments );
+        (*patterns) << pattern;
+        pattern_node = pattern_node.nextSiblingElement( "pattern" );
+    }
+    return patterns;
+}
+
+void PatternList::load_virtuals_from( XMLNode* node ) {
+    XMLNode virtual_pattern_node = node->firstChildElement( "pattern" );
+    while ( !virtual_pattern_node.isNull() ) {
+        QString name = virtual_pattern_node.read_string( "name", "unknown", false, false );
+        Pattern *pattern = find( name );
+        if( pattern ) {
+            XMLNode virtual_node = node->firstChildElement( "virtual" );
+		    while ( !virtual_node.isNull() ) {
+			    QString virtual_name = virtual_node.firstChild().nodeValue();
+                Pattern *virtual_pattern = find( virtual_name );
+                if( virtual_pattern ) {
+			        pattern->add_virtual_pattern( virtual_pattern );
+                } else {
+		            ERRORLOG( QString("Virtual pattern (data) %1 does not belong to pattern list)").arg( virtual_name ) );
+                }
+            }
+        } else {
+		    ERRORLOG( QString("Virtual pattern (virtual) %1 does not belong to pattern list)").arg( name ) );
+        }
+        virtual_pattern_node = virtual_pattern_node.nextSiblingElement( "pattern" );
+    }
+}
+
+void PatternList::save_to( XMLNode* node ) {
+    for ( int i = 0; i < size(); i++ ) {
+        XMLNode pattern_node = XMLDoc().createElement( "pattern" );
+        (*this)[i]->save_to( &pattern_node );
+        node->appendChild( pattern_node );
+    }
+}
+
 void PatternList::operator<<( Pattern* pattern ) {
     // do nothing if already in __patterns
     for( int i=0; i<__patterns.size(); i++ ) if(__patterns[i]==pattern) return;
@@ -96,6 +138,12 @@ int PatternList::index( Pattern* pattern ) {
 
 void PatternList::set_to_old() {
 	for ( int i=0 ; i<__patterns.size() ; i++ ) __patterns[i]->set_to_old();
+}
+
+Pattern*  PatternList::find( const QString& name ) {
+    for(int i=0; i<__patterns.size(); i++)
+        if (__patterns[i]->get_name()==name) return __patterns[i];
+    return 0;
 }
 
 void PatternList::swap( int idx_a, int idx_b ) {
