@@ -106,12 +106,12 @@ void Song::purge_instrument( Instrument* instrument ) {
 
 Song* Song::load( const QString& song_path ) {
     INFOLOG( QString("Load song %1").arg(song_path) );
-    if( !Filesystem::file_readable( song_path ) ) {
+    if ( !Filesystem::file_readable( song_path ) ) {
         ERRORLOG( QString("%1 is not a readable song file").arg(song_path) );
         return 0;
     }
     XMLDoc doc;
-    if( !doc.read( song_path ) ) return 0;
+    if ( !doc.read( song_path ) ) return 0;
     // TODO XML VALIDATION !!!!!!!!!!
     XMLNode root = doc.firstChildElement( "song" );
     if ( root.isNull() ) {
@@ -129,14 +129,16 @@ Song* Song::load( const QString& song_path ) {
 
 Song* Song::load_from( XMLNode* node ) {
 
-	QString name( node->read_string( "name", "Untitled Song" ) );
-	QString author( node->read_string( "author", "Unknown Author" ) );
 	float bpm = node->read_float( "bpm", 120 );
-	float volume = node->read_float( "volume", 0.5 );
-	
+
     Hydrogen::get_instance()->setNewBpmJTM( bpm ); 
 
-    Song *song = new Song( name, author, bpm, volume );
+    Song *song = new Song(
+        node->read_string( "name", "Untitled Song" ),
+        node->read_string( "author", "Unknown Author" ),
+        bpm,
+        node->read_float( "volume", 0.5 )
+    );
 	song->set_click_volume( node->read_float("metronomeVolume", 0.5 ) );
 	song->set_notes( node->read_string( "notes", "..." ) );
 	song->set_license( node->read_string( "license", "Unknown License") );
@@ -162,14 +164,50 @@ Song* Song::load_from( XMLNode* node ) {
 	song->set_instruments( instruments );
 	// Patterns
 	XMLNode pattern_list_node = node->firstChildElement( "patternList" );
+    if ( pattern_list_node.isNull() ) {
+		ERRORLOG( "Error reading song: patternList node not found" );
+		delete song;
+		return 0;
+    }
     PatternList *patterns = new PatternList();
     patterns->load_from( &pattern_list_node, song->get_instruments() );
 	XMLNode virtual_pattern_list_node = node->firstChildElement( "virtualPatternList" );
+    if ( virtual_pattern_list_node.isNull() ) {
+		ERRORLOG( "Error reading song: virtualPatternList node not found" );
+		delete song;
+		return 0;
+    }
+    // Virtual Patterns
     patterns->load_virtuals_from( &virtual_pattern_list_node );
 	patterns->compute_flattened_virtual_patterns();
 	song->set_patterns( patterns );
-    // TODO
 	// Pattern sequence
+	XMLNode pattern_sequence_node = node->firstChildElement( "patternSequence" );
+    std::vector<PatternList*>* pattern_groups = new std::vector<PatternList*>;
+    if ( pattern_sequence_node.isNull() ) {
+        ERRORLOG( "Error reading song : patternSequence node not found" );
+        delete song;
+        return 0;
+    }
+    XMLNode group_node = pattern_sequence_node.firstChildElement( "group" );
+    while ( !group_node.isNull() ) {
+        PatternList *pattern_sequence = new PatternList();
+        XMLNode pattern_id_node = group_node.firstChildElement( "patternID" );
+        while ( !pattern_id_node.isNull() ) {
+            QString pattern_name = pattern_id_node.firstChild().nodeValue();
+            Pattern *pattern = patterns->find( pattern_name );
+            if ( !pattern ) {
+                WARNINGLOG( QString("patternid %1 not found in patternSequence").arg(pattern_name) );
+            } else {
+                pattern_sequence->add( pattern );
+            }
+            pattern_id_node = ( QDomNode ) pattern_id_node.nextSiblingElement( "patternID" );
+        }
+        pattern_groups->push_back( pattern_sequence );
+        group_node = group_node.nextSiblingElement( "group" );
+    }
+	song->set_pattern_group_vector( pattern_groups );
+    // TODO
     // LADSPA
     // BPM Time Line
     // Time Line Tag
@@ -178,6 +216,7 @@ Song* Song::load_from( XMLNode* node ) {
 
 /// Save a song to file
 bool Song::save( const QString& song_path, bool overwrite ) {
+    // TODO
     /*
     INFOLOG( "Saving song" );
     if( Filesystem::file_exists( song_path ) && !overwrite ) {
@@ -377,73 +416,8 @@ void Song::readTempPatternList( QString filename )
 /*
 Song* SongReader::readSong( const QString& filename )
 {
-	// Pattern sequence
-	QDomNode patternSequenceNode = songNode.firstChildElement( "patternSequence" );
-
-	std::vector<PatternList*>* pPatternGroupVector = new std::vector<PatternList*>;
-	
-	// back-compatibility code..
-	QDomNode pPatternIDNode = patternSequenceNode.firstChildElement( "patternID" );
-	while ( ! pPatternIDNode.isNull()  ) {
-		WARNINGLOG( "Using old patternSequence code for back compatibility" );
-		PatternList *patternSequence = new PatternList();
-		QString patId = pPatternIDNode.firstChildElement().text();
-		ERRORLOG(patId);
-
-		Pattern *pat = NULL;
-		for ( unsigned i = 0; i < patternList->size(); i++ ) {
-			Pattern *tmp = patternList->get( i );
-			if ( tmp ) {
-				if ( tmp->get_name() == patId ) {
-					pat = tmp;
-					break;
-				}
-			}
-		}
-		if ( pat == NULL ) {
-			WARNINGLOG( "patternid not found in patternSequence" );
-			pPatternIDNode = ( QDomNode ) pPatternIDNode.nextSiblingElement( "patternID" );
-			continue;
-		}
-		patternSequence->add( pat );
-
-		pPatternGroupVector->push_back( patternSequence );
-
-		pPatternIDNode = ( QDomNode ) pPatternIDNode.nextSiblingElement( "patternID" );
-	}
-
-	QDomNode groupNode = patternSequenceNode.firstChildElement( "group" );
-	while (  !groupNode.isNull()  ) {
-		PatternList *patternSequence = new PatternList();
-		QDomNode patternId = groupNode.firstChildElement( "patternID" );
-		while (  !patternId.isNull()  ) {
-			QString patId = patternId.firstChild().nodeValue();
-
-			Pattern *pat = NULL;
-			for ( unsigned i = 0; i < patternList->size(); i++ ) {
-				Pattern *tmp = patternList->get( i );
-				if ( tmp ) {
-					if ( tmp->get_name() == patId ) {
-						pat = tmp;
-						break;
-					}
-				}
-			}
-			if ( pat == NULL ) {
-				WARNINGLOG( "patternid not found in patternSequence" );
-				patternId = ( QDomNode ) patternId.nextSiblingElement( "patternID" );
-				continue;
-			}
-			patternSequence->add( pat );
-			patternId = ( QDomNode ) patternId.nextSiblingElement( "patternID" );
-		}
-		pPatternGroupVector->push_back( patternSequence );
-
-		groupNode = groupNode.nextSiblingElement( "group" );
-	}
-
-	song->set_pattern_group_vector( pPatternGroupVector );
-	
+*/
+/*
 #ifdef H2CORE_HAVE_LADSPA
 	// reset FX
 	for ( int fx = 0; fx < MAX_FX; ++fx ) {
