@@ -21,7 +21,6 @@
  */
 
 #include <hydrogen/basics/note.h>
-#include <hydrogen/basics/instrument.h>
 
 #include <cassert>
 //#include <cstdlib>
@@ -34,13 +33,13 @@ const char* Note::__key_str[] = { "C", "Cs", "D", "Ef", "E", "F", "Fs", "G", "Af
 
 Note::Note( Instrument* instrument, int position, float velocity, float pan_l, float pan_r, int length, float pitch )
     : Object( __class_name ),
-    __instrument( 0 ),
+    __instrument( instrument ),
     __position( position ),
     __velocity( velocity ),
-    __pan_l( 0.0 ),
-    __pan_r( 0.0 ),
-    __length( 0 ),
-    __pitch( 0.0 ),
+    __pan_l( pan_l ),
+    __pan_r( pan_r ),
+    __length( length ),
+    __pitch( pitch ),
     __key( C ),
     __octave( 0 ),
     __adsr( ADSR() ),
@@ -58,11 +57,6 @@ Note::Note( Instrument* instrument, int position, float velocity, float pan_l, f
     __note_off( false ),
     __just_recorded( false )
 {
-    set_pan_l( pan_l );
-    set_pan_r( pan_r );
-    set_length( length );
-    set_instrument( instrument );
-    set_pitch( pitch );
 }
 
 Note::Note( Note* other )
@@ -146,6 +140,41 @@ void Note::dump() {
 	        .arg( __pitch )
 	        .arg( __note_off )
             );
+}
+
+void Note::save_to( XMLNode* node ) {
+    node->write_int( "position", __position );
+    node->write_float( "leadlag", __lead_lag );
+    node->write_float( "velocity", __velocity );
+    node->write_float( "pan_L", __pan_l );
+    node->write_float( "pan_R", __pan_r );
+    node->write_float( "pitch", __pitch );
+    node->write_string( "key", key_to_string() );
+    node->write_int( "length", __length );
+    node->write_int( "instrument", get_instrument()->get_id() );
+    node->write_bool( "note_off", __note_off );
+}
+
+Note* Note::load_from( XMLNode* node, InstrumentList* instruments ) {
+    int instr_id = node->read_int( "instrument", EMPTY_INSTR_ID );
+    Instrument* instr = instruments->find( instr_id );
+    if( !instr ) {
+		ERRORLOG( QString("Instrument with ID: '%1' not found. Note skipped.").arg(instr_id) );
+        return 0;
+    }
+    Note *note = new Note(
+        instr,
+        node->read_int( "position", 0 ),
+        node->read_float( "velocity", 0.8f ),
+        node->read_float( "pan_L", 0.5f ),
+        node->read_float( "pan_R", 0.5f ),
+        node->read_int( "length", -1 ),
+        node->read_float( "pitch", 0.0f )
+    );
+    note->set_lead_lag( node->read_float( "leadlag", 0, false, false ) );
+    note->set_key_octave( node->read_string( "key", "C0", false, false ) );
+    note->set_note_off( node->read_bool( "note_off", false, false, false ) );
+    return note;
 }
 
 };

@@ -27,6 +27,8 @@
 #include <hydrogen/Object.h>
 #include <hydrogen/adsr.h>
 #include <hydrogen/basics/instrument.h>
+#include <hydrogen/basics/instrument_list.h>
+#include <hydrogen/helpers/xml.h>
 
 #define KEY_MIN              0
 #define KEY_MAX             11
@@ -59,6 +61,7 @@ class Note : public Object
     public:
         /** \brief possible keys */
         enum Key { C=KEY_MIN, Cs, D, Ef, E, F, Fs, G, Af, A, Bf, B };
+
         /**
          * \brief constructor
          * \param instrument the instrument played by this note
@@ -83,6 +86,19 @@ class Note : public Object
 	    Note( Note* other );
         /** \brief destructor */
         ~Note();
+
+        /*
+         * \brief save the note within the given XMLNode
+         * \param node the XMLNode to feed
+         */
+        void save_to( XMLNode* node );
+        /**
+         * \brief load a note from an XMLNode
+         * \param node the XMLDode to read from
+         * \param instruments the current instrument list to search instrument into
+         * \return a new Note instance
+         */
+        static Note* load_from( XMLNode* node, InstrumentList* instruments );
 
         /** \brief output details through logger with DEBUG severity */
         void dump();
