@@ -207,8 +207,49 @@ Song* Song::load_from( XMLNode* node ) {
         group_node = group_node.nextSiblingElement( "group" );
     }
 	song->set_pattern_group_vector( pattern_groups );
-    // TODO
     // LADSPA
+#ifdef H2CORE_HAVE_LADSPA
+	Effects::get_instance()->reset();
+#endif
+    XMLNode ladspa_node = node->firstChildElement( "ladspa" );
+	if ( ladspa_node.isNull() ) {
+	    WARNINGLOG( "ladspa node not found" );
+    } else {
+#ifdef H2CORE_HAVE_LADSPA
+		int fx_count = 0;
+        XMLNode fx_node = ladspa_node.firstChildElement( "fx" );
+		while ( !fx_node.isNull() ) {
+			QString fx_name = fx_node.read_string( "name", "" );
+			if ( !fx_name.isEmpty() ) {
+				// FIXME: the sample rate should be set by the engine
+				LadspaFX* fx = LadspaFX::load( fx_node.read_string( "filename", "", false, false ), fx_name, 44100 );
+				if ( fx ) {
+					fx->setEnabled( fx_node.read_bool( "enabled", false ) );
+					fx->setVolume( fx_node.read_float( "volume", 1.0f ) );
+					XMLNode input_control_node = fx_node.firstChildElement( "inputControlPort" );
+					while ( !input_control_node.isNull() ) {
+						QString port_name = input_control_node.read_string( "name", "", false, false );
+						for ( int i=0; i < fx->inputControlPorts.size(); i++ ) {
+							LadspaControlPort *port = fx->inputControlPorts[i];
+							if ( QString( port->sName ) == port_name ) {
+								port->fControlValue = input_control_node.read_float( "value", 0.0 );
+							}
+						}
+                        input_control_node = input_control_node.nextSiblingElement( "inputControlPort" );
+					}
+				    Effects::get_instance()->setLadspaFX( fx, fx_count );
+				}
+			}
+			fx_count++;
+            if( fx_count>=MAX_FX) {
+                WARNINGLOG( QString("Maximum number (%1) of ladspa fx has been reached, don't do further").arg(MAX_FX) );
+                break;
+            }
+			fx_node = fx_node.nextSiblingElement( "fx" );
+		}
+#endif
+	}
+    // TODO
     // BPM Time Line
     // Time Line Tag
     return song;
@@ -417,61 +458,7 @@ void Song::readTempPatternList( QString filename )
 Song* SongReader::readSong( const QString& filename )
 {
 */
-/*
-#ifdef H2CORE_HAVE_LADSPA
-	// reset FX
-	for ( int fx = 0; fx < MAX_FX; ++fx ) {
-		//LadspaFX* pFX = Effects::get_instance()->getLadspaFX( fx );
-		//delete pFX;
-		Effects::get_instance()->setLadspaFX( NULL, fx );
-	}
-#endif
-	
-	// LADSPA FX
-	QDomNode ladspaNode = songNode.firstChildElement( "ladspa" );
-	if ( !ladspaNode.isNull() ) {
-		int nFX = 0;
-		QDomNode fxNode = ladspaNode.firstChildElement( "fx" );
-		while (  !fxNode.isNull()  ) {
-			QString sName = LocalFileMng::readXmlString( fxNode, "name", "" );
-			QString sFilename = LocalFileMng::readXmlString( fxNode, "filename", "" );
-			bool bEnabled = LocalFileMng::readXmlBool( fxNode, "enabled", false );
-			float fVolume = LocalFileMng::readXmlFloat( fxNode, "volume", 1.0 );
-
-			if ( sName != "no plugin" ) {
-				// FIXME: il caricamento va fatto fare all'engine, solo lui sa il samplerate esatto
-#ifdef H2CORE_HAVE_LADSPA
-				LadspaFX* pFX = LadspaFX::load( sFilename, sName, 44100 );
-				Effects::get_instance()->setLadspaFX( pFX, nFX );
-				if ( pFX ) {
-					pFX->setEnabled( bEnabled );
-					pFX->setVolume( fVolume );
-					QDomNode inputControlNode = fxNode.firstChildElement( "inputControlPort" );
-					while ( !inputControlNode.isNull() ) {
-						QString sName = LocalFileMng::readXmlString( inputControlNode, "name", "" );
-						float fValue = LocalFileMng::readXmlFloat( inputControlNode, "value", 0.0 );
-
-						for ( unsigned nPort = 0; nPort < pFX->inputControlPorts.size(); nPort++ ) {
-							LadspaControlPort *port = pFX->inputControlPorts[ nPort ];
-							if ( QString( port->sName ) == sName ) {
-								port->fControlValue = fValue;
-							}
-						}
-						 inputControlNode = ( QDomNode ) inputControlNode.nextSiblingElement( "inputControlPort" );
-					}
-
-					//TiXmlNode* outputControlNode;
-					//for ( outputControlNode = fxNode->FirstChild( "outputControlPort" ); outputControlNode; outputControlNode = outputControlNode->NextSibling( "outputControlPort" ) ) {
-					//}
-				}
-#endif
-			}
-			nFX++;
-			fxNode = ( QDomNode ) fxNode.nextSiblingElement( "fx" );
-		}
-	} else {
-		WARNINGLOG( "ladspa node not found" );
-	}
+/*	
 
 	
 	Hydrogen::get_instance()->m_timelinevector.clear();
