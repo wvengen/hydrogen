@@ -121,6 +121,7 @@ void  Effects::setLadspaFX( LadspaFX* pFX, int nFX )
 	AudioEngine::get_instance()->unlock();
 }
 
+void Effects::reset() { for ( int i=0; i<MAX_FX; i++ ) setLadspaFX( NULL, i ); }
 
 
 ///

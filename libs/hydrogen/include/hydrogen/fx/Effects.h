@@ -50,6 +50,8 @@ public:
 	LadspaFX* getLadspaFX( int nFX );
 	void  setLadspaFX( LadspaFX* pFX, int nFX );
 
+    void reset();
+
 	std::vector<LadspaFXInfo*> getPluginList();
 	LadspaFXGroup* getLadspaFXGroup();
 
