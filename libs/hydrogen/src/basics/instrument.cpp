@@ -112,7 +112,7 @@ Instrument::~Instrument() {
 Instrument* Instrument::create_empty() { return new Instrument( EMPTY_INSTR_ID, "Empty Instrument", new ADSR() ); }
 
 Instrument* Instrument::load_instrument( const QString& drumkit_name, const QString& instrument_name ) {
-    Instrument* i = create_empty();
+    Instrument *i = create_empty();
     i->load_from( drumkit_name, instrument_name, false );
     return i;
 }
@@ -258,9 +258,9 @@ void Instrument::save_to( XMLNode* node ) {
         node->write_float( QString("FX%1Level").arg(i+1), __fx_level[i] );
     }
     for ( int n = 0; n < MAX_LAYERS; n++ ) {
-        XMLNode layer_node = XMLDoc().createElement( "layer" );
         InstrumentLayer* layer = get_layer(n);
         if(layer) {
+            XMLNode layer_node = XMLDoc().createElement( "layer" );
             layer->save_to( &layer_node );
             node->appendChild( layer_node );
         }

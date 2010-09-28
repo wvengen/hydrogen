@@ -44,8 +44,8 @@ InstrumentList::~InstrumentList() {
 }
 
 InstrumentList* InstrumentList::load_from( XMLNode* node ) {
-    XMLNode instrument_node = node->firstChildElement( "instrument" );
     InstrumentList *instruments = new InstrumentList();
+    XMLNode instrument_node = node->firstChildElement( "instrument" );
     int count = 0;
     while ( !instrument_node.isNull() ) {
         count++;
@@ -53,7 +53,7 @@ InstrumentList* InstrumentList::load_from( XMLNode* node ) {
             ERRORLOG( QString("instrument count >= %2, stop reading instruments").arg(MAX_INSTRUMENTS) );
             break;
         }
-        Instrument* instrument = Instrument::load_from( &instrument_node );
+        Instrument *instrument = Instrument::load_from( &instrument_node );
         if(instrument) {
             (*instruments) << instrument;
         } else {
