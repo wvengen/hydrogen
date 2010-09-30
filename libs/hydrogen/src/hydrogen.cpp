@@ -3029,6 +3029,21 @@ int Hydrogen::getSelectedPatternNumber()
 }
 
 
+void Hydrogen::setSelectedPatternNumberWithoutGuiEvent( int nPat )
+{
+        if ( nPat == m_nSelectedPatternNumber
+            || ( nPat + 1 > m_pSong->get_pattern_list()->get_size() ) )
+                return;
+
+        if ( Preferences::get_instance()->patternModePlaysSelected() ) {
+                AudioEngine::get_instance()->lock( RIGHT_HERE );
+
+                m_nSelectedPatternNumber = nPat;
+                AudioEngine::get_instance()->unlock();
+        } else {
+                m_nSelectedPatternNumber = nPat;
+        }
+}
 
 void Hydrogen::setSelectedPatternNumber( int nPat )
 {
