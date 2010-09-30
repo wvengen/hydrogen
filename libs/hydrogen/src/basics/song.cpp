@@ -124,6 +124,8 @@ Song* Song::load( const QString& song_path ) {
 		WARNINGLOG( QString("Song [%1] saved with version %2").arg(song_path).arg(version) );
 	}
     Song* song = Song::load_from( &root );
+	song->set_is_modified( false );
+	song->set_filename( song_path );
     return song;
 }
 
@@ -249,9 +251,38 @@ Song* Song::load_from( XMLNode* node ) {
 		}
 #endif
 	}
-    // TODO
     // BPM Time Line
+    Hydrogen::get_instance()->m_timelinevector.clear();
+	Hydrogen::HTimelineVector tlvector;
+	XMLNode bpm_time_line_node = node->firstChildElement( "BPMTimeLine" );
+	if ( bpm_time_line_node.isNull() ) {
+		WARNINGLOG( "BPMTimeLine node not found" );
+    } else {
+		XMLNode bpm_node = bpm_time_line_node.firstChildElement( "newBPM" );
+		while ( !bpm_node.isNull() ) {
+			tlvector.m_htimelinebeat = bpm_node.read_int( "BAR", 0 );
+			tlvector.m_htimelinebpm = bpm_node.read_float( "BPM", 120.0 );	
+			Hydrogen::get_instance()->m_timelinevector.push_back( tlvector );
+			Hydrogen::get_instance()->sortTimelineVector();
+			bpm_node = bpm_node.nextSiblingElement( "newBPM" );
+		}
+	}
     // Time Line Tag
+	Hydrogen::get_instance()->m_timelinetagvector.clear();
+	Hydrogen::HTimelineTagVector tltagvector;
+	XMLNode time_line_tag_node = node->firstChildElement( "timeLineTag" );
+	if ( time_line_tag_node.isNull() ) {
+		WARNINGLOG( "timeLineTag node not found" );
+    } else {
+		XMLNode tag_node = time_line_tag_node.firstChildElement( "newTAG" );
+		while( !tag_node.isNull() ) {
+			tltagvector.m_htimelinetagbeat = tag_node.read_int( "BAR", 0 );
+			tltagvector.m_htimelinetag = tag_node.read_string( "TAG", "" );	
+			Hydrogen::get_instance()->m_timelinetagvector.push_back( tltagvector );
+			Hydrogen::get_instance()->sortTimelineTagVector();
+			tag_node = tag_node.nextSiblingElement( "newTAG" );
+		}
+	}
     return song;
 }
 
@@ -454,53 +485,6 @@ void Song::readTempPatternList( QString filename )
 
 };
 
-/*
-Song* SongReader::readSong( const QString& filename )
-{
-*/
-/*	
-
-	
-	Hydrogen::get_instance()->m_timelinevector.clear();
-	Hydrogen::HTimelineVector tlvector;
-	QDomNode bpmTimeLine = songNode.firstChildElement( "BPMTimeLine" );
-	if ( !bpmTimeLine.isNull() ) {
-		QDomNode newBPMNode = bpmTimeLine.firstChildElement( "newBPM" );
-		while( !newBPMNode.isNull() ) {
-			tlvector.m_htimelinebeat = LocalFileMng::readXmlInt( newBPMNode, "BAR", 0 );
-			tlvector.m_htimelinebpm = LocalFileMng::readXmlFloat( newBPMNode, "BPM", 120.0 );	
-			Hydrogen::get_instance()->m_timelinevector.push_back( tlvector );
-			Hydrogen::get_instance()->sortTimelineVector();
-			newBPMNode = newBPMNode.nextSiblingElement( "newBPM" );
-		}
-	}
-	else {
-		WARNINGLOG( "bpmTimeLine node not found" );
-	}
-
-	
-	Hydrogen::get_instance()->m_timelinetagvector.clear();
-	Hydrogen::HTimelineTagVector tltagvector;
-	QDomNode timeLineTag = songNode.firstChildElement( "timeLineTag" );
-	if ( !timeLineTag.isNull() ) {
-		QDomNode newTAGNode = timeLineTag.firstChildElement( "newTAG" );
-		while( !newTAGNode.isNull() ) {
-			tltagvector.m_htimelinetagbeat = LocalFileMng::readXmlInt( newTAGNode, "BAR", 0 );
-			tltagvector.m_htimelinetag = LocalFileMng::readXmlString( newTAGNode, "TAG", "" );	
-			Hydrogen::get_instance()->m_timelinetagvector.push_back( tltagvector );
-			Hydrogen::get_instance()->sortTimelineTagVector();
-			newTAGNode = newTAGNode.nextSiblingElement( "newTAG" );
-		}
-	}
-	else {
-		WARNINGLOG( "TagTimeLine node not found" );
-	}
-	song->set_is_modified( false );
-	song->set_filename( filename );
-	return song;
-}
-
-*/
 
 /*
 Pattern* SongReader::getPattern( QDomNode pattern, InstrumentList* instrList )
