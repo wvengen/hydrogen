@@ -8,7 +8,6 @@ LIST(APPEND hydrogen_INCLUDES ${CMAKE_CURRENT_BINARY_DIR}/include/hydrogen/confi
 
 ADD_LIBRARY( hydrogen-core ${H2CORE_LIBRARY_TYPE} ${hydrogen_SOURCES})
 INCLUDE_DIRECTORIES( include
-    ${CMAKE_SOURCE_DIR}                             # TODO remove this when core and gui are nicely splitted
     ${CMAKE_CURRENT_BINARY_DIR}/include             # config.h
     ${QT_INCLUDES}
     ${LIBTAR_INCLUDE_DIR}
@@ -35,6 +34,7 @@ SET_TARGET_PROPERTIES(hydrogen-core
 TARGET_LINK_LIBRARIES(hydrogen-core
     ${QT_QTCORE_LIBRARY}
     ${QT_QTXML_LIBRARY}
+    ${QT_QTXMLPATTERNS_LIBRARY}
     ${LIBTAR_LIBRARIES}
     ${LIBARCHIVE_LIBRARIES}
     ${LIBSNDFILE_LIBRARIES}
