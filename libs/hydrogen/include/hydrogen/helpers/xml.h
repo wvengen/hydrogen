@@ -114,11 +114,14 @@ class XMLDoc : public Object, public QDomDocument
         /** \brief basic constructor */
         XMLDoc( );
         /** \brief read the content of an xml file
+         * \param filepath the path to the file to read from
+         * \param schema_path the path to the XML Schema file
          * \return true on success */
-        bool read( const QString& filename );
+        bool read( const QString& filepath, const QString& schemapath=0 );
         /** \brief write itself into a file
+         * \param filepath the path to the file to write to
          * \return true an success */
-        bool write( const QString& filename );
+        bool write( const QString& filepath );
 };
 
 };

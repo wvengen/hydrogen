@@ -27,6 +27,8 @@
 #include <hydrogen/helpers/xml.h>
 #include <QtCore/QLocale>
 #include <QtCore/QFile>
+#include <QtXmlPatterns/QXmlSchema>
+#include <QtXmlPatterns/QXmlSchemaValidator>
 
 namespace H2Core
 {
@@ -106,24 +108,45 @@ const char* XMLDoc::__class_name ="XMLDoc";
 
 XMLDoc::XMLDoc( ) : Object(__class_name) { }
 
-bool XMLDoc::read( const QString& filename ) {
-    QFile file( filename );
+bool XMLDoc::read( const QString& filepath, const QString& schemapath ) {
+    QXmlSchema schema;
+    if( schemapath!=0 ) {
+        QFile file(schemapath);
+        if ( !file.open(QIODevice::ReadOnly) ) {
+            ERRORLOG( QString("Unable to open xml schema %1 for reading").arg(schemapath) );
+        } else {
+            schema.load(&file, QUrl::fromLocalFile(file.fileName()));
+            file.close();
+        }
+    }
+    QFile file( filepath );
     if ( !file.open(QIODevice::ReadOnly) ) {
-        ERRORLOG( QString("Unable to open %1 for reading").arg(filename) );
+        ERRORLOG( QString("Unable to open %1 for reading").arg(filepath) );
         return false;
     }
+    if ( schemapath!=0 ) {
+        if ( schema.isValid() ) {
+            QXmlSchemaValidator validator(schema);
+            if ( !validator.validate(&file, QUrl::fromLocalFile(file.fileName())) ) {
+                ERRORLOG( QString("XML document %1 is not valid (%2)").arg(filepath).arg(schemapath) );
+                return false;
+            }
+        } else {
+            WARNINGLOG( QString("%2 XML schema is not valid").arg(schemapath) );
+        }
+    }
     if( !setContent( &file ) ) {
-        ERRORLOG( QString("Unable to read XML document %1").arg(filename) );
+        ERRORLOG( QString("Unable to read XML document %1").arg(filepath) );
         return false;
     }
     file.close();
     return true;
 }
 
-bool XMLDoc::write( const QString& filename ) {
-    QFile file( filename );
+bool XMLDoc::write( const QString& filepath ) {
+    QFile file( filepath );
     if ( !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate ) ) {
-        ERRORLOG( QString("Unable to open %1 for writting").arg(filename) );
+        ERRORLOG( QString("Unable to open %1 for writting").arg(filepath) );
         return false;
     }
     QTextStream out(&file);
