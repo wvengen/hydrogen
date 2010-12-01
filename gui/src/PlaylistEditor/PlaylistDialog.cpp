@@ -974,6 +974,7 @@ bool PlaylistDialog::eventFilter ( QObject *o, QEvent *e )
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
 				Playlist::get_instance()->setPrevSongPlaylist();
+                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				return TRUE;
 				break;
 
@@ -981,6 +982,7 @@ bool PlaylistDialog::eventFilter ( QObject *o, QEvent *e )
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
 				Playlist::get_instance()->setNextSongPlaylist();
+                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				return TRUE;
 				break;
 		}

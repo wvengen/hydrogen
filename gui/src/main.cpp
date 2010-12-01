@@ -29,6 +29,8 @@
 #include "SplashScreen.h"
 #include "HydrogenApp.h"
 #include "MainForm.h"
+#include "InstrumentRack.h"
+#include "SoundLibrary/SoundLibraryPanel.h"
 #include "PlaylistEditor/PlaylistDialog.h"
 
 #ifdef H2CORE_HAVE_LASH
@@ -363,6 +365,7 @@ int main(int argc, char *argv[])
 		bool loadlist = HydrogenApp::get_instance()->getPlayListDialog()->loadListByFileName( playlistFilename );
 		if( loadlist ){
 			Playlist::get_instance()->setNextSongByNumber( 0 );
+            HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 		}else
 		{
 			___ERRORLOG ( "Error loading the playlist" );

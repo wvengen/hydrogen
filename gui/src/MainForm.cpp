@@ -1324,6 +1324,7 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 					break;
 				Playlist::get_instance()->setPrevSongPlaylist();
 				songnumber = Playlist::get_instance()->getActiveSongNumber();
+                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
@@ -1333,6 +1334,7 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 					break;
 				Playlist::get_instance()->setNextSongPlaylist();
 				songnumber = Playlist::get_instance()->getActiveSongNumber();
+                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;

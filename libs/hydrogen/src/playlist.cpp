@@ -21,8 +21,6 @@
  */
 
 #include "gui/src/HydrogenApp.h"
-#include "gui/src/InstrumentRack.h"
-#include "gui/src/SoundLibrary/SoundLibraryPanel.h"
 #include "gui/src/SongEditor/SongEditorPanel.h"
 
 #include <hydrogen/h2_exception.h>
@@ -97,10 +95,6 @@ void Playlist::setNextSongByNumber(int SongNumber)
 	execScript( realNumber );
 
 	EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
-
-	#ifndef NO_GUI_SUPPORT
-        	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-	#endif
 }
 
 
@@ -132,10 +126,6 @@ void Playlist::setNextSongPlaylist()
 	execScript( index );
 
 	EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );	
-
-	#ifndef NO_GUI_SUPPORT
-        	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-	#endif
 }
 
 
@@ -168,10 +158,6 @@ void Playlist::setPrevSongPlaylist()
 	execScript( index );
 
 	EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
-
-	#ifndef NO_GUI_SUPPORT
-        	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-	#endif
 }
 
 
