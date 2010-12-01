@@ -32,6 +32,7 @@
 #include "InstrumentRack.h"
 #include "SoundLibrary/SoundLibraryPanel.h"
 #include "PlaylistEditor/PlaylistDialog.h"
+#include "SongEditor/SongEditorPanel.h"
 
 #ifdef H2CORE_HAVE_LASH
 #include <hydrogen/LashClient.h>
@@ -364,8 +365,10 @@ int main(int argc, char *argv[])
 		pSplash->finish( pMainForm );
 		bool loadlist = HydrogenApp::get_instance()->getPlayListDialog()->loadListByFileName( playlistFilename );
 		if( loadlist ){
-			Playlist::get_instance()->setNextSongByNumber( 0 );
-            HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+            HydrogenApp* app = HydrogenApp::get_instance();
+            app->setSong ( Playlist::get_instance()->setNextSongByNumber( 0 ) );
+	        app->getSongEditorPanel()->updatePositionRuler();
+            app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 		}else
 		{
 			___ERRORLOG ( "Error loading the playlist" );

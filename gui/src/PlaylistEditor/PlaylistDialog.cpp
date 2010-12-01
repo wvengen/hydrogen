@@ -967,22 +967,25 @@ bool PlaylistDialog::eventFilter ( QObject *o, QEvent *e )
 	if ( e->type() == QEvent::KeyPress )
 	{	
 		QKeyEvent *k = ( QKeyEvent * ) e;
+        HydrogenApp* app = HydrogenApp::get_instance();
 
 		switch ( k->key() )
 		{
 			case  Qt::Key_F5 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setPrevSongPlaylist();
-                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+                app->setSong ( Playlist::get_instance()->setPrevSongPlaylist() );
+	            app->getSongEditorPanel()->updatePositionRuler();
+                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setNextSongPlaylist();
-                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+                app->setSong ( Playlist::get_instance()->setNextSongPlaylist() );
+	            app->getSongEditorPanel()->updatePositionRuler();
+                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 				return TRUE;
 				break;
 		}

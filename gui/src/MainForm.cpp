@@ -1282,6 +1282,8 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 
 		// qDebug( "Got key press for instrument '%c'", k->ascii() );
 		int songnumber = 0;
+        HydrogenApp* app = HydrogenApp::get_instance();
+        Hydrogen* engine = Hydrogen::get_instance();
 
 		switch (k->key()) {
 			case Qt::Key_Space:
@@ -1290,7 +1292,7 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 
 
 			case Qt::Key_Comma:
-				Hydrogen::get_instance()->handleBeatCounter();
+				engine->handleBeatCounter();
 				return TRUE; // eat even
 				break;
 
@@ -1310,7 +1312,7 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 				break;
 
 			case Qt::Key_Backslash:
-				Hydrogen::get_instance()->onTapTempoAccelEvent();
+				engine->onTapTempoAccelEvent();
 				return TRUE; // eat event
 				break;
 
@@ -1320,47 +1322,49 @@ bool MainForm::eventFilter( QObject *o, QEvent *e )
 				break;
 			
 			case  Qt::Key_F5 :
-				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
+				if( engine->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setPrevSongPlaylist();
+                app->setSong ( Playlist::get_instance()->setPrevSongPlaylist() );
+	            app->getSongEditorPanel()->updatePositionRuler();
 				songnumber = Playlist::get_instance()->getActiveSongNumber();
-                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
+                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+				app->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F6 :
 				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
 					break;
-				Playlist::get_instance()->setNextSongPlaylist();
+                app->setSong ( Playlist::get_instance()->setNextSongPlaylist() );
+	            app->getSongEditorPanel()->updatePositionRuler();
 				songnumber = Playlist::get_instance()->getActiveSongNumber();
-                HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-				HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
+                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
+                app->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F12 : //panic button stop all playing notes
-				Hydrogen::get_instance()->__panic();
+				engine->__panic();
 //				QMessageBox::information( this, "Hydrogen", trUtf8( "Panic" ) );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F9 : // Qt::Key_Left do not work. Some ideas ?
-				Hydrogen::get_instance()->setPatternPos( Hydrogen::get_instance()->getPatternPos() - 1 );
+				engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() - 1 );
 				return TRUE;
 				break;
 
 			case  Qt::Key_F10 : // Qt::Key_Right do not work. Some ideas ?
-				Hydrogen::get_instance()->setPatternPos( Hydrogen::get_instance()->getPatternPos() + 1 );
+				engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() + 1 );
 				return TRUE;
 				break;
 			
 			case Qt::Key_L :
-				Hydrogen::get_instance()->togglePlaysSelected();
+				engine->togglePlaysSelected();
 				QString msg = Preferences::get_instance()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
-				HydrogenApp::get_instance()->setStatusBarMessage( msg, 5000 );
-				HydrogenApp::get_instance()->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
-				HydrogenApp::get_instance()->getSongEditorPanel()->updateAll();
+				app->setStatusBarMessage( msg, 5000 );
+				app->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
+				app->getSongEditorPanel()->updateAll();
 				
 				return TRUE;
 			
