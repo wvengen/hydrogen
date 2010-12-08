@@ -107,9 +107,9 @@ cd ${LOCAL_DIR}
 while [ 1 ]; do
     echo -e "\nOptions :"
     echo -e " # 1) ${RED}fetch svn${RESET} and update branches within ${SRC}${SVN_CLONE_DIR}${RESET}"
-    echo -e " # 2) ${RED}pull${RESET} ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} within ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET}"
-    echo -e " # 3) ${RED}push${RESET} ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET} within ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}"
-    echo -e " # 4) ${RED}push${RESET} ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} to ${URL_COLOR}${SVN_URL}${RESET}"
+    echo -e " # 2) ${RED}push${RESET} ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET} within ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET}"
+    echo -e " # 3) ${RED}push${RESET} ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} to ${URL_COLOR}${SVN_URL}${RESET}"
+    echo -e " # 4) ${RED}pull${RESET} ${SRC}${SVN_CLONE_REPO}${RESET}/${SBC}${SVN_CLONE_B}${RESET} within ${LRC}${LOCAL_REPO}${RESET}/${LBC}${LOCAL_B}${RESET}"
     echo -e " # q) ${RED}QUIT${RESET}"
     echo -n -e "\nyour choice : "
     read CHOICE
@@ -122,13 +122,13 @@ while [ 1 ]; do
             fetch_svn
             ;;
         2)
-            pull_from_clone
-            ;;
-        3)
             push_to_clone
             ;;
-        4)
+        3)
             dcommit
+            ;;
+        4)
+            pull_from_clone
             ;;
     esac
 done
