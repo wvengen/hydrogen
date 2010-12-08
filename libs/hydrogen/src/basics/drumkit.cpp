@@ -63,8 +63,7 @@ Drumkit* Drumkit::load( const QString& dk_path ) {
         return 0;
     }
     XMLDoc doc;
-    if( !doc.read( Filesystem::drumkit_file(dk_path) ) ) return 0;
-    // TODO XML VALIDATION !!!!!!!!!!
+    if( !doc.read( Filesystem::drumkit_file(dk_path), Filesystem::drumkit_xsd() ) ) return 0;
     XMLNode root = doc.firstChildElement( "drumkit_info" );
     if ( root.isNull() ) {
         ERRORLOG( "drumkit_info node not found" );
@@ -93,7 +92,6 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
     } else {
         drumkit->set_instruments( InstrumentList::load_from( &instruments_node ) );
     }
-    drumkit->dump();
     return drumkit;
 }
 
