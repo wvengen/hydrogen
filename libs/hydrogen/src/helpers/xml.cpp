@@ -133,7 +133,8 @@ bool XMLDoc::read( const QString& filepath, const QString& schemapath ) {
                 return false;
             }
         } else {
-            WARNINGLOG( QString("%2 XML schema is not valid").arg(schemapath) );
+            ERRORLOG( QString("%2 XML schema is not valid").arg(schemapath) );
+            return false;
         }
     }
     if( !setContent( &file ) ) {
