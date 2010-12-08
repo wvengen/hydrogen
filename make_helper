@@ -46,6 +46,10 @@ function scsons_exec() {
     echo -e " * execute hydrogen\n" && ./hydrogen $H2FLAGS
 }
 
+function scons_test() {
+    echo -e " * sorry, no can do\n"
+}
+
 function cmake_clean() {
     echo -e " * clean cmake files\n" && rm build/CMakeCache.txt 2>/dev/null
 }
@@ -61,7 +65,7 @@ function cmake_make() {
     fi
     cd build
     if [ ! -e CMakeCache.txt ]; then
-        cmake ${CMAKE_OPTIONS} ..
+        cmake ${CMAKE_OPTIONS} .. || exit 1
     fi
     if [ $VERBOSE -eq 1 ]; then
         VERBOSE=1 make $MAKE_OPTS || exit 1
@@ -97,6 +101,10 @@ function cmake_exec() {
     echo -e " * execute hydrogen\n" && ./build/gui/hydrogen $H2FLAGS
 }
 
+function cmake_test() {
+    echo -e " * execute test\n" && ./build/tests/tests
+}
+
 echo -e "used builder : ${BUILDER}"
 if [ $# -eq 0 ]; then
     echo "usage $0 [cmds list]"
@@ -108,6 +116,7 @@ if [ $# -eq 0 ]; then
     echo "   g or graph  => draw a dependecies graph"
     echo "   h or help   => show the build options"
     echo "   x or exec   => execute hydrogen"
+    echo "   t or test   => execute tests"
     exit 1
 fi
 
@@ -154,6 +163,12 @@ for arg in $@; do
             ;;
         "exec")
             cmd="${BUILDER}_${arg}"
+            ;;
+        "t")
+            cmd="${BUILDER}_test"
+            ;;
+        "test")
+            cmd="${BUILDER}_test"
             ;;
         *)
          echo "unknown command ${arg}" && exit 1
