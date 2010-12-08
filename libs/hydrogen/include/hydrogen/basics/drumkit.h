@@ -43,11 +43,17 @@ class Drumkit : public Object {
 	    ~Drumkit();
         
         /**
-         * \brief load drumkit information from a path
-         * \param dk_path like one returned by Filesystem::drumkit_path
+         * \brief load drumkit information from a directory
+         * \param dk_dir like one returned by Filesystem::drumkit_path
          * \return a Drumkit on success, 0 otherwise
          */
-        static Drumkit* load( const QString& dk_path );
+        static Drumkit* load( const QString& dk_dir );
+        /**
+         * \brief load drumkit information from a file
+         * \param dk_path is a path to an xml file
+         * \return a Drumkit on success, 0 otherwise
+         */
+        static Drumkit* load_file( const QString& dk_path );
         /**
          * \brief save a drumkit
          * \param overwrite allows to write over existing drumkit files

@@ -56,14 +56,18 @@ Drumkit::Drumkit() : Object( __class_name ), __instruments( 0 ) { }
 
 Drumkit::~Drumkit() { if(__instruments) delete __instruments; }
 
-Drumkit* Drumkit::load( const QString& dk_path ) {
-    INFOLOG( QString("Load drumkit %1").arg(dk_path) );
-    if( !Filesystem::drumkit_valid( dk_path ) ) {
-        ERRORLOG( QString("%1 is not valid drumkit").arg(dk_path) );
+Drumkit* Drumkit::load( const QString& dk_dir ) {
+    INFOLOG( QString("Load drumkit %1").arg(dk_dir) );
+    if( !Filesystem::drumkit_valid( dk_dir ) ) {
+        ERRORLOG( QString("%1 is not valid drumkit").arg(dk_dir) );
         return 0;
     }
+    return load_file( Filesystem::drumkit_file(dk_dir) );
+}
+
+Drumkit* Drumkit::load_file( const QString& dk_path ) {
     XMLDoc doc;
-    if( !doc.read( Filesystem::drumkit_file(dk_path), Filesystem::drumkit_xsd() ) ) return 0;
+    if( !doc.read( dk_path, Filesystem::drumkit_xsd() ) ) return 0;
     XMLNode root = doc.firstChildElement( "drumkit_info" );
     if ( root.isNull() ) {
         ERRORLOG( "drumkit_info node not found" );
