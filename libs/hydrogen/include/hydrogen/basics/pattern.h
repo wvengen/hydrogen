@@ -50,6 +50,12 @@ class Pattern : public Object
 	    ~Pattern();
 
         /*
+         * \brief load a pattern from a file
+         * \param pattern_path the path to the file to load the pattern from
+         */
+        static Pattern* load_from( const QString& pattern_path );
+
+        /*
          * \brief save the pattern within the given XMLNode
          * \param node the XMLNode to feed
          */

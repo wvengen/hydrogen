@@ -22,10 +22,12 @@
 
 #include <hydrogen/basics/pattern.h>
 
+#include <hydrogen/hydrogen.h>
 #include <hydrogen/basics/song.h>
 #include <hydrogen/basics/note.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/basics/pattern_list.h>
+#include <hydrogen/helpers/filesystem.h>
 
 #include <vector>
 #include <cassert>
@@ -54,6 +56,28 @@ Pattern::Pattern( Pattern *other)
     }
 }
 
+Pattern* Pattern::load_from( const QString& pattern_path ) {
+    INFOLOG( QString("Load pattern %1").arg(pattern_path) );
+    if ( !Filesystem::file_readable( pattern_path ) ) {
+        ERRORLOG( QString("%1 is not a readable pattern file").arg(pattern_path) );
+        return 0;
+    }
+    XMLDoc doc;
+    if ( !doc.read( pattern_path ) ) return 0;
+    // TODO XML VALIDATION !!!!!!!!!!
+    XMLNode root = doc.firstChildElement( "drumkit_pattern" );
+    if ( root.isNull() ) {
+        ERRORLOG( "drumkit_pattern node not found" );
+        return 0;
+    }
+    XMLNode pattern_node = root.firstChildElement( "pattern" );
+    if ( pattern_node.isNull() ) {
+        ERRORLOG( "pattern node not found" );
+        return 0;
+    }
+    return load_from( &pattern_node, Hydrogen::get_instance()->getSong()->get_instruments() );
+}
+
 void Pattern::save_to( XMLNode* node ) {
     node->write_string( "name", __name );
     node->write_string( "category", __category );
@@ -70,7 +94,7 @@ void Pattern::save_to( XMLNode* node ) {
     node->appendChild( note_list_node );
 }
 
-Pattern* Pattern::load_from( XMLNode *node, InstrumentList *instruments ) {
+Pattern* Pattern::load_from( XMLNode* node, InstrumentList* instruments ) {
     Pattern *pattern = new Pattern(
             node->read_string( "name", "unknown", false, false ),
             node->read_string( "category", "unknown", false, false ),
