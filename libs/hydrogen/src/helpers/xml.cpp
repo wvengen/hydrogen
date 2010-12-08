@@ -94,10 +94,11 @@ bool XMLNode::read_bool( const QString& node, bool default_value, bool inexisten
 }
 
 void XMLNode::write_child_node( const QString& node, const QString& text ) {
-    QDomDocument doc;
+    QDomDocument doc = this->ownerDocument();
     QDomElement el = doc.createElement( node );
-    el.appendChild( doc.createTextNode( text ) );
-    appendChild( el );
+    QDomText txt = doc.createTextNode( text );
+    el.appendChild( txt );
+    this->appendChild( el );
 }
 void XMLNode::write_string( const QString& node, const QString& value ) { write_child_node( node, value ); }
 void XMLNode::write_float( const QString& node, const float value ) { write_child_node( node, QString::number( value ) ); }
