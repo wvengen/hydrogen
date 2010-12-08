@@ -73,7 +73,7 @@ public:
 
 	static unsigned parse_log_level(const char*);
 
-	void log( unsigned lev, const char* funcname, const QString& class_name, const QString& msg );
+	void log( unsigned lev, const QString& class_name, const char* funcname, const QString& msg );
 
 	friend void* loggerThread_func(void* param);  // object.cpp
 

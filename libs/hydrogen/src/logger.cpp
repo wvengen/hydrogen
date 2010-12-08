@@ -145,8 +145,8 @@ Logger::~Logger()
 }
 
 void Logger::log( unsigned level,
-		  const char* funcname,
 		  const QString& class_name,
+		  const char* funcname,
 		  const QString& msg )
 {
 	if( level == None ) return;
@@ -181,7 +181,7 @@ void Logger::log( unsigned level,
 		break;
 	}
 
-	QString tmp = QString("%1%2%3\t%4 %5 \033[0m\n")
+	QString tmp = QString("%1%2%3::%4 %5\033[0m\n")
 		.arg(color[i])
 		.arg(prefix[i])
 		.arg(class_name)
