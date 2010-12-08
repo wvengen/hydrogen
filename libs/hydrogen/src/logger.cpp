@@ -113,6 +113,12 @@ void* loggerThread_func( void* param )
 	return NULL;
 }
 
+Logger* Logger::bootstrap( unsigned lvl ) {
+    Logger::set_log_level( lvl );
+    Logger::create_instance();
+    return Logger::get_instance();
+}
+
 void Logger::create_instance()
 {
 	if ( __instance == 0 ) {

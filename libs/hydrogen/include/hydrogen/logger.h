@@ -63,15 +63,16 @@ public:
 
 	static void create_instance();
 	static Logger* get_instance() { assert(__instance); return __instance; }
+	static Logger* bootstrap( unsigned lvl );
 
 	/** Destructor */
 	~Logger();
 
     bool should_log( unsigned lvl ) { return (lvl&__log_level); }
-	static void set_log_level(unsigned lev) { __log_level = lev; }
+	static void set_log_level( unsigned lvl ) { __log_level = lvl; }
 	static unsigned get_log_level() { return __log_level; }
 
-	static unsigned parse_log_level(const char*);
+	static unsigned parse_log_level( const char* lvl );
 
 	void log( unsigned lev, const QString& class_name, const char* funcname, const QString& msg );
 
