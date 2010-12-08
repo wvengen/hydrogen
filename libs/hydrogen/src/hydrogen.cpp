@@ -1821,6 +1821,32 @@ Hydrogen::~Hydrogen()
 }
 
 
+Hydrogen* Hydrogen::bootstrap( unsigned log_level ) {
+    if( __instance!=0 ) return __instance;
+    /* Logger */
+    Logger* logger = Logger::bootstrap( log_level );
+    /* Object */
+    Object::bootstrap( logger, logger->should_log(Logger::Debug) );
+    /* Filesystem */
+    Filesystem::bootstrap( logger );
+    Filesystem::info();
+    /* Hydrogen */
+    Preferences::create_instance();
+    MidiMap::create_instance();
+    EventQueue::create_instance();
+    ActionManager::create_instance();
+    __instance = new Hydrogen;
+    return __instance;
+}
+
+void Hydrogen::shutdown() {
+    delete AudioEngine::get_instance();
+    delete ActionManager::get_instance();
+    delete EventQueue::get_instance();
+    delete MidiMap::get_instance();
+    delete Preferences::get_instance();
+    delete Logger::get_instance();
+}
 
 void Hydrogen::create_instance()
 {

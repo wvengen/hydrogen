@@ -24,10 +24,9 @@
 
 #include <stdint.h> // for uint32_t et al
 #include "hydrogen/config.h"
-#include <hydrogen/action.h>
+#include <hydrogen/Object.h>
 #include <hydrogen/basics/song.h>
 #include <hydrogen/basics/drumkit.h>
-#include <hydrogen/Object.h>
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/IO/MidiOutput.h>
@@ -52,6 +51,8 @@ class Hydrogen : public Object
 {
     H2_OBJECT
 public:
+    static Hydrogen* bootstrap( unsigned log_level );
+    void shutdown();
 	/// Return the Hydrogen instance
 	static void create_instance();  // Also creates other instances, like AudioEngine
 	static Hydrogen* get_instance() { assert(__instance); return __instance; };
