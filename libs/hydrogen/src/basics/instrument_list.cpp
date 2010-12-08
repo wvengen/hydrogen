@@ -66,11 +66,11 @@ InstrumentList* InstrumentList::load_from( XMLNode* node ) {
 }
 
 void InstrumentList::save_to( XMLNode* node ) {
+    XMLNode instruments_node = node->ownerDocument().createElement( "instrumentList" );
     for ( int i = 0; i < size(); i++ ) {
-        XMLNode instrument_node = XMLDoc().createElement( "instrument" );
-        (*this)[i]->save_to( &instrument_node );
-        node->appendChild( instrument_node );
+        (*this)[i]->save_to( &instruments_node );
     }
+    node->appendChild( instruments_node );
 }
 
 void InstrumentList::operator<<( Instrument* instrument ) {

@@ -235,36 +235,36 @@ Instrument* Instrument::load_from( XMLNode* node ) {
 }
 
 void Instrument::save_to( XMLNode* node ) {
-    node->write_int( "id", __id );
-    node->write_string( "name", __name );
-    node->write_float( "volume", __volume );
-    node->write_bool( "isMuted", __muted );
-    node->write_float( "pan_L", __pan_l );
-    node->write_float( "pan_R", __pan_r );
-    node->write_bool( "filterActive", __filter_active );
-    node->write_float( "filterCutoff", __filter_cutoff );
-    node->write_float( "filterResonance", __filter_resonance );
-    node->write_float( "randomPitchFactor", __random_pitch_factor );
-    node->write_float( "Attack", __adsr->__attack );
-    node->write_float( "Decay", __adsr->__decay );
-    node->write_float( "Sustain", __adsr->__sustain );
-    node->write_float( "Release", __adsr->__release );
-    node->write_float( "gain", __gain );
-    node->write_int( "muteGroup", __mute_group );
-    node->write_int( "midiOutChannel", __midi_out_channel );
-    node->write_int( "midiOutNote", __midi_out_note );
-    node->write_bool( "isStopNote", __stop_notes );
+    XMLNode instrument_node = node->ownerDocument().createElement( "instrument" );
+    instrument_node.write_int( "id", __id );
+    instrument_node.write_string( "name", __name );
+    instrument_node.write_float( "volume", __volume );
+    instrument_node.write_bool( "isMuted", __muted );
+    instrument_node.write_float( "pan_L", __pan_l );
+    instrument_node.write_float( "pan_R", __pan_r );
+    instrument_node.write_bool( "filterActive", __filter_active );
+    instrument_node.write_float( "filterCutoff", __filter_cutoff );
+    instrument_node.write_float( "filterResonance", __filter_resonance );
+    instrument_node.write_float( "randomPitchFactor", __random_pitch_factor );
+    instrument_node.write_float( "Attack", __adsr->__attack );
+    instrument_node.write_float( "Decay", __adsr->__decay );
+    instrument_node.write_float( "Sustain", __adsr->__sustain );
+    instrument_node.write_float( "Release", __adsr->__release );
+    instrument_node.write_float( "gain", __gain );
+    instrument_node.write_int( "muteGroup", __mute_group );
+    instrument_node.write_int( "midiOutChannel", __midi_out_channel );
+    instrument_node.write_int( "midiOutNote", __midi_out_note );
+    instrument_node.write_bool( "isStopNote", __stop_notes );
     for ( int i=0; i<MAX_FX; i++ ) {
-        node->write_float( QString("FX%1Level").arg(i+1), __fx_level[i] );
+        instrument_node.write_float( QString("FX%1Level").arg(i+1), __fx_level[i] );
     }
     for ( int n = 0; n < MAX_LAYERS; n++ ) {
         InstrumentLayer* layer = get_layer(n);
         if(layer) {
-            XMLNode layer_node = XMLDoc().createElement( "layer" );
-            layer->save_to( &layer_node );
-            node->appendChild( layer_node );
+            layer->save_to( &instrument_node );
         }
     }
+    node->appendChild( instrument_node );
 }
 
 inline InstrumentLayer* Instrument::operator[]( int idx ) {

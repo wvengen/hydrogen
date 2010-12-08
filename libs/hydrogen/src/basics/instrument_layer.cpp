@@ -74,11 +74,13 @@ InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {
 }
 
 void InstrumentLayer::save_to( XMLNode* node ) {
-    node->write_string( "filename", get_sample()->get_filename() );
-    node->write_float( "min", __start_velocity );
-    node->write_float( "max", __end_velocity );
-    node->write_float( "gain", __gain );
-    node->write_float( "pitch", __pitch );
+    XMLNode layer_node = node->ownerDocument().createElement( "layer" );
+    layer_node.write_string( "filename", get_sample()->get_filename() );
+    layer_node.write_float( "min", __start_velocity );
+    layer_node.write_float( "max", __end_velocity );
+    layer_node.write_float( "gain", __gain );
+    layer_node.write_float( "pitch", __pitch );
+    node->appendChild( layer_node );
 }
 
 };

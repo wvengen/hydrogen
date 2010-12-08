@@ -108,13 +108,22 @@ bool Drumkit::save( bool overwrite ) {
         ERRORLOG( QString("unable to create %1").arg(dk_path) );
         return false;
     }
+    return save( Filesystem::drumkit_file(dk_path), overwrite );
+}
+
+bool Drumkit::save( const QString& dk_path, bool overwrite ) {
+    INFOLOG( QString("Saving drumkit into %1").arg(dk_path) );
+    if( Filesystem::file_exists( dk_path ) && !overwrite ) {
+        ERRORLOG( QString("drumkit %1 already exists").arg(dk_path) );
+        return false;
+    }
     XMLDoc doc;
     QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
     doc.appendChild( header );
     XMLNode root = doc.createElement( "drumkit_info" );
     save_to( &root );
     doc.appendChild( root );
-    bool ret = doc.write( Filesystem::drumkit_file(dk_path) );
+    bool ret = doc.write( dk_path );
     if(ret) {
         // TODO use overwrite, keep lists of already written files
         // Copy sample files
@@ -164,9 +173,7 @@ void Drumkit::save_to( XMLNode* node ) {
     node->write_string( "author", __author );
     node->write_string( "info", __info );
     node->write_string( "license", __license );
-    XMLNode instruments_node = XMLDoc().createElement( "instrumentList" );
-    __instruments->save_to( &instruments_node );
-    node->appendChild( instruments_node ); 
+    __instruments->save_to( node );
 }
 
 bool Drumkit::remove( const QString& sDrumkitName ) {
