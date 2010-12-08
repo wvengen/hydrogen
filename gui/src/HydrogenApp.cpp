@@ -277,7 +277,7 @@ void HydrogenApp::closeFXProperties()
 
 void HydrogenApp::setSong(Song* song)
 {
-
+    if(song==0) return;
 
 	Song* oldSong = (Hydrogen::get_instance())->getSong();
 	if (oldSong != NULL) {
