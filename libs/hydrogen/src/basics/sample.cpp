@@ -56,6 +56,7 @@ Sample::Sample( const QString& filename,  int frames, int sample_rate, float* da
     __rubber_divider( 1.0 ),
     __rubber_c_settings( 4 )
 {
+    /* filename only, no path information */
     assert( filename.lastIndexOf("/")<0);
 }
 
