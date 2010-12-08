@@ -20,7 +20,6 @@
 
 #cmakedefine HAVE_SSCANF
 #cmakedefine HAVE_RTCLOCK
-#cmakedefine HAVE_LIBSNDFILE_FLAC_SUPPORT
 
 #ifndef H2CORE_HAVE_DEBUG
 #cmakedefine H2CORE_HAVE_DEBUG
@@ -57,9 +56,6 @@
 #endif
 #ifndef H2CORE_HAVE_COREMIDI
 #cmakedefine H2CORE_HAVE_COREMIDI
-#endif
-#ifndef H2CORE_HAVE_FLAC
-#cmakedefine H2CORE_HAVE_FLAC
 #endif
 #ifndef H2CORE_HAVE_LRDF
 #cmakedefine H2CORE_HAVE_LRDF

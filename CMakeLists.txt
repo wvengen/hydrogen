@@ -22,6 +22,7 @@ SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 IF(VERSION_SUFFIX)
     SET(VERSION "${VERSION}-${VERSION_SUFFIX}")
 ENDIF(VERSION_SUFFIX)
+SET(LIBSNDFILE_VERSION_PREV "1.0.17")
 
 #
 # CONFIG OPTIONS
@@ -42,7 +43,6 @@ OPTION(WANT_PORTAUDIO   "Include PortAudio support" OFF)
 OPTION(WANT_PORTMIDI    "Include PortMidi support" OFF)
 OPTION(WANT_LASH        "Include LASH (Linux Audio Session Handler) support" OFF)
 OPTION(WANT_LRDF        "Include LRDF (Lightweight Resource Description Framework with special support for LADSPA plugins) support" OFF)
-OPTION(WANT_FLAC        "Include FLAC (Free Lossless Audio Codec) support" OFF)
 OPTION(WANT_RUBBERBAND  "Include RUbberBand (Audio Time Stretcher Library) support" OFF)
 IF(APPLE)
     OPTION(WANT_COREAUDIO   "Include CoreAudio support" ON)
@@ -103,10 +103,6 @@ INCLUDE(FindZLIB)
 INCLUDE(FindThreads)
 COMPILE_HELPER(SSCANF ${CMAKE_SOURCE_DIR}/cmake/sscanf sscanf )
 COMPILE_HELPER(RTCLOCK ${CMAKE_SOURCE_DIR}/cmake/rtclock rtclock )
-COMPILE_HELPER(LIBSNDFILE_FLAC_SUPPORT ${CMAKE_SOURCE_DIR}/cmake/libsndfile_flac libsndfile_flac )
-IF(HAVE_LIBSNDFILE_FLAC_SUPPORT)
-    SET(FLAC_NOT_NEEDED TRUE)
-ENDIF()
 CHECK_INCLUDE_FILES(sys/types.h HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILES(sys/stat.h HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILES(libtar.h HAVE_LIBTAR_H)
@@ -142,7 +138,6 @@ FIND_HELPER(PORTAUDIO portaudio-2.0 portaudio.h portaudio)
 FIND_HELPER(PORTMIDI portmidi portmidi.h portmidi)
 FIND_HELPER(LASH lash-1.0 lash/lash.h lash)
 FIND_HELPER(LRDF lrdf lrdf.h lrdf)
-FIND_HELPER(FLAC flac++ FLAC++/all.h FLAC++)
 FIND_HELPER(RUBBERBAND rubberband RubberBandStretcher.h rubberband)
 # CHECK FOR Qt4
 SET(QT_USE_QTNETWORK true)
@@ -158,10 +153,18 @@ include(doxygen OPTIONAL)
 #
 # COMPUTE H2CORE_HAVE_xxx xxx_STATUS_REPORT
 #
-SET(STATUS_LIST LIBSNDFILE LIBTAR LIBARCHIVE LADSPA ALSA OSS JACK COREAUDIO COREMIDI PORTAUDIO PORTMIDI LASH LRDF FLAC RUBBERBAND )
+SET(STATUS_LIST LIBSNDFILE LIBTAR LIBARCHIVE LADSPA ALSA OSS JACK COREAUDIO COREMIDI PORTAUDIO PORTMIDI LASH LRDF RUBBERBAND )
 FOREACH( _pkg ${STATUS_LIST})
     COMPUTE_PKGS_FLAGS(${_pkg})
 ENDFOREACH()
+
+# LIBSNDFILE CHECKS
+STRING( COMPARE GREATER "${LIBSNDFILE_VERSION}" "${LIBSNDFILE_VERSION_PREV}" LIBSNDFILE_VERSION_OK)
+IF(LIBSNDFILE_VERSION_OK)
+    SET(LIBSNDFILE_MSG "libsndfile supports FLAC and OGG sound file formats")
+ELSE()
+    SET(LIBSNDFILE_MSG "libsndfile version must be greater than ${LIBSNDFILE_VERSION_PREV} to support LFAC and OGG sound file formats")
+ENDIF()
 
 #
 # CONFIG PROCESS SUMMARY
@@ -180,6 +183,7 @@ MESSAGE("\n"
 "Main librarires\n"
 "* Qt4 version                  : ${QT_VERSION_MAJOR}.${QT_VERSION_MINOR}.${QT_VERSION_PATCH}\n"
 "* libsndfile                   : ${LIBSNDFILE_STATUS}\n"
+"*                                ${LIBSNDFILE_MSG}\n"
 "* libtar                       : ${LIBTAR_STATUS}\n"
 "* libarchive                   : ${LIBARCHIVE_STATUS}\n"
 "* ladspa                       : ${LADSPA_STATUS}\n"
@@ -205,19 +209,12 @@ MESSAGE(
 "* RUBBERBAND                   : ${RUBBERBAND_STATUS}\n"
 )
 
-MESSAGE(
-"Supported file formats for samples\n"
-"-----------------------------------------\n"
-"* WAVE                         :   builtin\n"
-"* FLAC                         : ${FLAC_STATUS}\n"
-)
 IF(WANT_DEBUG)
     MESSAGE(
     "Miscellaneous capabilities\n"
     "-----------------------------------------\n"
     "* realtime clock               : ${HAVE_RTCLOCK}\n"
     "* working sscanf               : ${HAVE_SSCANF}\n"
-    "* libsndfile support flac      : ${HAVE_LIBSNDFILE_FLAC_SUPPORT}\n"
     )
 ENDIF()
 

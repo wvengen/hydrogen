@@ -86,7 +86,7 @@ installed on your system, and the development header files:
 	* Qt 4 SDK (moc, uic, etc.)
 	* GNU g++ compiler (>=4.0, 3.x might work)
     * [ cmake (>=2.6) OR scons (>=0.98, 1.0 preferred, <0.98 might work) ]
-	* libsndfile >=1.0.17
+	* libsndfile >=1.0.18
 	* zlib and libtar -OR- libarchive
 	  OS X: You will probably need to build libarchive from source.
 	* At least 1 audio and 1 midi driver
@@ -103,7 +103,6 @@ installed on your system, and the development header files:
 
 	OPTIONAL SUPPORT
 	* LASH (Linux Audio Session Handler)
-	* libFLAC for handling FLAC sound files.
 	* liblrdf for LADSPA plugins
 
 On a single, 500MHz processor Hydrogen takes about 1.5 hours to build.
@@ -132,7 +131,7 @@ look like this:
 	$ scons
 	$ sudo scons install
 
-If you wish to configure features like LADSPA plugins, FLAC support,
+If you wish to configure features like LADSPA plugins,
 or debugging symbols, get more information like this:
 
 	$ scons --help
@@ -174,7 +173,7 @@ look like this:
 
 In the above, all cmake commands should be executed in a build directory.
 
-If you wish to configure features like LADSPA plugins, FLAC support,
+If you wish to configure features like LADSPA plugins,
 or debugging symbols, get more information like this:
 
 	$ cmake -L ..

@@ -24,7 +24,6 @@
 
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
-#include <hydrogen/helpers/flac.h>
 #include <hydrogen/helpers/filesystem.h>
 
 #include <sndfile.h>
@@ -96,21 +95,7 @@ Sample* Sample::load( const QString& path ) {
         sleep(1);
         return 0;
     }
-#ifdef HAVE_LIBSNDFILE_FLAC_SUPPORT
 	return libsndfile_load( path );
-#else
-	if ( ( path.endsWith( "flac") ) || ( path.endsWith( "FLAC" )) ) {
-#ifdef H2CORE_HAVE_FLAC
-	    FLACFile file;
-	    return file.load( path );
-#else
-	    ERRORLOG("FLAC support was disabled during compilation");
-	    return 0;
-#endif
-    } else {
-		return libsndfile_load( path );
-	}
-#endif
 }
 
 Sample* Sample::libsndfile_load( const QString& path ) {
