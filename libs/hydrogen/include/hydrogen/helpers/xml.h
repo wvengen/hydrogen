@@ -29,6 +29,9 @@
 #include <QtCore/QString>
 #include <QtXml/QDomDocument>
 
+#define XMLNS_BASE "http://www.hydrogen-music.org"
+#define XMLNS_XSI "http://www.w3.org/2001/XMLSchema-instance"
+
 namespace H2Core
 {
 

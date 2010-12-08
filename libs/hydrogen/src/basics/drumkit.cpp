@@ -119,6 +119,9 @@ bool Drumkit::save( const QString& dk_path, bool overwrite ) {
     QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
     doc.appendChild( header );
     XMLNode root = doc.createElement( "drumkit_info" );
+    QDomElement el = root.toElement();
+    el.setAttribute("xmlns",XMLNS_BASE"/drumkit");
+    el.setAttribute("xmlns:xsi",XMLNS_XSI);
     save_to( &root );
     doc.appendChild( root );
     bool ret = doc.write( dk_path );

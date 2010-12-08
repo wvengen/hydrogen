@@ -128,6 +128,7 @@ bool XMLDoc::read( const QString& filepath, const QString& schemapath ) {
     if ( schemapath!=0 ) {
         if ( schema.isValid() ) {
             QXmlSchemaValidator validator(schema);
+            INFOLOG( QString("validating XML::%1 with XSD::%2").arg(filepath).arg(schemapath) );
             if ( !validator.validate(&file, QUrl::fromLocalFile(file.fileName())) ) {
                 ERRORLOG( QString("XML document %1 is not valid (%2)").arg(filepath).arg(schemapath) );
                 file.close();

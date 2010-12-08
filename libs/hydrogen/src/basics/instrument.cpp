@@ -242,15 +242,15 @@ void Instrument::save_to( XMLNode* node ) {
     instrument_node.write_bool( "isMuted", __muted );
     instrument_node.write_float( "pan_L", __pan_l );
     instrument_node.write_float( "pan_R", __pan_r );
+    instrument_node.write_float( "randomPitchFactor", __random_pitch_factor );
+    instrument_node.write_float( "gain", __gain );
     instrument_node.write_bool( "filterActive", __filter_active );
     instrument_node.write_float( "filterCutoff", __filter_cutoff );
     instrument_node.write_float( "filterResonance", __filter_resonance );
-    instrument_node.write_float( "randomPitchFactor", __random_pitch_factor );
     instrument_node.write_float( "Attack", __adsr->__attack );
     instrument_node.write_float( "Decay", __adsr->__decay );
     instrument_node.write_float( "Sustain", __adsr->__sustain );
     instrument_node.write_float( "Release", __adsr->__release );
-    instrument_node.write_float( "gain", __gain );
     instrument_node.write_int( "muteGroup", __mute_group );
     instrument_node.write_int( "midiOutChannel", __midi_out_channel );
     instrument_node.write_int( "midiOutNote", __midi_out_note );
