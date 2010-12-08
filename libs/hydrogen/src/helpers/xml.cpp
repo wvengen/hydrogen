@@ -130,15 +130,20 @@ bool XMLDoc::read( const QString& filepath, const QString& schemapath ) {
             QXmlSchemaValidator validator(schema);
             if ( !validator.validate(&file, QUrl::fromLocalFile(file.fileName())) ) {
                 ERRORLOG( QString("XML document %1 is not valid (%2)").arg(filepath).arg(schemapath) );
+                file.close();
                 return false;
             }
         } else {
             ERRORLOG( QString("%2 XML schema is not valid").arg(schemapath) );
+            file.close();
             return false;
         }
+        INFOLOG( QString("XML document %1 is valid (%2)").arg(filepath).arg(schemapath) );
+        file.seek(0);
     }
     if( !setContent( &file ) ) {
         ERRORLOG( QString("Unable to read XML document %1").arg(filepath) );
+        file.close();
         return false;
     }
     file.close();
