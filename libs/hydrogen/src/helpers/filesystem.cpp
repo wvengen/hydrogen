@@ -46,6 +46,7 @@
 #define DRUMKITS        "/drumkits"
 #define PLAYLISTS       "/playlists"
 #define DEMOS           "/demo_songs"
+#define XSD             "/xsd"
 
 #define USER_CFG_DIR    "/.hydrogen"
 
@@ -54,12 +55,13 @@
 #define CORE_CONFIG     "/core.conf"
 #define CLICK_SAMPLE    "/click.wav"
 #define EMPTY_SAMPLE    "/empty_sample.wav"
-#define DEFAULT_SONG    "/empty_song.h2song"
+#define EMPTY_SONG      "/empty_song.h2song"
 
 // filters
 #define SONG_FILTER     "*.h2song"
 #define PATTERN_FILTER  "*.h2pattern"
 #define DRUMKIT_XML     "drumkit.xml"
+#define DRUMKIT_XSD     "drumkit.xsd"
 
 namespace H2Core
 {
@@ -216,15 +218,16 @@ bool Filesystem::check_sys_paths() {
         __sys_data_path = DATA_PATH;
     }
     if(  !dir_readable( __sys_data_path ) ) return false;
-    if(  !dir_readable( __sys_data_path + IMG ) ) return false;
-    if(  !dir_readable( __sys_data_path + I18N ) ) return false;
-    if(  !dir_readable( __sys_data_path + DEMOS ) ) return false;
-    if(  !dir_readable( __sys_data_path + DRUMKITS ) ) return false;
-    if( !file_readable( __sys_data_path + CLICK_SAMPLE ) ) return false;
-    if( !file_readable( __sys_data_path + EMPTY_SAMPLE ) ) return false;
-    if( !file_readable( __sys_data_path + GUI_CONFIG ) ) return false;
-    if( !file_readable( __sys_data_path + CORE_CONFIG ) ) return false;
-    if( !file_readable( __sys_data_path + DEFAULT_SONG ) ) return false;
+    if(  !dir_readable( img_dir() ) ) return false;
+    if(  !dir_readable( xsd_dir() ) ) return false;
+    if(  !dir_readable( i18n_dir() ) ) return false;
+    if(  !dir_readable( demos_dir() ) ) return false;
+    if( !file_readable( click_file() ) ) return false;
+    if( !file_readable( empty_song() ) ) return false;
+    if( !file_readable( empty_sample() ) ) return false;
+    if( !file_readable( sys_gui_config() ) ) return false;
+    if( !file_readable( sys_core_config() ) ) return false;
+    if(  !dir_readable( sys_drumkits_dir() ) ) return false;
     ___INFOLOG( QString("system wide data path %1 is usable.").arg(__sys_data_path) );
     return true;
 }
@@ -232,10 +235,10 @@ bool Filesystem::check_sys_paths() {
 
 bool Filesystem::check_usr_paths() {
 	if( !path_usable( __usr_data_path ) ) return false;
-	if( !path_usable( __usr_data_path+SONGS ) ) return false;
-	if( !path_usable( __usr_data_path+PATTERNS ) ) return false;
-	if( !path_usable( __usr_data_path+DRUMKITS ) ) return false;
-	if( !path_usable( __usr_data_path+PLAYLISTS ) ) return false;
+	if( !path_usable( songs_dir() ) ) return false;
+	if( !path_usable( patterns_dir() ) ) return false;
+	if( !path_usable( playlists_dir() ) ) return false;
+	if( !path_usable( usr_drumkits_dir() ) ) return false;
     ___INFOLOG( QString("user path %1 is usable.").arg(__usr_data_path) );
     return true;
 }
@@ -249,10 +252,11 @@ QString Filesystem::usr_core_config()           { return __usr_data_path + CORE_
 QString Filesystem::sys_gui_config()            { return __sys_data_path + GUI_CONFIG; }
 QString Filesystem::usr_gui_config()            { return __usr_data_path + GUI_CONFIG; }
 QString Filesystem::empty_sample()              { return __sys_data_path + EMPTY_SAMPLE; }
-QString Filesystem::empty_song()                { return __sys_data_path + DEFAULT_SONG; }
-QString Filesystem::click_file() {
+QString Filesystem::empty_song()                { return __sys_data_path + EMPTY_SONG; }
+QString Filesystem::click_file()                { return __sys_data_path + CLICK_SAMPLE; }
+QString Filesystem::usr_click_file() {
     if(file_readable( __usr_data_path + CLICK_SAMPLE, true )) return __usr_data_path + CLICK_SAMPLE;
-    return __sys_data_path + CLICK_SAMPLE;
+    return click_file();
 }
 
 // DIRS
@@ -264,6 +268,7 @@ QString Filesystem::sys_drumkits_dir()          { return __sys_data_path + DRUMK
 QString Filesystem::usr_drumkits_dir()          { return __usr_data_path + DRUMKITS; }
 QString Filesystem::playlists_dir()             { return __usr_data_path + PLAYLISTS; }
 QString Filesystem::demos_dir()                 { return __sys_data_path + DEMOS; }
+QString Filesystem::xsd_dir()                   { return __sys_data_path + XSD; }
 
 // DRUMKITS
 QStringList Filesystem::drumkits_list( const QString& path )    {
@@ -293,6 +298,8 @@ QString Filesystem::drumkit_path( const QString& dk_name ) {
 bool Filesystem::drumkit_valid( const QString& dk_path )   { return file_readable( dk_path + "/" + DRUMKIT_XML ); }
 QString Filesystem::drumkit_file( const QString& dk_path ) { return dk_path + "/" + DRUMKIT_XML; }
 
+QString Filesystem::drumkit_xsd( ) { return xsd_dir() + "/" + DRUMKIT_XSD; }
+
 // PATTERNS
 QStringList Filesystem::patterns_list( )    { return QDir( patterns_dir() ).entryList( QStringList(PATTERN_FILTER), QDir::Files | QDir::NoDotAndDotDot ); }
 
@@ -314,6 +321,7 @@ void Filesystem::info() {
     ___INFOLOG( QString("Patterns dir               : %1").arg( patterns_dir() ) );
     ___INFOLOG( QString("Playlists dir              : %1").arg( playlists_dir() ) );
     ___INFOLOG( QString("Demos dir                  : %1").arg( demos_dir() ) );
+    ___INFOLOG( QString("XSD dir                    : %1").arg( xsd_dir() ) );
     ___INFOLOG( QString("System drumkit dir         : %1").arg( sys_drumkits_dir() ) );
     ___INFOLOG( QString("User drumkit dir           : %1").arg( usr_drumkits_dir() ) );
 }

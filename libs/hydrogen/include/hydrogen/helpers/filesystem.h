@@ -75,8 +75,10 @@ class Filesystem : public Object
         static QString empty_sample();
         /** \brief returns system empty song file path */
         static QString empty_song();
-        /** \brief returns click file path from user directory if exists, otherwise from system */
+        /** \brief returns system click file path */
         static QString click_file();
+        /** \brief returns click file path from user directory if exists, otherwise from system */
+        static QString usr_click_file();
 
         /** \brief returns gui image path */
         static QString img_dir();
@@ -94,6 +96,8 @@ class Filesystem : public Object
         static QString playlists_dir();
         /** \brief returns system demos path */
         static QString demos_dir();
+        /** \brief returns system xsd path */
+        static QString xsd_dir();
 
         /* DRUMKIT */
         /** \brief returns list of usable system drumkits ( see Filesystem::drumkits_list ) */
@@ -108,6 +112,8 @@ class Filesystem : public Object
         static bool drumkit_valid( const QString& dk_path );
         /** \brief returns the path to the xml file within a suposed drumkit path */
         static QString drumkit_file( const QString& dk_path );
+        /** \brief returns the path to the drumkit XSD (xml schema definition) file */
+        static QString drumkit_xsd( );
         
         /* PATTERNS */
         /** \brief returns */
