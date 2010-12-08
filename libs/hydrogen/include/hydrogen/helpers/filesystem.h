@@ -56,7 +56,7 @@ class Filesystem : public Object
          * \param logger is a pointer to the logger instance which will be used
          * \return true on success
          */
-        static bool init( Logger* logger );
+        static bool bootstrap( Logger* logger );
 
         /** \brief returns system data path */
         static QString sys_data_path();
@@ -122,6 +122,8 @@ class Filesystem : public Object
         /** \brief send current settings information to logger with INFO severity */
         static void info();
 
+        /** \brief returns true if the given path is an existing regular file */
+        static bool file_exists( const QString& path, bool silent=false );
         /** \brief returns true if the given path is an existing readable regular file */
         static bool file_readable( const QString& path, bool silent=false );
         /** \brief returns true if the given path is a possibly writable file (may exist or not) */

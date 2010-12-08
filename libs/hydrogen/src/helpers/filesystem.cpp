@@ -72,9 +72,11 @@ QString Filesystem::__usr_data_path;
 /* TODO qApp doesn't exists should be created within H2Core::Hydrogen::bootstrap( boll gui ); QApplication(argc,argv,gui); */
 /* TODO fix user path on start, .hydrogen/data is no more used !! */
 
-bool Filesystem::init( Logger* logger ) {
+bool Filesystem::bootstrap( Logger* logger ) {
     if(__logger==0 && logger!=0) {
         __logger = logger;
+    } else {
+        return false;
     }
 #ifdef Q_OS_MACX
     #ifdef H2CORE_HAVE_BUNDLE
@@ -131,6 +133,7 @@ bool Filesystem::check_permissions( const QString& path, const int perms, bool s
     return true;
 }
 
+bool Filesystem::file_exists( const QString& path, bool silent )  { return check_permissions(path, is_file, silent); }
 bool Filesystem::file_readable( const QString& path, bool silent )  { return check_permissions(path, is_file|is_readable, silent); }
 bool Filesystem::file_writable( const QString& path, bool silent )  { return check_permissions(path, is_file|is_writable, silent); }
 bool Filesystem::file_executable( const QString& path, bool silent ){ return check_permissions(path, is_file|is_executable, silent); }
