@@ -110,26 +110,9 @@ bool Drumkit::save( bool overwrite ) {
         ERRORLOG( QString("unable to create %1").arg(dk_path) );
         return false;
     }
-    return save( Filesystem::drumkit_file(dk_path), overwrite );
-}
-
-bool Drumkit::save( const QString& dk_path, bool overwrite ) {
-    INFOLOG( QString("Saving drumkit into %1").arg(dk_path) );
-    if( Filesystem::file_exists( dk_path ) && !overwrite ) {
-        ERRORLOG( QString("drumkit %1 already exists").arg(dk_path) );
-        return false;
-    }
-    XMLDoc doc;
-    QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
-    doc.appendChild( header );
-    XMLNode root = doc.createElement( "drumkit_info" );
-    QDomElement el = root.toElement();
-    el.setAttribute("xmlns",XMLNS_BASE"/drumkit");
-    el.setAttribute("xmlns:xsi",XMLNS_XSI);
-    save_to( &root );
-    doc.appendChild( root );
-    bool ret = doc.write( dk_path );
-    if(ret) {
+    bool ret = save( Filesystem::drumkit_file(dk_path), overwrite );
+    if ( ret) {
+        // TODO should be in a public method
         // TODO use overwrite, keep lists of already written files
         // Copy sample files
         InstrumentList *instruments = get_instruments();
@@ -155,9 +138,26 @@ bool Drumkit::save( const QString& dk_path, bool overwrite ) {
                 }
             }
         }
-        INFOLOG( QString("Drumkit saved in %1").arg(dk_path) );
     }
     return ret;
+}
+
+bool Drumkit::save( const QString& dk_path, bool overwrite ) {
+    INFOLOG( QString("Saving drumkit into %1").arg(dk_path) );
+    if( Filesystem::file_exists( dk_path ) && !overwrite ) {
+        ERRORLOG( QString("drumkit %1 already exists").arg(dk_path) );
+        return false;
+    }
+    XMLDoc doc;
+    QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild( header );
+    XMLNode root = doc.createElement( "drumkit_info" );
+    QDomElement el = root.toElement();
+    el.setAttribute("xmlns",XMLNS_BASE"/drumkit");
+    el.setAttribute("xmlns:xsi",XMLNS_XSI);
+    save_to( &root );
+    doc.appendChild( root );
+    return doc.write( dk_path );
 }
 
 bool Drumkit::save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments, bool overwrite ) {
