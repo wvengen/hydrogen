@@ -43,6 +43,13 @@ InstrumentList::~InstrumentList() {
         delete __instruments[i];
 }
 
+bool InstrumentList::load_samples( const QString& path ) {
+    for( int i=0; i<__instruments.size(); i++ ) {
+        if( !__instruments[i]->load_samples(path) ) { return false; }
+    }
+    return true;
+}
+
 InstrumentList* InstrumentList::load_from( XMLNode* node ) {
     InstrumentList *instruments = new InstrumentList();
     XMLNode instrument_node = node->firstChildElement( "instrument" );

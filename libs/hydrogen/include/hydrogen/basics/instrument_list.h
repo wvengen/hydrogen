@@ -119,6 +119,11 @@ class InstrumentList : public Object
 	    void move( int idx_a, int idx_b );
 
         /*
+         * \brief load instrument samples
+         * \param path to the directory holding the samples
+         */
+        bool load_samples( const QString& path );
+        /*
          * \brief save the intrument list within the given XMLNode
          * \param node the XMLNode to feed
          */

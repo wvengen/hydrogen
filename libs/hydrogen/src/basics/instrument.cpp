@@ -72,21 +72,21 @@ Instrument::Instrument( Instrument *other )
     , __volume( other->get_volume() )
     , __pan_l( other->get_pan_l() )
     , __pan_r( other->get_pan_r() )
-    , __peak_l( 0.0 )
-    , __peak_r( 0.0 )
+    , __peak_l( other->get_peak_l() )
+    , __peak_r( other->get_peak_r() )
     , __adsr( new ADSR( *( other->get_adsr() ) ) )
     , __filter_active( other->is_filter_active() )
     , __filter_cutoff( other->get_filter_cutoff() )
     , __filter_resonance( other->get_filter_resonance() )
     , __random_pitch_factor( other->get_random_pitch_factor() )
-    , __midi_out_note( 60 )
-    , __midi_out_channel( -1 )
-    , __stop_notes( false )
-    , __active( true )
-    , __soloed( false )
+    , __midi_out_note( other->get_midi_out_note() )
+    , __midi_out_channel( other->get_midi_out_channel() )
+    , __stop_notes( other->is_stop_notes() )
+    , __active( other->is_active() )
+    , __soloed( other->is_soloed() )
     , __muted( other->is_muted() )
     , __mute_group( other->get_mute_group() )
-    , __queued( 0 )
+    , __queued( other->is_queued() )
 {
     for ( int i=0; i<MAX_FX; i++ ) __fx_level[i] = other->get_fx_level(i);
 
@@ -200,7 +200,7 @@ Instrument* Instrument::load_from( XMLNode* node ) {
     instrument->set_mute_group( node->read_int( "muteGroup", -1, true, false ) );
     instrument->set_midi_out_channel( node->read_int( "midiOutChannel", -1, true, false ) );
     instrument->set_midi_out_note( node->read_int( "midiOutNote", 60, true, false ) );
-    instrument->set_stop_note( node->read_bool( "isStopNote", true ,false ) );
+    instrument->set_stop_notes( node->read_bool( "isStopNote", true ,false ) );
     for ( int i=0; i<MAX_FX; i++ ) {
         instrument->set_fx_level( node->read_float( QString("FX%1Level").arg(i+1), 0.0 ), i );
     }
@@ -232,6 +232,20 @@ Instrument* Instrument::load_from( XMLNode* node ) {
         }
     }
     return instrument;
+}
+
+bool Instrument::load_samples( const QString& path ) {
+    for ( int i=0; i<MAX_LAYERS; i++ ) {
+        InstrumentLayer *layer = get_layer(i);
+        if(layer!=0) {
+           if( !layer->load_sample(path) ) {
+                ERRORLOG( "KO" );
+               return false;
+           }
+                ERRORLOG( "OK" );
+        }
+    }
+    return true;
 }
 
 void Instrument::save_to( XMLNode* node ) {

@@ -52,7 +52,18 @@ namespace H2Core
     
 const char* Drumkit::__class_name = "Drumkit";
 
-Drumkit::Drumkit() : Object( __class_name ), __instruments( 0 ) { }
+Drumkit::Drumkit() : Object( __class_name ), __samples_loaded(false), __instruments( 0 ) { }
+
+Drumkit::Drumkit( Drumkit* other ) :
+    Object( __class_name ),
+    __path( other->get_path() ),
+    __name( other->get_name() ),
+    __author( other->get_author() ),
+    __info( other->get_info() ),
+    __license( other->get_license() ),
+    __samples_loaded( other->samples_loaded() ) {
+    __instruments = new InstrumentList( other->get_instruments() );
+}
 
 Drumkit::~Drumkit() { if(__instruments) delete __instruments; }
 
@@ -85,10 +96,11 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
         return 0;
     }
     Drumkit *drumkit = new Drumkit();
-    drumkit->set_name( drumkit_name );
-    drumkit->set_author( node->read_string( "author", "undefined author" ) );
-    drumkit->set_info( node->read_string( "info", "defaultInfo" ) );
-    drumkit->set_license( node->read_string( "license", "undefined license" ) );
+    drumkit->__name = drumkit_name;
+    drumkit->__author = node->read_string( "author", "undefined author" );
+    drumkit->__info = node->read_string( "info", "defaultInfo" );
+    drumkit->__license = node->read_string( "license", "undefined license" );
+    drumkit->__samples_loaded = false;
     XMLNode instruments_node = node->firstChildElement( "instrumentList" );
     if ( instruments_node.isNull() ) {
         WARNINGLOG( "instrumentList node not found" );
@@ -97,6 +109,15 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
         drumkit->set_instruments( InstrumentList::load_from( &instruments_node ) );
     }
     return drumkit;
+}
+
+bool Drumkit::load_samples( ) {
+    INFOLOG( QString("Loading drumkit %1 instrument samples").arg(__name) );
+    if( __instruments->load_samples( __path.left( __path.lastIndexOf("/") ) ) ) {
+        __samples_loaded = true;
+        return true;
+    }
+    return false;
 }
 
 bool Drumkit::save( bool overwrite ) {
@@ -206,7 +227,7 @@ void Drumkit::dump() {
 		Instrument* instrument = (*__instruments)[i];          // TODO why do I need an excplicit type conversion
 		DEBUGLOG( QString("  |- (%1 of %2) Name = %3")
 			 .arg( i )
-			 .arg( __instruments->size() )
+			 .arg( __instruments->size()-1 )
 			 .arg( instrument->get_name() )
 			);
 		for ( int j=0; j<MAX_LAYERS; j++ ) {

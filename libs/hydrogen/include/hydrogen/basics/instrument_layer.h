@@ -72,6 +72,13 @@ class InstrumentLayer : public Object
 
         void set_sample( Sample* sample )       { __sample = sample; }          ///< \brief set the sample of the layer
         Sample* get_sample()                    { return __sample; }            ///< \brief get the sample of the layer
+
+        /**
+         * \brief load the sample data
+         * \param path to the directory holding the samples
+         */
+        bool load_sample( const QString& path );
+
         /**
          * \brief save the intrument layer within the given XMLNode
          * \param node the XMLNode to feed

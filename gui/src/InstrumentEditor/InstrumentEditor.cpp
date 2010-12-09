@@ -796,7 +796,7 @@ void InstrumentEditor::muteGroupBtnClicked(Button *pRef)
 
 void InstrumentEditor::onIsStopNoteCheckBoxClicked( bool on )
 {
-	m_pInstrument->set_stop_note( on );
+	m_pInstrument->set_stop_notes( on );
 }
 
 void InstrumentEditor::midiOutChannelBtnClicked(Button *pRef)

@@ -39,6 +39,8 @@ class Drumkit : public Object {
     public:
         /** \brief drumkit constructor, does nothing */
         Drumkit();
+        /** \brief copy constructor */
+        Drumkit( Drumkit *other );
         /** \brief drumkit destructor, delete__ instruments */
 	    ~Drumkit();
         
@@ -54,6 +56,10 @@ class Drumkit : public Object {
          * \return a Drumkit on success, 0 otherwise
          */
         static Drumkit* load_file( const QString& dk_path );
+        /**
+         * \brief load the instrument samples
+         */
+        bool load_samples();
         /**
          * \brief save a drumkit
          * \param overwrite allows to write over existing drumkit files
@@ -110,6 +116,8 @@ class Drumkit : public Object {
         void set_license( const QString& license )  { __license = license; }    ///< sets __license
         const QString& get_license()                { return __license; }       ///< returns __license
 
+        const bool samples_loaded()             { return __samples_loaded; } ///< returns __instruments_loaded
+
         void dump();
     
     private:
@@ -118,6 +126,7 @@ class Drumkit : public Object {
         QString __author;               ///< drumkit author
         QString __info;                 ///< drumkit free text
         QString __license;              ///< drumkit license description
+        bool __samples_loaded;          ///< true if the instrument samples are loaded
         InstrumentList* __instruments;  ///< the list of instruments
         /*
          * \brief save the drumkit within the given XMLNode

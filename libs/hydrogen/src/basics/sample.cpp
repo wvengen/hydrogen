@@ -92,7 +92,6 @@ Sample::~Sample() {
 Sample* Sample::load( const QString& path ) {
     if( !Filesystem::file_readable(path)) {
         ERRORLOG(QString("Unable to read %1").arg(path));
-        sleep(1);
         return 0;
     }
 	return libsndfile_load( path );
@@ -103,6 +102,7 @@ Sample* Sample::libsndfile_load( const QString& path ) {
 	SNDFILE* file = sf_open( path.toLocal8Bit(), SFM_READ, &sound_info );
 	if ( !file ) {
 		ERRORLOG( QString( "[Sample::load] Error loading file %1" ).arg( path ) );
+        return 0;
 	}
 
     float* buffer = new float[ sound_info.frames * sound_info.channels ];

@@ -43,7 +43,7 @@ InstrumentLayer::InstrumentLayer( InstrumentLayer* other )
     , __end_velocity( other->get_end_velocity() )
     , __pitch( other->get_pitch() )
     , __gain( other->get_gain() )
-    , __sample( new Sample( other->get_sample()->get_filename(), 0, 0 ) )       // is not a real sample, it contains only the filename information
+    , __sample( new Sample( other->get_sample() ) )
 {
 }
 
@@ -61,6 +61,14 @@ InstrumentLayer::~InstrumentLayer()
 {
 	delete __sample;
 	__sample = 0;
+}
+
+bool InstrumentLayer::load_sample( const QString& path ) {
+    Sample* sample = Sample::load( path+"/"+__sample->get_filename() );
+    if( !sample ) return false;
+    if(__sample) delete __sample;
+    __sample = sample;
+    return true;
 }
 
 InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {

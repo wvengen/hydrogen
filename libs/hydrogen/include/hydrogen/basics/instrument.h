@@ -75,6 +75,11 @@ class Instrument : public Object
          */
         void load_from( Drumkit* drumkit, Instrument* instrument, bool is_live = true );
 
+        /**\brief load samples data
+         * \param path to the directory holding the samples
+         */
+        bool load_samples( const QString& path );
+
         /*
          * \brief save the intrument within the given XMLNode
          * \param node the XMLNode to feed
@@ -171,7 +176,7 @@ class Instrument : public Object
         void dequeue()                              { assert( __queued > 0 ); __queued--; } ///< \brief dequeue the instrument
         int is_queued()                             { return __queued; }                    ///< \brief get the queued status of the instrument
 
-        void set_stop_note( bool stopnotes )        { __stop_notes = stopnotes; }   ///< \brief set the stop notes status of the instrument
+        void set_stop_notes( bool stopnotes )       { __stop_notes = stopnotes; }   ///< \brief set the stop notes status of the instrument
         bool is_stop_notes()                        { return __stop_notes; }        ///< \brief get the stop notes of the instrument
 
     private:
