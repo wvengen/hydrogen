@@ -150,8 +150,8 @@ class Filesystem : public Object
         static bool write_to_file( const QString& dst, const QString& content );
         /** \brief copy a source file to a destination */
         static bool file_copy( const QString& src, const QString& dst );
-        /** \brief recursively remove a path */
-        static bool rm_fr( const QString& path );
+        /** \brief remove a path */
+        static bool rm( const QString& path, bool recursive=false );
         /** \brief create a path */
         static bool mkdir( const QString& path );
 
@@ -159,6 +159,7 @@ class Filesystem : public Object
         static Logger* __logger;            ///< a pointer to the logger
         static bool check_sys_paths();      ///< returns true if the system path is consistent
         static bool check_usr_paths();      ///< returns true if the user path is consistent
+        static bool rm_fr( const QString& path );   ///< recursively remove a path
 
         /** \brief returns a list of usable drumkits, which means having a readable drumkit.xml file */
         static QStringList drumkits_list( const QString& path );

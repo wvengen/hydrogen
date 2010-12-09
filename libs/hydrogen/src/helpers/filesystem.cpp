@@ -188,6 +188,26 @@ bool Filesystem::file_copy( const QString& src, const QString& dst ) {
 	return QFile::copy(src,dst);
 }
 
+bool Filesystem::rm( const QString& path, bool recursive ) {
+    if ( check_permissions(path, is_file, true) ) {
+        QFile file( path );
+        bool ret = file.remove();
+        if( !ret ) {
+        ___ERRORLOG( QString("unable to remove file %1").arg(path) );
+        }
+        return ret;
+    }
+    if ( !check_permissions(path, is_dir, true)  ) {
+        ___ERRORLOG( QString("%1 is neither a file nor a directory ?!?!").arg(path) );
+        return false;
+    }
+    if ( !recursive ) {
+        ___ERRORLOG( QString("unable to remove directory %1 without recursive parameter set to true").arg(path) );
+        return false;
+    }
+    return rm_fr( path );
+}
+
 bool Filesystem::rm_fr( const QString& path ) {
     bool ret = true;
     QDir dir(path);
