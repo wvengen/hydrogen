@@ -94,6 +94,12 @@ void PatternList::add( Pattern* pattern ) {
 	__patterns.push_back( pattern );
 }
 
+void PatternList::insert( int idx, Pattern* pattern ) {
+    // do nothing if already in __patterns
+    for( int i=0; i<__patterns.size(); i++ ) if(__patterns[i]==pattern) return;
+	__patterns.insert( __patterns.begin() + idx, pattern );
+}
+
 Pattern* PatternList::operator[]( int idx ) {
     if ( idx < 0 || idx >= __patterns.size() ) {
 		ERRORLOG( QString( "idx %1 out of [0;%2]" ).arg( idx ).arg(__patterns.size()) );

@@ -64,6 +64,12 @@ class PatternList : public Object
          * \param pattern a pointer to the pattern to add
          */
         void add( Pattern* pattern );
+        /**
+         * \brief insert a pattern into the list
+         * \param idx the index to insert the pattern at
+         * \param pattern a pointer to the pattern to add
+         */
+        void insert( int idx, Pattern* pattern );
         /** 
          * \brief get a pattern from  the list
          * \param idx the index to get the pattern from

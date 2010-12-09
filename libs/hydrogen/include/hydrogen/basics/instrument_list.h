@@ -64,6 +64,12 @@ class InstrumentList : public Object
          * \param instrument a pointer to the instrument to add
          */
         void add( Instrument* instrument );
+        /**
+         * \brief insert an instrument into the list
+         * \param idx the index to insert the instrument at
+         * \param instrument a pointer to the instrument to add
+         */
+        void insert( int idx, Instrument* instrument );
         /** 
          * \brief get an instrument from  the list
          * \param idx the index to get the instrument from

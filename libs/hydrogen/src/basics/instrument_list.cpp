@@ -74,11 +74,21 @@ void InstrumentList::save_to( XMLNode* node ) {
 }
 
 void InstrumentList::operator<<( Instrument* instrument ) {
+    // do nothing if already in __instruments
+    for( int i=0; i<__instruments.size(); i++ ) if(__instruments[i]==instrument) return;
 	__instruments.push_back( instrument );
 }
 
 void InstrumentList::add( Instrument* instrument ) {
+    // do nothing if already in __instruments
+    for( int i=0; i<__instruments.size(); i++ ) if(__instruments[i]==instrument) return;
 	__instruments.push_back( instrument );
+}
+
+void InstrumentList::insert( int idx, Instrument* instrument ) {
+    // do nothing if already in __instruments
+    for( int i=0; i<__instruments.size(); i++ ) if(__instruments[i]==instrument) return;
+	__instruments.insert( __instruments.begin() + idx, instrument );
 }
 
 Instrument* InstrumentList::operator[]( int idx ) {
