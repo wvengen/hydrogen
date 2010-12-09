@@ -1,4 +1,5 @@
 
+#include <hydrogen/helpers/filesystem.h>
 #include <hydrogen/basics/drumkit.h>
 
 int xml_drumkit( int log_level ) {
@@ -14,6 +15,7 @@ int xml_drumkit( int log_level ) {
     dk = 0;
     dk = H2Core::Drumkit::load_file( "./tests/data/drumkit2.xml" );
     if( !dk ) { return EXIT_FAILURE; }
+    H2Core::Filesystem::rm( "./tests/data/drumkit2.xml" );
 
     return EXIT_SUCCESS;
 }

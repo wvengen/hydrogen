@@ -144,7 +144,7 @@ bool Drumkit::save( bool overwrite ) {
 
 bool Drumkit::save( const QString& dk_path, bool overwrite ) {
     INFOLOG( QString("Saving drumkit into %1").arg(dk_path) );
-    if( Filesystem::file_exists( dk_path ) && !overwrite ) {
+    if( Filesystem::file_exists( dk_path, true ) && !overwrite ) {
         ERRORLOG( QString("drumkit %1 already exists").arg(dk_path) );
         return false;
     }
@@ -188,7 +188,7 @@ bool Drumkit::remove( const QString& sDrumkitName ) {
         return false;
     }
     _INFOLOG( QString("Removing drumkit: %1").arg(path) );
-    if( !Filesystem::rm_fr( path ) ) {
+    if( !Filesystem::rm( path, true ) ) {
         _ERRORLOG( QString("Unable to remove drumkit: %1").arg(path) );
         return false;
     }
