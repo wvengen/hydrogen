@@ -113,8 +113,19 @@ Drumkit* Drumkit::load_from( XMLNode* node ) {
 
 bool Drumkit::load_samples( ) {
     INFOLOG( QString("Loading drumkit %1 instrument samples").arg(__name) );
+    if(__samples_loaded) return true;
     if( __instruments->load_samples( __path.left( __path.lastIndexOf("/") ) ) ) {
         __samples_loaded = true;
+        return true;
+    }
+    return false;
+}
+
+bool Drumkit::unload_samples( ) {
+    INFOLOG( QString("Unloading drumkit %1 instrument samples").arg(__name) );
+    if(!__samples_loaded) return true;
+    if( __instruments->unload_samples() ) {
+        __samples_loaded = false;
         return true;
     }
     return false;

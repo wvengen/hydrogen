@@ -71,6 +71,14 @@ bool InstrumentLayer::load_sample( const QString& path ) {
     return true;
 }
 
+bool InstrumentLayer::unload_sample() {
+    Sample* sample = new Sample( __sample->get_filename(), 0, 0 );
+    if( !sample ) return false;
+    if(__sample) delete __sample;
+    __sample = sample;
+    return true;
+}
+
 InstrumentLayer* InstrumentLayer::load_from( XMLNode* node ) {
     Sample* sample = new Sample( node->read_string( "filename", "" ), 0, 0 );
     InstrumentLayer* layer = new InstrumentLayer( sample );

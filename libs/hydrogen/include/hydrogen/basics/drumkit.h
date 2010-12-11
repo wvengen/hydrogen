@@ -61,6 +61,10 @@ class Drumkit : public Object {
          */
         bool load_samples();
         /**
+         * \brief unload the instrument samples
+         */
+        bool unload_samples();
+        /**
          * \brief save a drumkit
          * \param overwrite allows to write over existing drumkit files
          * \return true on success

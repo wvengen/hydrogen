@@ -78,6 +78,10 @@ class InstrumentLayer : public Object
          * \param path to the directory holding the samples
          */
         bool load_sample( const QString& path );
+        /*
+         * \brief unload sample and replace it with an empty one
+         */
+        bool unload_sample();
 
         /**
          * \brief save the intrument layer within the given XMLNode

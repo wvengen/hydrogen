@@ -50,6 +50,13 @@ bool InstrumentList::load_samples( const QString& path ) {
     return true;
 }
 
+bool InstrumentList::unload_samples() {
+    for( int i=0; i<__instruments.size(); i++ ) {
+        if( !__instruments[i]->unload_samples() ) { return false; }
+    }
+    return true;
+}
+
 InstrumentList* InstrumentList::load_from( XMLNode* node ) {
     InstrumentList *instruments = new InstrumentList();
     XMLNode instrument_node = node->firstChildElement( "instrument" );

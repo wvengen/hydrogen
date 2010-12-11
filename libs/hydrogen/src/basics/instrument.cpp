@@ -239,10 +239,20 @@ bool Instrument::load_samples( const QString& path ) {
         InstrumentLayer *layer = get_layer(i);
         if(layer!=0) {
            if( !layer->load_sample(path) ) {
-                ERRORLOG( "KO" );
                return false;
            }
-                ERRORLOG( "OK" );
+        }
+    }
+    return true;
+}
+
+bool Instrument::unload_samples() {
+    for ( int i=0; i<MAX_LAYERS; i++ ) {
+        InstrumentLayer *layer = get_layer(i);
+        if(layer!=0) {
+           if( !layer->unload_sample() ) {
+               return false;
+           }
         }
     }
     return true;

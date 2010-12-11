@@ -79,6 +79,10 @@ class Instrument : public Object
          * \param path to the directory holding the samples
          */
         bool load_samples( const QString& path );
+        /*
+         * \brief unload instrument samples
+         */
+        bool unload_samples();
 
         /*
          * \brief save the intrument within the given XMLNode

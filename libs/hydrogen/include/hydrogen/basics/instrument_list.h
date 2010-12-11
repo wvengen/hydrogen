@@ -124,6 +124,10 @@ class InstrumentList : public Object
          */
         bool load_samples( const QString& path );
         /*
+         * \brief unload instrument samples
+         */
+        bool unload_samples();
+        /*
          * \brief save the intrument list within the given XMLNode
          * \param node the XMLNode to feed
          */
