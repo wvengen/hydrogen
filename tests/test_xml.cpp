@@ -1,6 +1,9 @@
 
 #include <hydrogen/helpers/filesystem.h>
 #include <hydrogen/basics/drumkit.h>
+#include <hydrogen/basics/pattern.h>
+
+#define BASE_DIR    "./tests/data"
 
 int xml_drumkit( int log_level ) {
 
@@ -10,14 +13,15 @@ int xml_drumkit( int log_level ) {
     H2Core::Drumkit* dk1 = 0;
     H2Core::Drumkit* dk2 = 0;
 
-    dk0 = H2Core::Drumkit::load( "./tests/data/drumkit" );
+    dk0 = H2Core::Drumkit::load( BASE_DIR"/drumkit" );
     if( !dk0 ) { return EXIT_FAILURE; }
     dk0->dump();
     if( !dk0->load_samples() ) { return EXIT_FAILURE; }
+    if( !dk0->save_samples( BASE_DIR"/dk2" ) ) { return EXIT_FAILURE; }
     if( !dk0->unload_samples() ) { return EXIT_FAILURE; }
-    dk0->save( "./tests/data/drumkit1.xml", true );
+    dk0->save_file( BASE_DIR"/drumkit1.xml", true );
 
-    dk1 = H2Core::Drumkit::load_file( "./tests/data/drumkit1.xml" );
+    dk1 = H2Core::Drumkit::load_file( BASE_DIR"/drumkit1.xml" );
     dk1->dump();
     if( !dk1 ) { return EXIT_FAILURE; }
 
@@ -25,15 +29,24 @@ int xml_drumkit( int log_level ) {
     dk2->dump();
     dk2->set_name("COPY");
     if( !dk2 ) { return EXIT_FAILURE; }
-    dk2->save( "./tests/data/drumkit2.xml", true );
+    dk2->save_file( BASE_DIR"/drumkit2.xml", true );
 
     delete dk0;
     delete dk1;
     dk2->dump();
     delete dk2;
 
-    H2Core::Filesystem::rm( "./tests/data/drumkit1.xml" );
-    H2Core::Filesystem::rm( "./tests/data/drumkit2.xml" );
+    //H2Core::Filesystem::rm( BASE_DIR"/drumkit1.xml" );
+    //H2Core::Filesystem::rm( BASE_DIR"/drumkit2.xml" );
 
     return EXIT_SUCCESS;
+}
+
+int xml_pattern( int log_level ) {
+    ___INFOLOG( "test xml pattern validation, read and write" );
+
+    H2Core::Pattern* pt0 = 0;
+
+    pt0 = H2Core::Pattern::load_file( BASE_DIR"/pattern.xml" );
+    //pt0->save_file( BASE_DIR"/pattern1.xml" );
 }

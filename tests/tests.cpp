@@ -4,6 +4,7 @@
 #include "hydrogen/helpers/filesystem.h"
 
 int xml_drumkit( int log_level );
+int xml_pattern( int log_level );
 
 int main(int argc, char *argv[]) {
 
@@ -17,6 +18,7 @@ int main(int argc, char *argv[]) {
     H2Core::Filesystem::info();
 
     xml_drumkit( log_level );
+    xml_pattern( log_level );
 
     sleep(2);
 
