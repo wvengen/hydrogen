@@ -65,18 +65,25 @@ class Drumkit : public Object {
          */
         bool unload_samples();
         /**
-         * \brief save a drumkit
+         * \brief save a drumkit, xml file and samples
          * \param overwrite allows to write over existing drumkit files
          * \return true on success
          */
         bool save( bool overwrite=false );
         /**
-         * \brief save a drumkit
+         * \brief save a drumkit into an xml file
          * \param dk_path the path to save the drumkit into
-         * \param overwrite allows to write over existing drumkit files
+         * \param overwrite allows to write over existing drumkit file
          * \return true on success
          */
-        bool save( const QString& dk_path, bool overwrite=false );
+        bool save_file( const QString& dk_path, bool overwrite=false );
+        /**
+         * \brief save a drumkit instruments samples into a directory
+         * \param dk_dir the directory to save the samples into
+         * \param overwrite allows to write over existing drumkit samples files
+         * \return true on success
+         */
+        bool save_samples( const QString& dk_dir, bool overwrite=false );
         /**
          * \brief save a drumkit using given parameters and an instrument list
          * \param name the name of the drumkit

@@ -131,50 +131,38 @@ bool Drumkit::unload_samples( ) {
     return false;
 }
 
+bool Drumkit::save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments, bool overwrite ) {
+    Drumkit *drumkit = new Drumkit();
+    drumkit->set_name( name );
+    drumkit->set_author( author );
+    drumkit->set_info( info );
+    drumkit->set_license( license );
+	drumkit->set_instruments( instruments );
+    bool ret = drumkit->save( overwrite );
+	drumkit->set_instruments( 0 );
+	delete drumkit;
+    return ret;
+}
+
 bool Drumkit::save( bool overwrite ) {
     INFOLOG( "Saving drumkit" );
     if( Filesystem::drumkit_exists( __name ) && !overwrite ) {
         ERRORLOG( QString("drumkit %1 already exists").arg(__name) );
         return false;
     }
-    QString dk_path = Filesystem::usr_drumkits_dir() + "/" + __name;
-    if( !Filesystem::mkdir( dk_path) ) {
-        ERRORLOG( QString("unable to create %1").arg(dk_path) );
+    QString dk_dir = Filesystem::usr_drumkits_dir() + "/" + __name;
+    if( !Filesystem::mkdir( dk_dir ) ) {
+        ERRORLOG( QString("unable to create %1").arg(dk_dir) );
         return false;
     }
-    bool ret = save( Filesystem::drumkit_file(dk_path), overwrite );
+    bool ret = save_file( Filesystem::drumkit_file(dk_dir), overwrite );
     if ( ret) {
-        // TODO should be in a public method
-        // TODO use overwrite, keep lists of already written files
-        // Copy sample files
-        InstrumentList *instruments = get_instruments();
-        for( int i=0; i<instruments->size(); i++) {
-            Instrument* instrument = (*instruments)[i];
-            for ( int n = 0; n < MAX_LAYERS; n++ ) {
-                InstrumentLayer* layer = instrument->get_layer(n);
-                if(layer) {
-                    // TODO have to do this cause in Sample::load_wave, a new sample is created with an absolute path
-                    QString path = layer->get_sample()->get_filename();
-	                int idx = path.lastIndexOf("/");
-                    if(idx>=0) {
-                        QString dst = dk_path + "/" + path.right( path.size()-1-path.lastIndexOf("/") );
-                        if( Filesystem::file_readable( dst ) ) {
-                            WARNINGLOG( QString("do not overwrite %1 with %2 has it already exists").arg(dst).arg(path) );
-                        } else {
-                            Filesystem::file_copy( path, dst );
-                        }
-                    } else {
-                        QString dst = dk_path + "/" + path;
-                        ERRORLOG( QString("unable to copy %1 to %2, we don't know where it comes from").arg(path).arg(dst) );
-                    }
-                }
-            }
-        }
+        ret = save_samples( dk_dir, overwrite );
     }
     return ret;
 }
 
-bool Drumkit::save( const QString& dk_path, bool overwrite ) {
+bool Drumkit::save_file( const QString& dk_path, bool overwrite ) {
     INFOLOG( QString("Saving drumkit into %1").arg(dk_path) );
     if( Filesystem::file_exists( dk_path, true ) && !overwrite ) {
         ERRORLOG( QString("drumkit %1 already exists").arg(dk_path) );
@@ -192,25 +180,35 @@ bool Drumkit::save( const QString& dk_path, bool overwrite ) {
     return doc.write( dk_path );
 }
 
-bool Drumkit::save( const QString& name, const QString& author, const QString& info, const QString& license, InstrumentList* instruments, bool overwrite ) {
-    Drumkit *drumkit = new Drumkit();
-    //drumkit->set_path( dk_path );
-    drumkit->set_name( name );
-    drumkit->set_author( author );
-    drumkit->set_info( info );
-    drumkit->set_license( license );
-	drumkit->set_instruments( new InstrumentList( instruments ) );
-    bool ret = drumkit->save( overwrite );
-	delete drumkit;
-    return ret;
-}
-
 void Drumkit::save_to( XMLNode* node ) {
     node->write_string( "name", __name );
     node->write_string( "author", __author );
     node->write_string( "info", __info );
     node->write_string( "license", __license );
     __instruments->save_to( node );
+}
+
+bool Drumkit::save_samples( const QString& dk_dir, bool overwrite ) {
+    INFOLOG( QString("Saving drumkit %1 samples into %2").arg(dk_dir) );
+    if( !Filesystem::mkdir( dk_dir ) ) {
+        ERRORLOG( QString("unable to create %1").arg(dk_dir) );
+        return false;
+    }
+    InstrumentList *instruments = get_instruments();
+    for( int i=0; i<instruments->size(); i++) {
+        Instrument* instrument = (*instruments)[i];
+        for ( int n = 0; n < MAX_LAYERS; n++ ) {
+            InstrumentLayer* layer = instrument->get_layer(n);
+            if(layer) {
+                QString src = __path.left( __path.lastIndexOf("/") ) + "/" + layer->get_sample()->get_filename();
+                QString dst = dk_dir + "/" + layer->get_sample()->get_filename();
+                if( !Filesystem::file_copy( src, dst ) ) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 bool Drumkit::remove( const QString& sDrumkitName ) {
