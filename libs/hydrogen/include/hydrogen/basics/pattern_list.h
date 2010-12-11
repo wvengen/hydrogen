@@ -140,7 +140,7 @@ class PatternList : public Object
          * \param instruments the current instrument list to search instrument into
          * \return a new PatternList instance
          */
-        static PatternList* load_from( XMLNode* node, InstrumentList* instruments );
+        static PatternList* load_from( XMLNode* node, InstrumentList* instruments=0 );
         /**
          * \brief load the virtual patterns
          * \param node the XMLDode to read from

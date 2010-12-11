@@ -98,15 +98,21 @@ class Note : public Object
          * \param instruments the current instrument list to search instrument into
          * \return a new Note instance
          */
-        static Note* load_from( XMLNode* node, InstrumentList* instruments );
+        static Note* load_from( XMLNode* node, InstrumentList* instruments=0 );
 
         /** \brief output details through logger with DEBUG severity */
         void dump();
 
+        /** \brief find the corresponding instrument and point to it, or an empty instrument */
+        void map_instrument( InstrumentList* instruments );
         /** \brief set the instrument */
         void set_instrument( Instrument* instrument );
         /** \brief get the instrument */
 	    Instrument* get_instrument()                    { return __instrument; }
+        /** \brief get the instrument id */
+	    int get_instrument_id()                         { return __instrument_id; }
+        /** \brief returns true of the note is linked to an instrument */
+        bool has_instrument()                           { return __instrument!=0; }
         /** \brief set the position of the note */
 	    void set_position( int position )               { __position = position; }
         /** \brief get the position of the note */
@@ -152,8 +158,13 @@ class Note : public Object
         Key get_key()                       { return __key; }               ///< get key
         int get_octave()                    { return __octave; }            ///< get octave
 
-        /** \brief return scaled key for midi output */
-        int get_midi_key()                  { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-MIDI_MIDDLE_C; }
+        /** \brief return scaled key for midi output, !!! DO NOT CHECK IF INSTRUMENT IS SET !!! */
+        int get_midi_key()                  {
+            /* TODO JZU ???
+            if( !has_instrument() ) { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key; }
+            */
+            return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-MIDI_MIDDLE_C;
+        }
         /** \brief return scaled velocity for midi output */
         int get_midi_velocity()             { return __velocity * MIDI_FACTOR; }
         /** \brief returns octave*12 + key */
@@ -188,10 +199,12 @@ class Note : public Object
             __midi_msg = msg;
         }
 
+        /** \brief get the ADSR of the note */
+        ADSR* get_adsr()                    { return __adsr; }
         /** \brief call release on adsr */
-        float release_adsr()                { return __adsr.release(); }
+        float release_adsr()                { return __adsr->release(); }
         /** \brief call get value on adsr */
-		float get_adsr_value(float v)       { return __adsr.get_value( v ); }
+		float get_adsr_value(float v)       { return __adsr->get_value( v ); }
         
         /**
          * \brief update sample_position with increment
@@ -209,6 +222,13 @@ class Note : public Object
 
         /** \brief compute left and right output based on filters */
         void compute_lr_values( float* val_l, float* val_r ) {
+            /* TODO JZU ??
+            if( !has_instrument() ) {
+			    *val_l = 0.0f;
+			    *val_r = 0.0f;
+                return;
+            }
+            */
             float cut_off = __instrument->get_filter_cutoff();
 	        float resonance = __instrument->get_filter_resonance();
 			__bpfb_l  = ( resonance * __bpfb_l ) + cut_off * ( *val_l - __lpfb_l );
@@ -220,17 +240,18 @@ class Note : public Object
         }
 
     private:
-	    Instrument* __instrument;   ///< the instrument to be played by this note
-	    unsigned __position;		///< note position inside the pattern
-	    float __velocity;		    ///< velocity (intensity) of the note [0;1]
+        Instrument* __instrument;   ///< the instrument to be played by this note
+        int __instrument_id;        ///< the id of the instrument played by this note
+        unsigned __position;		///< note position inside the pattern
+        float __velocity;		    ///< velocity (intensity) of the note [0;1]
         float __pan_l;			    ///< pan of the note (left volume) [0;1]
         float __pan_r;			    ///< pan of the note (right volume) [0;1]
         int __length;               ///< the length of the note
         float __pitch;              ///< the frequency of the note
         Key __key;                  ///< the key, [0;11]==[C;B]
         int __octave;               ///< the octave [-3;3]
-        ADSR __adsr;                ///< attack decay sustain release
-	    float __lead_lag;		    ///< lead or lag offset of the note
+        ADSR* __adsr;               ///< attack decay sustain release
+        float __lead_lag;		    ///< lead or lag offset of the note
         float __cut_off;		    ///< filter cutoff [0;1]
         float __resonance;	        ///< filter resonant frequency [0;1]
         int __humanize_delay;       ///< used in "humanize" function
@@ -241,7 +262,7 @@ class Note : public Object
         float __lpfb_r;		        ///< right low pass filter buffer
         int __pattern_idx;          ///< index of the pattern holding this note for undo actions
         int __midi_msg;             ///< TODO
-	    bool __note_off;			///< note type on|off
+        bool __note_off;			///< note type on|off
         bool __just_recorded;       ///< used in record+delete
         ///< used to build QString from __key an __octave
         static const char *__key_str[];

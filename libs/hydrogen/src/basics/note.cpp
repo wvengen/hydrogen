@@ -42,7 +42,7 @@ Note::Note( Instrument* instrument, int position, float velocity, float pan_l, f
     __pitch( pitch ),
     __key( C ),
     __octave( 0 ),
-    __adsr( ADSR() ),
+    __adsr( new ADSR() ),
     __lead_lag( 0.0 ),
     __cut_off( 1.0 ),
     __resonance( 0.0 ),
@@ -70,7 +70,7 @@ Note::Note( Note* other )
     __pitch( other->get_pitch() ),
     __key( other->get_key() ),
     __octave( other->get_octave() ),
-    __adsr( ADSR() ),
+    __adsr( other->get_adsr() ),
     __lead_lag( other->get_lead_lag() ),
     __cut_off( other->get_cut_off() ),
     __resonance( other->get_resonance() ),
@@ -102,12 +102,25 @@ void Note::set_pan_l( float pan ) { __pan_l = check_boundary( pan, PAN_MIN, PAN_
 
 void Note::set_pan_r( float pan ) { __pan_r = check_boundary( pan, PAN_MIN, PAN_MAX ); }
 
+void Note::map_instrument( InstrumentList* instruments ) {
+    if( instruments==0 ) {
+        __instrument = Instrument::create_empty();
+    } else {
+        Instrument* instr = instruments->find( __instrument_id );
+        if( !instr ) {
+		    ERRORLOG( QString("Instrument with ID: '%1' not found. Using empty instrument.").arg(__instrument_id) );
+            __instrument = Instrument::create_empty();
+        } else {
+            __instrument = instr;
+        }
+    }
+}
 
 void Note::set_instrument( Instrument* instrument ) {
     if ( instrument == 0 ) return;
     __instrument = instrument;
     assert( __instrument->get_adsr() );
-    __adsr = ADSR( *( __instrument->get_adsr() ) );
+    __adsr = new ADSR( *( __instrument->get_adsr() ) );
 }
 
 QString Note::key_to_string() {
@@ -156,14 +169,8 @@ void Note::save_to( XMLNode* node ) {
 }
 
 Note* Note::load_from( XMLNode* node, InstrumentList* instruments ) {
-    int instr_id = node->read_int( "instrument", EMPTY_INSTR_ID );
-    Instrument* instr = instruments->find( instr_id );
-    if( !instr ) {
-		ERRORLOG( QString("Instrument with ID: '%1' not found. Note skipped.").arg(instr_id) );
-        return 0;
-    }
     Note *note = new Note(
-        instr,
+        0,
         node->read_int( "position", 0 ),
         node->read_float( "velocity", 0.8f ),
         node->read_float( "pan_L", 0.5f ),
@@ -174,6 +181,7 @@ Note* Note::load_from( XMLNode* node, InstrumentList* instruments ) {
     note->set_lead_lag( node->read_float( "leadlag", 0, false, false ) );
     note->set_key_octave( node->read_string( "key", "C0", false, false ) );
     note->set_note_off( node->read_bool( "note_off", false, false, false ) );
+    note->map_instrument( instruments );
     return note;
 }
 

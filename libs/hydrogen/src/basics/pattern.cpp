@@ -56,15 +56,14 @@ Pattern::Pattern( Pattern *other)
     }
 }
 
-Pattern* Pattern::load_from( const QString& pattern_path ) {
+Pattern* Pattern::load_file( const QString& pattern_path ) {
     INFOLOG( QString("Load pattern %1").arg(pattern_path) );
     if ( !Filesystem::file_readable( pattern_path ) ) {
         ERRORLOG( QString("%1 is not a readable pattern file").arg(pattern_path) );
         return 0;
     }
     XMLDoc doc;
-    if ( !doc.read( pattern_path ) ) return 0;
-    // TODO XML VALIDATION !!!!!!!!!!
+    if ( !doc.read( pattern_path, Filesystem::pattern_xsd() ) ) return 0;
     XMLNode root = doc.firstChildElement( "drumkit_pattern" );
     if ( root.isNull() ) {
         ERRORLOG( "drumkit_pattern node not found" );
@@ -75,23 +74,7 @@ Pattern* Pattern::load_from( const QString& pattern_path ) {
         ERRORLOG( "pattern node not found" );
         return 0;
     }
-    return load_from( &pattern_node, Hydrogen::get_instance()->getSong()->get_instruments() );
-}
-
-void Pattern::save_to( XMLNode* node ) {
-    node->write_string( "name", __name );
-    node->write_string( "category", __category );
-    node->write_int( "size", __length );
-    XMLNode note_list_node = XMLDoc().createElement( "noteList" );
-    for( notes_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
-        Note* note = it->second;
-        if(note) {
-            XMLNode note_node = XMLDoc().createElement( "note" );
-            note->save_to( &note_node );
-            note_list_node.appendChild( note_node );
-        }
-    }
-    node->appendChild( note_list_node );
+    return load_from( &pattern_node );
 }
 
 Pattern* Pattern::load_from( XMLNode* node, InstrumentList* instruments ) {
@@ -112,6 +95,22 @@ Pattern* Pattern::load_from( XMLNode* node, InstrumentList* instruments ) {
         }
     }
     return pattern;
+}
+
+void Pattern::save_to( XMLNode* node ) {
+    node->write_string( "name", __name );
+    node->write_string( "category", __category );
+    node->write_int( "size", __length );
+    XMLNode note_list_node = XMLDoc().createElement( "noteList" );
+    for( notes_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
+        Note* note = it->second;
+        if(note) {
+            XMLNode note_node = XMLDoc().createElement( "note" );
+            note->save_to( &note_node );
+            note_list_node.appendChild( note_node );
+        }
+    }
+    node->appendChild( note_list_node );
 }
 
 Pattern::~Pattern() {

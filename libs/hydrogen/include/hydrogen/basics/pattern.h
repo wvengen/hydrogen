@@ -53,7 +53,7 @@ class Pattern : public Object
          * \brief load a pattern from a file
          * \param pattern_path the path to the file to load the pattern from
          */
-        static Pattern* load_from( const QString& pattern_path );
+        static Pattern* load_file( const QString& pattern_path );
 
         /*
          * \brief save the pattern within the given XMLNode
@@ -66,7 +66,7 @@ class Pattern : public Object
          * \param instruments the current instrument list to search instrument into
          * \return a new Pattern instance
          */
-        static Pattern* load_from( XMLNode *node, InstrumentList* instruments );
+        static Pattern* load_from( XMLNode *node, InstrumentList* instruments=0 );
         /**
          * \brief load the virtual patterns
          * \param node the XMLDode to read from

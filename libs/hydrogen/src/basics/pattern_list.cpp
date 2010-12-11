@@ -36,8 +36,7 @@ PatternList::~PatternList() {
 PatternList::PatternList( PatternList* other) : Object( __class_name ) {
     assert( __patterns.size() == 0 );
     for ( int i=0; i<other->size(); i++ )
-        (*this) << (*other)[i];
-        //(*this) << ( new Pattern( (*other)[i] ) );    // TODO should we ?!
+        (*this) << ( new Pattern( (*other)[i] ) );
 }
 
 PatternList* PatternList::load_from( XMLNode* node, InstrumentList* instruments ) {
