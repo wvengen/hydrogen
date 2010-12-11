@@ -153,7 +153,7 @@ class Note : public Object
         int get_octave()                    { return __octave; }            ///< get octave
 
         /** \brief return scaled key for midi output */
-        int get_midi_key()                  { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-60; }
+        int get_midi_key()                  { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-MIDI_MIDDLE_C; }
         /** \brief return scaled velocity for midi output */
         int get_midi_velocity()             { return __velocity * MIDI_FACTOR; }
         /** \brief returns octave*12 + key */
