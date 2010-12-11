@@ -14,6 +14,7 @@ int xml_drumkit( int log_level ) {
     if( !dk0 ) { return EXIT_FAILURE; }
     dk0->dump();
     if( !dk0->load_samples() ) { return EXIT_FAILURE; }
+    if( !dk0->unload_samples() ) { return EXIT_FAILURE; }
     dk0->save( "./tests/data/drumkit1.xml", true );
 
     dk1 = H2Core::Drumkit::load_file( "./tests/data/drumkit1.xml" );
