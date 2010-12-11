@@ -62,6 +62,7 @@
 #define PATTERN_FILTER  "*.h2pattern"
 #define DRUMKIT_XML     "drumkit.xml"
 #define DRUMKIT_XSD     "drumkit.xsd"
+#define PATTERN_XSD     "pattern.xsd"
 
 namespace H2Core
 {
@@ -143,7 +144,7 @@ bool Filesystem::dir_readable(  const QString& path, bool silent )  { return che
 bool Filesystem::dir_writable(  const QString& path, bool silent )  { return check_permissions(path, is_dir|is_writable, silent); }
 
 bool Filesystem::mkdir( const QString& path ) {
-    if ( !QDir("/").mkpath( path ) ) {
+    if ( !QDir("/").mkpath( QDir(path).absolutePath() ) ) {
         ___ERRORLOG( QString("unable to create directory : %1").arg(path) );
         return false;
     }
@@ -175,7 +176,11 @@ bool Filesystem::write_to_file( const QString& dst, const QString& content ) {
 	file.close();
 }
 
-bool Filesystem::file_copy( const QString& src, const QString& dst ) {
+bool Filesystem::file_copy( const QString& src, const QString& dst, bool overwrite ) {
+    if( file_exists( dst, true ) && !overwrite ) {
+        ___WARNINGLOG( QString("do not overwrite %1 with %2 has it already exists").arg(dst).arg(src) );
+        return true;
+    }
     if ( !file_readable( src ) ) {
         ___ERRORLOG( QString("unable to copy %1 to %2, %1 is not readable").arg(src).arg(dst) );
         return false;
@@ -319,6 +324,7 @@ bool Filesystem::drumkit_valid( const QString& dk_path )   { return file_readabl
 QString Filesystem::drumkit_file( const QString& dk_path ) { return dk_path + "/" + DRUMKIT_XML; }
 
 QString Filesystem::drumkit_xsd( ) { return xsd_dir() + "/" + DRUMKIT_XSD; }
+QString Filesystem::pattern_xsd( ) { return xsd_dir() + "/" + PATTERN_XSD; }
 
 // PATTERNS
 QStringList Filesystem::patterns_list( )    { return QDir( patterns_dir() ).entryList( QStringList(PATTERN_FILTER), QDir::Files | QDir::NoDotAndDotDot ); }

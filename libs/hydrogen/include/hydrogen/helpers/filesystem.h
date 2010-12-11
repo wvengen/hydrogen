@@ -114,6 +114,8 @@ class Filesystem : public Object
         static QString drumkit_file( const QString& dk_path );
         /** \brief returns the path to the drumkit XSD (xml schema definition) file */
         static QString drumkit_xsd( );
+        /** \brief returns the path to the pattern XSD (xml schema definition) file */
+        static QString pattern_xsd( );
         
         /* PATTERNS */
         /** \brief returns */
@@ -149,7 +151,7 @@ class Filesystem : public Object
          * */
         static bool write_to_file( const QString& dst, const QString& content );
         /** \brief copy a source file to a destination */
-        static bool file_copy( const QString& src, const QString& dst );
+        static bool file_copy( const QString& src, const QString& dst, bool overwrite=false );
         /** \brief remove a path */
         static bool rm( const QString& path, bool recursive=false );
         /** \brief create a path */
