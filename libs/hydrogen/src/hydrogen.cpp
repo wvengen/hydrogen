@@ -1832,8 +1832,12 @@ Hydrogen::Hydrogen()
 	audioEngine_init();
         // Prevent double creation caused by calls from MIDI thread 
 	__instance = this; 
-	audioEngine_startAudioDrivers();
+        audioEngine_startAudioDrivers();
         m_bExportsong = false;
+
+        for(int i = 0; i<128; i++){
+                m_nInstrumentLookupTable[i] = i;
+        }
 
 }
 
@@ -2086,7 +2090,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 
 	Instrument *instrRef = 0;
 	if ( song ) {
-		instrRef = song->get_instrument_list()->get( instrument );
+                instrRef = song->get_instrument_list()->get( m_nInstrumentLookupTable[ instrument ] );//getlookuptable index = instrument+36, ziel wert = der entprechende wert -36
 	}
 
 	if ( currentPattern && ( getState() == STATE_PLAYING ) ) {
@@ -2257,7 +2261,7 @@ void Hydrogen::addRealtimeNote( int instrument,
 							-1,
 							0 );
 	
-								int divider = msg1 / 12;
+                                int divider = msg1 / 12;
 				int octave = divider -3;
 				int notehigh = msg1 - (12 * divider);
 				note->m_noteKey.m_nOctave = octave;

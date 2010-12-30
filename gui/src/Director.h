@@ -20,30 +20,53 @@
  *
  */
 
-#ifndef FLAC_FILE_H
-#define FLAC_FILE_H
+#ifndef METRO_BLINKER_H
+#define METRO_BLINKER_H
 
+
+#include <QDialog>
+#include "ui_Director_UI.h"
 #include <hydrogen/Object.h>
-#include <string>
+#include <hydrogen/Preferences.h>
+#include <hydrogen/hydrogen.h>
+#include "EventListener.h"
 
-namespace H2Core
+
+class Director : public QDialog, public Ui_Director_UI, public Object, public EventListener
+
 {
+	Q_OBJECT
+	public:
+		
+		Director( QWidget* pParent );
+		~Director();
 
-class Sample;
+		virtual void metronomeEvent( int nValue );	
+		virtual void paintEvent( QPaintEvent*);
 
-/// \todo: impostare il samplerate in load()
-/// Class for FLAC file handling
-class FLACFile : public Object
-{
-    H2_OBJECT
-public:
-	FLACFile();
-	~FLACFile();
+	private slots:
 
-	Sample* load( const QString& sFilename );
+		void updateMetronomBackground();
+		//void updateBackground();
+
+
+	private:
+		QTimer *timer;
+		QColor p_color;
+//		QPixmap *m_pBackground;
+		QPalette blinkerPalette;
+		int p_counter;
+		int p_fadealpha;
+		float p_bpm;
+		int p_bar;
+		int p_wechselblink;
+		QString TAG;
+		QString TAG2;
+		QString songName;
+		int tagbeat;
+
 };
 
-};
 
 #endif
 

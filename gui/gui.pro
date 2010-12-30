@@ -26,7 +26,6 @@ win32 {
     INCLUDEPATH += ../3rdparty/install/include
     #INCLUDEPATH += ../3rdparty/install/libs/libpthread
     #INCLUDEPATH += ../3rdparty/install/libs/libsndfile
-    #INCLUDEPATH += ../3rdparty/install/libs/flac
     #INCLUDEPATH += ../3rdparty/install/libs/portaudio
     #INCLUDEPATH += ../3rdparty/install/libs/portmidi
     INCLUDEPATH += ../../../source/pthreads-w32-2-8-0-release
@@ -38,8 +37,6 @@ win32 {
 }
 
 #old windows libs..
-#LIBS += ../libflac++.lib ../libflac++_dynamic.lib ../libflac++_static.lib ../libflac.lib winmm.lib
-#LIBS += ../libflac++_static.lib ../libflac_static.lib winmm.lib
 #LIBS += ../optarg.lib
 #LIBS += ../ogg_static.lib
 #LIBS += ../pm_dll.lib
@@ -139,7 +136,7 @@ HEADERS += src/AboutDialog.h \
            src/widgets/midiTable.h \
            src/widgets/PixmapWidget.h \
            src/widgets/Rotary.h \
- src/MetroBlinker.h
+           src/Director.h
 FORMS += src/AudioFileBrowser/AudioFileBrowser_UI.ui \
          src/PlaylistEditor/PlaylistDialog_UI.ui \
          src/SampleEditor/SampleEditor_UI.ui \
@@ -160,7 +157,7 @@ FORMS += src/AudioFileBrowser/AudioFileBrowser_UI.ui \
          src/UI/PatternPropertiesDialog_UI.ui \
          src/UI/PreferencesDialog_UI.ui \
          src/UI/SongPropertiesDialog_UI.ui \
-         src/MetroBlinker_UI.ui
+         src/Director_UI.ui
 SOURCES += src/AboutDialog.cpp \
 	  ../version.cpp \
            src/AudioEngineInfoForm.cpp \
@@ -222,5 +219,4 @@ SOURCES += src/AboutDialog.cpp \
            src/widgets/midiTable.cpp \
            src/widgets/PixmapWidget.cpp \
            src/widgets/Rotary.cpp \
- \
- src/MetroBlinker.cpp
+           src/Director.cpp
