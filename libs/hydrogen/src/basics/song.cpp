@@ -20,27 +20,21 @@
  *
  */
 
+#include <hydrogen/basics/song.h>
+
+#include <hydrogen/config.h>
 #include "hydrogen/version.h"
 
-#include <cassert>
-
-#include <hydrogen/basics/adsr.h>
+#include <hydrogen/hydrogen.h>
 #include <hydrogen/data_path.h>
 #include <hydrogen/LocalFileMng.h>
-#include <hydrogen/helpers/filesystem.h>
-#include <hydrogen/Preferences.h>
-
 #include <hydrogen/fx/Effects.h>
-#include <hydrogen/globals.h>
-#include <hydrogen/basics/song.h>
-#include <hydrogen/basics/sample.h>
-#include <hydrogen/basics/instrument.h>
+
+#include <hydrogen/helpers/xml.h>
+#include <hydrogen/helpers/filesystem.h>
+
 #include <hydrogen/basics/pattern.h>
 #include <hydrogen/basics/pattern_list.h>
-#include <hydrogen/basics/note.h>
-#include <hydrogen/hydrogen.h>
-
-#include <QDomDocument>
 
 namespace H2Core
 {
@@ -485,3 +479,4 @@ void Song::readTempPatternList( QString filename )
 
 };
 
+/* vim: set softtabstop=4 expandtab: */

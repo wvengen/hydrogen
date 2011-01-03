@@ -2063,3 +2063,5 @@ static float convex_exponant_table[4096] = {
 	0.99973049465185, 0.99982034363783, 0.99991017875203, 1,
 };
 inline float convex_exponant( float value ) { return compute_exponant( value, convex_exponant_table, convex_exponant_table_size ); }
+
+/* vim: set softtabstop=4 expandtab: */

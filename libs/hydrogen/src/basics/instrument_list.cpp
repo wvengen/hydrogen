@@ -22,6 +22,9 @@
 
 #include <hydrogen/basics/instrument_list.h>
 
+#include <hydrogen/helpers/xml.h>
+#include <hydrogen/basics/instrument.h>
+
 namespace H2Core
 {
 

@@ -22,15 +22,16 @@
 
 #include <hydrogen/basics/pattern.h>
 
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/basics/song.h>
-#include <hydrogen/basics/note.h>
-#include <hydrogen/audio_engine.h>
-#include <hydrogen/basics/pattern_list.h>
-#include <hydrogen/helpers/filesystem.h>
-
 #include <vector>
 #include <cassert>
+
+#include <hydrogen/audio_engine.h>
+
+#include <hydrogen/helpers/xml.h>
+#include <hydrogen/helpers/filesystem.h>
+
+#include <hydrogen/basics/pattern_list.h>
+
 namespace H2Core
 {
 
@@ -44,7 +45,7 @@ Pattern::Pattern( const QString& name, const QString& category, int length )
 {
 }
 
-Pattern::Pattern( Pattern *other)
+Pattern::Pattern( Pattern* other)
     : Object( __class_name ),
     __length( other->get_length() ),
     __name( other->get_name() ),
@@ -120,14 +121,14 @@ Pattern::~Pattern() {
     }
 }
 
-void Pattern::purge_instrument( Instrument* I ) {
+void Pattern::purge_instrument( Instrument* instr ) {
     bool locked = false;
     std::list< Note* > slate;
     notes_it_t it = __notes.begin();
     while ( it!=__notes.end() ) {
         Note *note = it->second;
         assert( note );
-        if ( note->get_instrument() == I ) {
+        if ( note->get_instrument() == instr ) {
             if ( !locked ) {
                 H2Core::AudioEngine::get_instance()->lock( RIGHT_HERE );
                 locked = true;
@@ -147,11 +148,11 @@ void Pattern::purge_instrument( Instrument* I ) {
     }
 }
 
-bool Pattern::references_instrument( Instrument * I ) {
+bool Pattern::references_instrument( Instrument* instr ) {
     for( notes_cst_it_t it=__notes.begin(); it!=__notes.end(); ++it ) {
         Note *note = it->second;
         assert( note );
-        if ( note->get_instrument() == I ) {
+        if ( note->get_instrument() == instr ) {
             return true;
         }
     }

@@ -22,13 +22,11 @@
 
 #include <hydrogen/basics/sample.h>
 
+#include <sndfile.h>
+
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/helpers/filesystem.h>
-
-#include <sndfile.h>
-
-using namespace std;
 
 namespace H2Core
 {
@@ -461,3 +459,4 @@ Sample::loop_mode_t Sample::parse_loop_mode( const QString& loop_mode ) {
 
 };
 
+/* vim: set softtabstop=4 expandtab: */

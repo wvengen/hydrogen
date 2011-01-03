@@ -22,14 +22,16 @@
 
 #include <hydrogen/basics/instrument.h>
 
-#include <hydrogen/basics/adsr.h>
-#include <hydrogen/basics/sample.h>
-#include <hydrogen/basics/song.h>
-#include <hydrogen/basics/drumkit.h>
-#include <hydrogen/helpers/filesystem.h>
+#include <cassert>
+
 #include <hydrogen/audio_engine.h>
 
-#include <cassert>
+#include <hydrogen/helpers/xml.h>
+#include <hydrogen/helpers/filesystem.h>
+
+#include <hydrogen/basics/sample.h>
+#include <hydrogen/basics/drumkit.h>
+#include <hydrogen/basics/instrument_layer.h>
 
 namespace H2Core
 {
@@ -64,7 +66,7 @@ Instrument::Instrument( const int id, const QString& name, ADSR* adsr )
 	for ( int i=0; i<MAX_LAYERS; i++ ) __layers[i] = NULL;
 }
 
-Instrument::Instrument( Instrument *other )
+Instrument::Instrument( Instrument* other )
     : Object( __class_name )
     , __id( other->get_id() )
     , __name( other->get_name() )

@@ -21,6 +21,7 @@
  */
 
 #include <hydrogen/basics/adsr.h>
+
 #include "exponential_tables.h"
 
 namespace H2Core
@@ -46,15 +47,15 @@ ADSR::ADSR( float attack, float decay, float sustain, float release )
 , __value( 0.0 )
 { }
 
-ADSR::ADSR( const ADSR& other )
+ADSR::ADSR( const ADSR* other )
     : Object( __class_name )
-    , __attack( other.__attack )
-    , __decay( other.__decay )
-    , __sustain( other.__sustain )
-    , __release( other.__release )
-    , __state( other.__state )
-    , __ticks( other.__ticks )
-    , __value( other.__value )
+    , __attack( other->__attack )
+    , __decay( other->__decay )
+    , __sustain( other->__sustain )
+    , __release( other->__release )
+    , __state( other->__state )
+    , __ticks( other->__ticks )
+    , __value( other->__value )
 { }
 
 ADSR::~ADSR() { }

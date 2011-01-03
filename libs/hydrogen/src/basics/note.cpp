@@ -23,7 +23,10 @@
 #include <hydrogen/basics/note.h>
 
 #include <cassert>
-//#include <cstdlib>
+
+#include <hydrogen/helpers/xml.h>
+
+#include <hydrogen/basics/instrument_list.h>
 
 namespace H2Core
 {
@@ -186,3 +189,5 @@ Note* Note::load_from( XMLNode* node, InstrumentList* instruments ) {
 }
 
 };
+
+/* vim: set softtabstop=4 expandtab: */

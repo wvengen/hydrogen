@@ -22,21 +22,7 @@
 
 #include <hydrogen/basics/drumkit.h>
 
-#include <hydrogen/basics/instrument.h>
-#include <hydrogen/basics/instrument_list.h>
-
-#include <hydrogen/basics/adsr.h>
-#include <hydrogen/basics/sample.h>
-
-#include <hydrogen/helpers/xml.h>
-#include <hydrogen/helpers/filesystem.h>
-
-#include <hydrogen/hydrogen.h>
-#include <hydrogen/h2_exception.h>
-
-#include <fcntl.h>
-#include <errno.h>
-
+#include <hydrogen/config.h>
 #ifdef H2CORE_HAVE_LIBARCHIVE
 #include <archive.h>
 #include <archive_entry.h>
@@ -46,6 +32,13 @@
 		#include <libtar.h>
 	#endif
 #endif
+
+#include <hydrogen/basics/sample.h>
+#include <hydrogen/basics/instrument.h>
+#include <hydrogen/basics/instrument_layer.h>
+
+#include <hydrogen/helpers/xml.h>
+#include <hydrogen/helpers/filesystem.h>
 
 namespace H2Core
 {
