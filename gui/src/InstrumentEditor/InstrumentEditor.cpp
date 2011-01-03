@@ -31,6 +31,7 @@
 #include <hydrogen/basics/adsr.h>
 #include <hydrogen/basics/sample.h>
 #include <hydrogen/basics/instrument.h>
+#include <hydrogen/basics/instrument_layer.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/event_queue.h>
 using namespace H2Core;
