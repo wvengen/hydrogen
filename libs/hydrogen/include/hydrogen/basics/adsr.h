@@ -20,56 +20,61 @@
  *
  */
 
-#ifndef ADSR_H
-#define ADSR_H
+#ifndef H2C_ADSR_H
+#define H2C_ADSR_H
 
 #include <hydrogen/Object.h>
 
 namespace H2Core
 {
 
-///
-/// ADSR envelope.
-///
-class ADSR : private Object
-{
+/**
+ * \brief Attack Decay Sustain Release envelope.
+ */
+class ADSR : private Object {
     H2_OBJECT
-public:
-	float __attack;		///< Attack time (in samples)
-	float __decay;		///< Decay time (in samples)
-	float __sustain;	///< Sustain level
-	float __release;	///< Release time (in samples)
+    public:
+        float __attack;		///< Attack time (in samples)
+        float __decay;		///< Decay time (in samples)
+        float __sustain;	///< Sustain level
+        float __release;	///< Release time (in samples)
 
-	ADSR(
-	    float attack = 0.0,
-	    float decay = 0.0,
-	    float sustain = 1.0,
-	    float release = 1000
-	);
+        /** \brief constructor */
+	    ADSR ( float attack = 0.0, float decay = 0.0, float sustain = 1.0, float release = 1000 );
 
-	ADSR( const ADSR& orig );
+        /** \brief copy constructor */
+	    ADSR( const ADSR& other );
 
-	~ADSR();
+        /** \brief destructor */
+	    ~ADSR();
 
-	float get_value( float step );
-	float release();
+        /** \brief compute the step value and return it */
+	    float get_value( float step );
+        /**
+         * \brief stets state to REALSE,
+         * returns 0 if the state is IDLE,
+         * __value if the state is RELEASE,
+         * set state to RELEASE, save __release_value and return it.
+         * */
+	    float release();
 
-private:
-	enum ADSRState {
-		ATTACK,
-		DECAY,
-		SUSTAIN,
-		RELEASE,
-		IDLE
-	};
+    private:
+	    enum ADSRState {
+            ATTACK,
+            DECAY,
+            SUSTAIN,
+            RELEASE,
+            IDLE
+	    };
 
-	ADSRState __state;
-	float __ticks;
-	float __value;
-	float __release_value;
+	    ADSRState __state;
+	    float __ticks;
+	    float __value;
+	    float __release_value;
 };
 
 };
 
+#endif // H2C_ADRS_H
 
-#endif
+/* vim: set softtabstop=4 expandtab: */
