@@ -20,19 +20,19 @@
  *
  */
 
-#ifndef H2_DRUMKIT_H
-#define H2_DRUMKIT_H
+#ifndef H2C_DRUMKIT_H
+#define H2C_DRUMKIT_H
 
 #include <hydrogen/Object.h>
-#include <hydrogen/helpers/xml.h>
 #include <hydrogen/basics/instrument_list.h>
 
 namespace H2Core
 {
 
+class XMLNode;
+
 /**
-\ingroup H2Core
-\brief	Drumkit info
+ * \brief Drumkit info
 */
 class Drumkit : public Object {
     H2_OBJECT
@@ -40,7 +40,7 @@ class Drumkit : public Object {
         /** \brief drumkit constructor, does nothing */
         Drumkit();
         /** \brief copy constructor */
-        Drumkit( Drumkit *other );
+        Drumkit( Drumkit* other );
         /** \brief drumkit destructor, delete__ instruments */
 	    ~Drumkit();
         
@@ -110,24 +110,24 @@ class Drumkit : public Object {
 
         /** \brief set __instruments, delete existing one */
         void set_instruments( InstrumentList* l )   { if(__instruments) { delete __instruments; } __instruments = l; }
-        InstrumentList* get_instruments()           { return __instruments; }   ///< returns __instruments
+        InstrumentList* get_instruments() const     { return __instruments; }   ///< returns __instruments
 
         void set_path( const QString& path )        { __path = path; }          ///< sets __path
-        const QString& get_path()                   { return __path; }          ///< returns __path
+        const QString& get_path() const             { return __path; }          ///< returns __path
 
         void set_name( const QString& name )        { __name = name; }          ///< sets __name
-        const QString& get_name()                   { return __name; }          ///< returns __name
+        const QString& get_name() const             { return __name; }          ///< returns __name
         
         void set_author( const QString& author )    { __author = author; }      ///< sets __author
-        const QString& get_author()                 { return __author; }        ///< returns __author
+        const QString& get_author() const           { return __author; }        ///< returns __author
         
         void set_info( const QString& info )        { __info = info; }          ///< sets __info
-        const QString& get_info()                   { return __info; }          ///< returns __info
+        const QString& get_info() const             { return __info; }          ///< returns __info
         
         void set_license( const QString& license )  { __license = license; }    ///< sets __license
-        const QString& get_license()                { return __license; }       ///< returns __license
+        const QString& get_license() const          { return __license; }       ///< returns __license
 
-        const bool samples_loaded()             { return __samples_loaded; } ///< returns __instruments_loaded
+        const bool samples_loaded() const           { return __samples_loaded; } ///< returns __instruments_loaded
 
         void dump();
     
@@ -153,6 +153,6 @@ class Drumkit : public Object {
 
 };
 
-#endif // H2_DRUMKIT_H
+#endif // H2C_DRUMKIT_H
 
 /* vim: set softtabstop=4 expandtab: */

@@ -43,7 +43,7 @@ class ADSR : private Object {
 	    ADSR ( float attack = 0.0, float decay = 0.0, float sustain = 1.0, float release = 1000 );
 
         /** \brief copy constructor */
-	    ADSR( const ADSR& other );
+	    ADSR( const ADSR* other );
 
         /** \brief destructor */
 	    ~ADSR();

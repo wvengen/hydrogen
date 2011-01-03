@@ -20,15 +20,16 @@
  *
  */
 
-#ifndef H2_INSTRUMENT_LAYER_H
-#define H2_INSTRUMENT_LAYER_H
+#ifndef H2C_INSTRUMENT_LAYER_H
+#define H2C_INSTRUMENT_LAYER_H
 
 #include <hydrogen/Object.h>
-#include <hydrogen/helpers/xml.h>
-#include <hydrogen/basics/sample.h>
 
 namespace H2Core
 {
+
+class XMLNode;
+class Sample;
 
 /**
 \brief InstrumentLayer is part of an instrument
@@ -59,19 +60,19 @@ class InstrumentLayer : public Object
         ~InstrumentLayer();
 
         void set_gain( float gain )             { __gain = gain; }              ///< \brief set the gain of the layer
-        float get_gain()                        { return __gain; }              ///< \brief get the gain of the layer
+        float get_gain() const                  { return __gain; }              ///< \brief get the gain of the layer
 
         void set_pitch( float pitch )           { __pitch = pitch; }            ///< \brief set the pitch of the layer
-        float get_pitch()                       { return __pitch; }             ///< \brief get the pitch of the layer
+        float get_pitch() const                 { return __pitch; }             ///< \brief get the pitch of the layer
 
         void set_start_velocity( float start )  { __start_velocity = start; }   ///< \brief set the start ivelocity of the layer
-        float get_start_velocity()              { return __start_velocity; }    ///< \brief get the start velocity of the layer
+        float get_start_velocity() const        { return __start_velocity; }    ///< \brief get the start velocity of the layer
 
         void set_end_velocity( float end )      { __end_velocity = end; }       ///< \brief set the end velocity of the layer
-        float get_end_velocity()                { return __end_velocity; }      ///< \brief get the end velocity of the layer
+        float get_end_velocity() const          { return __end_velocity; }      ///< \brief get the end velocity of the layer
 
         void set_sample( Sample* sample )       { __sample = sample; }          ///< \brief set the sample of the layer
-        Sample* get_sample()                    { return __sample; }            ///< \brief get the sample of the layer
+        Sample* get_sample() const              { return __sample; }            ///< \brief get the sample of the layer
 
         /**
          * \brief load the sample data
@@ -105,6 +106,6 @@ class InstrumentLayer : public Object
 
 };
 
-#endif // H2_INSTRUMENT_LAYER_H
+#endif // H2C_INSTRUMENT_LAYER_H
 
 /* vim: set softtabstop=4 expandtab: */

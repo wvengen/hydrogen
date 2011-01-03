@@ -20,15 +20,18 @@
  *
  */
 
-#ifndef H2_INSTRUMENT_LIST_H
-#define H2_INSTRUMENT_LIST_H
+#ifndef H2C_INSTRUMENT_LIST_H
+#define H2C_INSTRUMENT_LIST_H
+
+#include <vector>
 
 #include <hydrogen/Object.h>
-#include <hydrogen/helpers/xml.h>
-#include <hydrogen/basics/instrument.h>
 
 namespace H2Core
 {
+
+class XMLNode;
+class Instrument;
 
 /**
 \brief InstrumentList is a collection of instruments used within a song, a drumkit, ...
@@ -48,7 +51,7 @@ class InstrumentList : public Object
         InstrumentList( InstrumentList* other);
 
         /** \brief returns the numbers of instruments */
-	    int size() { return __instruments.size(); }
+	    int size() const    { return __instruments.size(); }
         /** 
          * \brief add an instrument to the list
          * \param instrument a pointer to the instrument to add
@@ -145,6 +148,6 @@ class InstrumentList : public Object
 
 };
 
-#endif // H2_INSTRUMENT_LIST_H
+#endif // H2C_INSTRUMENT_LIST_H
 
 /* vim: set softtabstop=4 expandtab: */

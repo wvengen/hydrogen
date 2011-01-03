@@ -20,15 +20,12 @@
  *
  */
 
-#ifndef H2_NOTE_H
-#define H2_NOTE_H
+#ifndef H2C_NOTE_H
+#define H2C_NOTE_H
 
-#include <cassert>
 #include <hydrogen/Object.h>
 #include <hydrogen/basics/adsr.h>
 #include <hydrogen/basics/instrument.h>
-#include <hydrogen/basics/instrument_list.h>
-#include <hydrogen/helpers/xml.h>
 
 #define KEY_MIN              0
 #define KEY_MAX             11
@@ -49,8 +46,8 @@
 namespace H2Core
 {
 
-class ADSR;
-class Instrument;
+class XMLNode;
+class InstrumentList;
 
 /**
  * \brief A note plays an associated instrument with a velocity left and right pan
@@ -110,9 +107,9 @@ class Note : public Object
         /** \brief get the instrument */
 	    Instrument* get_instrument()                    { return __instrument; }
         /** \brief get the instrument id */
-	    int get_instrument_id()                         { return __instrument_id; }
+	    int get_instrument_id() const                   { return __instrument_id; }
         /** \brief returns true of the note is linked to an instrument */
-        bool has_instrument()                           { return __instrument!=0; }
+        bool has_instrument() const                     { return __instrument!=0; }
         /** \brief set the position of the note */
 	    void set_position( int position )               { __position = position; }
         /** \brief get the position of the note */
@@ -146,31 +143,31 @@ class Note : public Object
         int get_pattern_idx() const         { return __pattern_idx; }	    ///< get pattern index of the note
         void set_just_recorded( bool val )  { __just_recorded = val; }      ///< set just recorded
         bool get_just_recorded() const      { return __just_recorded; }	    ///< get just recorded
-        float get_sample_position()         { return __sample_position; }   ///< get sample position
+        float get_sample_position() const   { return __sample_position; }   ///< get sample position
         void set_humanize_delay(int delay ) { __humanize_delay = delay; }   ///< set humanize delay
-        int get_humanize_delay()            { return __humanize_delay; }    ///< get humanize delay
-        float get_cut_off()                 { return __cut_off; }           ///< get cut off
-        float get_resonance()               { return __resonance; }         ///< get resonance
-        float get_bpfb_l()                  { return __bpfb_l; }            ///< get left band pass filter buffer
-        float get_bpfb_r()                  { return __bpfb_r; }            ///< get right band pass filter buffer
-        float get_lpfb_l()                  { return __lpfb_l; }            ///< get left low pass filter buffer
-        float get_lpfb_r()                  { return __lpfb_r; }            ///< get right low pass filter buffer
+        int get_humanize_delay() const      { return __humanize_delay; }    ///< get humanize delay
+        float get_cut_off() const           { return __cut_off; }           ///< get cut off
+        float get_resonance() const         { return __resonance; }         ///< get resonance
+        float get_bpfb_l() const            { return __bpfb_l; }            ///< get left band pass filter buffer
+        float get_bpfb_r() const            { return __bpfb_r; }            ///< get right band pass filter buffer
+        float get_lpfb_l() const            { return __lpfb_l; }            ///< get left low pass filter buffer
+        float get_lpfb_r() const            { return __lpfb_r; }            ///< get right low pass filter buffer
         Key get_key()                       { return __key; }               ///< get key
         int get_octave()                    { return __octave; }            ///< get octave
 
         /** \brief return scaled key for midi output, !!! DO NOT CHECK IF INSTRUMENT IS SET !!! */
-        int get_midi_key()                  {
+        int get_midi_key() const            {
             /* TODO JZU ???
             if( !has_instrument() ) { return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key; }
             */
             return (__octave + OCTAVE_OFFSET ) * KEYS_PER_OCTAVE + __key + __instrument->get_midi_out_note()-MIDI_MIDDLE_C;
         }
         /** \brief return scaled velocity for midi output */
-        int get_midi_velocity()             { return __velocity * MIDI_FACTOR; }
+        int get_midi_velocity() const       { return __velocity * MIDI_FACTOR; }
         /** \brief returns octave*12 + key */
-        float get_notekey_pitch()           { return __octave * KEYS_PER_OCTAVE + __key; }
+        float get_notekey_pitch() const     { return __octave * KEYS_PER_OCTAVE + __key; }
         /** \brief returns octave*12+key+pitch */
-        float get_total_pitch()             { return __octave * KEYS_PER_OCTAVE + __key + __pitch; }
+        float get_total_pitch() const       { return __octave * KEYS_PER_OCTAVE + __key + __pitch; }
 
         /** \brief return a string representation of key-actove */
         QString key_to_string();
@@ -200,24 +197,24 @@ class Note : public Object
         }
 
         /** \brief get the ADSR of the note */
-        ADSR* get_adsr()                    { return __adsr; }
+        ADSR* get_adsr() const                  { return __adsr; }
         /** \brief call release on adsr */
-        float release_adsr()                { return __adsr->release(); }
+        float release_adsr() const              { return __adsr->release(); }
         /** \brief call get value on adsr */
-		float get_adsr_value(float v)       { return __adsr->get_value( v ); }
+		float get_adsr_value(float v) const     { return __adsr->get_value( v ); }
         
         /**
          * \brief update sample_position with increment
          * \param incr the value to add to current sample position
          */
-        float update_sample_position( float incr ) { __sample_position += incr; return __sample_position; }
+        float update_sample_position( float incr )  { __sample_position += incr; return __sample_position; }
 
         /** \brief return true if instrument, key and octave matches with internal
          * \param instrument the instrument to match with __instrument
          * \param key the key to match with __key
          * \param octave the octave to match with __octave
          */
-        bool match( Instrument* instrument, int key, int octave )   { return ((__instrument==instrument) && (__key==key) && (__octave==octave)); }
+        bool match( Instrument* instrument, int key, int octave ) const { return ((__instrument==instrument) && (__key==key) && (__octave==octave)); }
         
 
         /** \brief compute left and right output based on filters */
@@ -270,4 +267,6 @@ class Note : public Object
 
 };
 
-#endif
+#endif // H2C_NOTE_H
+
+/* vim: set softtabstop=4 expandtab: */

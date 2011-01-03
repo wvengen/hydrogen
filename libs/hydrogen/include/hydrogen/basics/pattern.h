@@ -20,8 +20,11 @@
  *
  */
 
-#ifndef H2_PATTERN_H
-#define H2_PATTERN_H
+#ifndef H2C_PATTERN_H
+#define H2C_PATTERN_H
+
+#include <set>
+#include <map>
 
 #include <hydrogen/Object.h>
 #include <hydrogen/basics/note.h>
@@ -29,6 +32,9 @@
 namespace H2Core
 {
 
+class XMLNode;
+class Instrument;
+class InstrumentList;
 class PatternList;
 
 /**
@@ -45,7 +51,7 @@ class Pattern : public Object
          */
 	    Pattern( const QString& name, const QString& category, int length = MAX_NOTES );
         /** \brief copy constructor */
-        Pattern( Pattern *other );
+        Pattern( Pattern* other );
         /** \brief destructor */
 	    ~Pattern();
 
@@ -66,19 +72,19 @@ class Pattern : public Object
          * \param instruments the current instrument list to search instrument into
          * \return a new Pattern instance
          */
-        static Pattern* load_from( XMLNode *node, InstrumentList* instruments=0 );
+        static Pattern* load_from( XMLNode* node, InstrumentList* instruments=0 );
         /**
          * \brief load the virtual patterns
          * \param node the XMLDode to read from
          * \param patterns the current pattern list to search pattern into
          */
-        static void load_virtuals_from( XMLNode *node, PatternList* patterns );
+        static void load_virtuals_from( XMLNode* node, PatternList* patterns );
 
 	    /**
          * delete notes that pertain to instrument I.
          * the function is thread safe (it locks the audio data while deleting notes)
          */
-        void purge_instrument( Instrument * I );
+        void purge_instrument( Instrument* I );
 	
 	    /**
          * TODO
@@ -94,7 +100,7 @@ class Pattern : public Object
         void dump();
 
         void set_length( unsigned length )              { __length = length; }      ///< \brief set length of the pattern 
-        int get_length()                                { return __length; }        ///< \brief get length of the pattern 
+        int get_length() const                          { return __length; }        ///< \brief get length of the pattern 
 
         void set_name( const QString& name )            { __name = name; }          ///< \brief set the name of the pattern 
         const QString& get_name() const                 { return __name; }          ///< \brief get the name of the pattern 
@@ -127,7 +133,7 @@ class Pattern : public Object
 		typedef virtual_patterns_t::iterator virtual_patterns_it_t;                 ///< \brief note set iterator type;
 		typedef virtual_patterns_t::const_iterator virtual_patterns_cst_it_t;       ///< \brief note set const iterator type;
 
-        bool virtual_patterns_empty()                   { return __virtual_patterns.empty(); }      ///< \brief return true if __virtual_patterns is empty
+        bool virtual_patterns_empty() const             { return __virtual_patterns.empty(); }      ///< \brief return true if __virtual_patterns is empty
         void clear_virtual_patterns()                   { __virtual_patterns.clear(); }             ///< \brief clear __virtual_patterns
         /**
          * \brief add a pattern to virtual patern set
@@ -152,8 +158,8 @@ class Pattern : public Object
          */
         void extand_with_flattened_virtual_patterns( PatternList* patterns );
         
-        virtual_patterns_t* get_virtual_patterns()              { return &__virtual_patterns; }             ///< \brief get the virtual pattern set
-        virtual_patterns_t* get_flattened_virtual_patterns()    { return &__flattened_virtual_patterns; }   ///< \brief get the flattened virtual pattern set
+        const virtual_patterns_t* get_virtual_patterns() const              { return &__virtual_patterns; }             ///< \brief get the virtual pattern set
+        const virtual_patterns_t* get_flattened_virtual_patterns() const    { return &__flattened_virtual_patterns; }   ///< \brief get the flattened virtual pattern set
         
     private:
         int __length;                                               ///< the length of the pattern
@@ -166,6 +172,6 @@ class Pattern : public Object
 
 };
 
-#endif // H2_PATTERN_H
+#endif // H2C_PATTERN_H
 
 /* vim: set softtabstop=4 expandtab: */

@@ -23,11 +23,16 @@
 #ifndef H2_PATTERN_LIST_H
 #define H2_PATTERN_LIST_H
 
+#include <vector>
+
 #include <hydrogen/Object.h>
-#include <hydrogen/basics/pattern.h>
 
 namespace H2Core
 {
+
+class XMLNode;
+class Pattern;
+class InstrumentList;
 
 /**
 \brief PatternList is a collection of patterns
@@ -48,7 +53,7 @@ class PatternList : public Object
         PatternList( PatternList* other);
 
         /** \brief returns the numbers of patterns */
-	    int size() { return __patterns.size(); }
+	    int size() const    { return __patterns.size(); }
         /** 
          * \brief add a pattern to the list, if not allready in
          * \param pattern a pointer to the pattern to add
@@ -80,13 +85,13 @@ class PatternList : public Object
          * \param idx the index
          * \return a pointer to the removed pattern
          */
-        Pattern* del( int idx ); 
+        Pattern* del( int idx );
         /**
          * \brief remove a pattern from the list, does not delete it
          * \param pattern the pattern to be removed
          * \return a pointer to the removed pattern, 0 if not found
          */
-        Pattern* del( Pattern *pattern ); 
+        Pattern* del( Pattern* pattern );
         /**
          * \brief get the index of a pattern within the patterns
          * \param pattern a pointer to the pattern to find
@@ -153,6 +158,6 @@ class PatternList : public Object
 
 };
 
-#endif // H2_PATTERN_LIST_H
+#endif // H2C_PATTERN_LIST_H
 
 /* vim: set softtabstop=4 expandtab: */
