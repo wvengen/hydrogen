@@ -38,6 +38,7 @@
 #include <hydrogen/basics/song.h>
 #include <hydrogen/basics/pattern.h>
 #include <hydrogen/basics/pattern_list.h>
+#include <hydrogen/basics/instrument_layer.h>
 #include <hydrogen/event_queue.h>
 
 #include <hydrogen/fx/Effects.h>

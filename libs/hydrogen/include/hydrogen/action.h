@@ -28,7 +28,6 @@
 
 using namespace std;
 
-
 class Action : public Object {
     H2_OBJECT
 	public:
