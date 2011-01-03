@@ -20,9 +20,9 @@
  *
  */
 
-#include <hydrogen/adsr.h>
-#include "table/getTableValue.h"
-#include "table/TableExponential.h"
+#include <hydrogen/basics/adsr.h>
+#include "getTableValue.h"
+#include "TableExponential.h"
 
 namespace H2Core
 {

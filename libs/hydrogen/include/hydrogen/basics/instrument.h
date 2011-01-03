@@ -26,7 +26,7 @@
 #include <hydrogen/Object.h>
 #include <hydrogen/globals.h>
 #include <hydrogen/helpers/xml.h>
-#include <hydrogen/adsr.h>
+#include <hydrogen/basics/adsr.h>
 #include <hydrogen/basics/instrument_layer.h>
 
 namespace H2Core

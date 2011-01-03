@@ -25,7 +25,7 @@
 
 #include <cassert>
 #include <hydrogen/Object.h>
-#include <hydrogen/adsr.h>
+#include <hydrogen/basics/adsr.h>
 #include <hydrogen/basics/instrument.h>
 #include <hydrogen/basics/instrument_list.h>
 #include <hydrogen/helpers/xml.h>
