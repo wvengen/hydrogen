@@ -21,7 +21,7 @@
  */
 
 #include <hydrogen/basics/adsr.h>
-#include "TableExponential.h"
+#include "exponential_tables.h"
 
 namespace H2Core
 {
