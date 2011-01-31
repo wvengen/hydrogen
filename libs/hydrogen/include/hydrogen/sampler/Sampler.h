@@ -91,9 +91,7 @@ private:
 	    float cost_L,
 	    float cost_R,
 	    float cost_track_L,
-	    float cost_track_R,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R,
+            float cost_track_R,
 	    Song* pSong
 	);
 
@@ -106,9 +104,7 @@ private:
 	    float cost_R,
 	    float cost_track_L,
 	    float cost_track_R,
-	    float fLayerPitch,
-	    float fSendFXLevel_L,
-	    float fSendFXLevel_R,
+            float fLayerPitch,
 	    Song* pSong
 	);
 };

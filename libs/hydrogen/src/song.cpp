@@ -559,7 +559,7 @@ Song* SongReader::readSong( const QString& filename )
 				WARNINGLOG( "Using back compatibility code. filename node found" );
 				QString sFilename = LocalFileMng::readXmlString( instrumentNode, "filename", "" );
 
-				if ( !drumkitPath.isEmpty() ) {
+                                if ( !QFile( sFilename ).exists() && !drumkitPath.isEmpty() ) {
 					sFilename = drumkitPath + "/" + sFilename;
 				}
 				Sample *pSample = Sample::load( sFilename );
@@ -605,7 +605,7 @@ Song* SongReader::readSong( const QString& filename )
 					float fGain = LocalFileMng::readXmlFloat( layerNode, "gain", 1.0 );
 					float fPitch = LocalFileMng::readXmlFloat( layerNode, "pitch", 0.0, false, false );
 
-					if ( !drumkitPath.isEmpty() ) {
+                                        if ( !QFile( sFilename ).exists() && !drumkitPath.isEmpty() ) {
 						sFilename = drumkitPath + "/" + sFilename;
 					}
 

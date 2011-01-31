@@ -1445,12 +1445,15 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 			int sRubberbandCsettings = pSample->get_rubber_C_settings();
 			float sRubberPitch = pSample->get_rubber_pitch();
 
+                      /*
+                        obsolete since we save songfiles in each only with absolute sample filenames
 			if ( !instr->get_drumkit_name().isEmpty() ) {
 				// se e' specificato un drumkit, considero solo il nome del file senza il path
 				int nPos = sFilename.lastIndexOf( "/" );
 				sFilename = sFilename.mid( nPos + 1, sFilename.length() );
 			}
-
+                        ~obsolete
+                      */
 			QDomNode layerNode = doc.createElement( "layer" );
 			LocalFileMng::writeXmlString( layerNode, "filename", sFilename );
 			LocalFileMng::writeXmlBool( layerNode, "ismodified", sIsModified);

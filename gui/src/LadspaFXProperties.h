@@ -48,6 +48,7 @@ class LadspaFXProperties : public QWidget, public Object {
 	public slots:
 		void faderChanged( Fader* ref );
 		void selectFXBtnClicked();
+                void removeFXBtnClicked();
 		void activateBtnClicked();
 		void updateOutputControls();
 
@@ -67,6 +68,7 @@ class LadspaFXProperties : public QWidget, public Object {
 		QFrame* m_pFrame;
 
 		QPushButton *m_pSelectFXBtn;
+                QPushButton *m_pRemoveFXBtn;
 		QPushButton *m_pActivateBtn;
 
 		QTimer* m_pTimer;
