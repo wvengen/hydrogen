@@ -22,13 +22,15 @@
 
 #include <hydrogen/action.h>
 #include <hydrogen/midiMap.h>
+
 #include <map>
+
 #include <QMutexLocker>
 
-MidiMap * MidiMap::__instance = 0;
-const char* MidiMap::__class_name = "MidiMap";
+MidiActionMap * MidiActionMap::__instance = 0;
+const char* MidiActionMap::__class_name = "MidiActionMap";
 
-MidiMap::MidiMap()
+MidiActionMap::MidiActionMap()
  : Object( __class_name )
 {
 	__instance = this;
@@ -41,9 +43,9 @@ MidiMap::MidiMap()
 	}
 }
 
-MidiMap::~MidiMap()
+MidiActionMap::~MidiActionMap()
 {
-	QMutexLocker mx(&__mutex);
+        QMutexLocker mx( &__mutex );
 
 	map_t::iterator dIter( mmcMap.begin() );
 
@@ -59,22 +61,22 @@ MidiMap::~MidiMap()
 	__instance = NULL;
 }
 
-void MidiMap::create_instance()
+void MidiActionMap::create_instance()
 {
 	if( __instance == 0 ) {
-		__instance = new MidiMap;
+                __instance = new MidiActionMap;
 	}
 }
 
-void MidiMap::reset_instance()
+void MidiActionMap::reset_instance()
 {
 	create_instance();
 	__instance->reset();
 }
 
-void MidiMap::reset()
+void MidiActionMap::reset()
 {
-	QMutexLocker mx(&__mutex);
+        QMutexLocker mx( &__mutex );
 
 	map_t::iterator iter;
 	for( iter = mmcMap.begin() ; iter != mmcMap.end() ; ++iter ) {
@@ -86,18 +88,18 @@ void MidiMap::reset()
 	for( i = 0 ; i < 128 ; ++i ) {
 		delete __note_array[ i ];
 		delete __cc_array[ i ];
-		__note_array[ i ] = new Action("NOTHING");
-		__cc_array[ i ] = new Action("NOTHING");
+                __note_array[ i ] = new Action( "NOTHING" );
+                __cc_array[ i ] = new Action( "NOTHING" );
 	}
 
 }
 
-std::map< QString, Action* > MidiMap::getMMCMap()
+std::map< QString, Action* > MidiActionMap::getMMCMap()
 {
 	return mmcMap;
 }
 
-void MidiMap::registerMMCEvent( QString eventString , Action* pAction )
+void MidiActionMap::registerMMCEvent( QString eventString , Action* pAction )
 {
 	QMutexLocker mx(&__mutex);
 
@@ -107,7 +109,7 @@ void MidiMap::registerMMCEvent( QString eventString , Action* pAction )
 	mmcMap[ eventString ] = pAction;
 }
 
-void MidiMap::registerNoteEvent( int note, Action* pAction )
+void MidiActionMap::registerNoteEvent( int note, Action* pAction )
 {
 	QMutexLocker mx(&__mutex);
 	if( note >= 0 && note < 128 ) {
@@ -116,7 +118,7 @@ void MidiMap::registerNoteEvent( int note, Action* pAction )
 	}
 }
 
-void MidiMap::registerCCEvent( int parameter , Action * pAction ){
+void MidiActionMap::registerCCEvent( int parameter , Action * pAction ){
 	QMutexLocker mx(&__mutex);
 	if( parameter >= 0 and parameter < 128 )
 	{
@@ -125,7 +127,7 @@ void MidiMap::registerCCEvent( int parameter , Action * pAction ){
 	}
 }
 
-Action* MidiMap::getMMCAction( QString eventString )
+Action* MidiActionMap::getMMCAction( QString eventString )
 {
 	QMutexLocker mx(&__mutex);
 	std::map< QString, Action *>::iterator dIter = mmcMap.find( eventString );
@@ -136,15 +138,15 @@ Action* MidiMap::getMMCAction( QString eventString )
 	return mmcMap[eventString];
 }
 
-Action* MidiMap::getNoteAction( int note )
+Action* MidiActionMap::getNoteAction( int note )
 {
-	QMutexLocker mx(&__mutex);
+        QMutexLocker mx( &__mutex );
 	return __note_array[ note ];
 }
 
-Action * MidiMap::getCCAction( int parameter )
+Action * MidiActionMap::getCCAction( int parameter )
 {
-	QMutexLocker mx(&__mutex);
+        QMutexLocker mx( &__mutex );
 	return __cc_array[ parameter ];
 }
 

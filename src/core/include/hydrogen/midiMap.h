@@ -31,17 +31,17 @@
 
 class Action;
 
-class MidiMap : public H2Core::Object
+class MidiActionMap : public H2Core::Object
 {
     H2_OBJECT
 	public:
 		typedef std::map< QString, Action* > map_t;
-		static MidiMap* __instance;
-		~MidiMap();
+		static MidiActionMap* __instance;
+		~MidiActionMap();
 
 		static void create_instance();
 		static void reset_instance();  // convenience accessor to reset()
-		static MidiMap* get_instance() { assert(__instance); return __instance; }
+		static MidiActionMap* get_instance() { assert(__instance); return __instance; }
 
 		void reset();  // Reinitializes the object.
 
@@ -58,7 +58,7 @@ class MidiMap : public H2Core::Object
 		void setupNoteArray();
 
 	private:
-		MidiMap();
+		MidiActionMap();
 
 		Action* __note_array[ 128 ];
 		Action* __cc_array[ 128 ];

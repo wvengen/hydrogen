@@ -137,7 +137,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 	
 	Hydrogen *pEngine = Hydrogen::get_instance();
 	ActionManager * aH = ActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
+	MidiActionMap * mM = MidiActionMap::get_instance();
 
 	Action * pAction; 
 
@@ -174,7 +174,7 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 	}
 
 	ActionManager * aH = ActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
+	MidiActionMap * mM = MidiActionMap::get_instance();
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	pEngine->lastMidiEvent = "NOTE";
@@ -305,7 +305,7 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 	
 	
 	ActionManager * aH = ActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
+	MidiActionMap * mM = MidiActionMap::get_instance();
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
 	pEngine->lastMidiEventParameter = msg.m_nData1;

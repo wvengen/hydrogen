@@ -653,8 +653,8 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
-			MidiMap::reset_instance();
-			MidiMap* mM = MidiMap::get_instance();
+			MidiActionMap::reset_instance();
+			MidiActionMap* mM = MidiActionMap::get_instance();
 			
 			
 			QDomNode pMidiEventMapNode = rootNode.firstChildElement( "midiEventMap" );
@@ -1000,7 +1000,7 @@ void Preferences::savePreferences()
 	}
 	rootNode.appendChild( filesNode );
 
-	MidiMap * mM = MidiMap::get_instance();
+	MidiActionMap * mM = MidiActionMap::get_instance();
 	std::map< QString, Action* > mmcMap = mM->getMMCMap();
 
 	//---- MidiMap ----

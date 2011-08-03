@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
         } else {
             H2Core::Filesystem::bootstrap( logger, sys_data_path );
         }
-		MidiMap::create_instance();
+		MidiActionMap::create_instance();
 		H2Core::Preferences::create_instance();
 		// See below for H2Core::Hydrogen.
 
@@ -443,7 +443,7 @@ int main(int argc, char *argv[])
 		delete H2Core::EventQueue::get_instance();
 		delete H2Core::AudioEngine::get_instance();
 
-		delete MidiMap::get_instance();
+		delete MidiActionMap::get_instance();
 		delete ActionManager::get_instance();
 
 		___INFOLOG( "Quitting..." );

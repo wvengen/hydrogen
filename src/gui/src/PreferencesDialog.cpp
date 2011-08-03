@@ -303,7 +303,7 @@ void PreferencesDialog::on_okBtn_clicked()
 
 	Preferences *pPref = Preferences::get_instance();
 
-	MidiMap *mM = MidiMap::get_instance();
+	MidiActionMap *mM = MidiActionMap::get_instance();
 	mM->reset_instance();
 
 	midiTable->saveMidiTable();

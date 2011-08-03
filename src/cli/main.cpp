@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
                 H2Core::Logger* logger = H2Core::Logger::bootstrap( H2Core::Logger::parse_log_level( logLevelOpt ) );
                 H2Core::Object::bootstrap( logger, logger->should_log( H2Core::Logger::Debug ) );
                 H2Core::Filesystem::bootstrap( logger );
-                MidiMap::create_instance();
+                MidiActionMap::create_instance();
                 H2Core::Preferences::create_instance();
                 // See below for H2Core::Hydrogen.
 
@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
                 delete H2Core::EventQueue::get_instance();
                 delete H2Core::AudioEngine::get_instance();
 
-                delete MidiMap::get_instance();
+                delete MidiActionMap::get_instance();
                 delete ActionManager::get_instance();
 
                 ___INFOLOG( "Quitting..." );
