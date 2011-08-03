@@ -26,6 +26,7 @@
 #include "HydrogenApp.h"
 #include "Skin.h"
 #include "PreferencesDialog.h"
+#include "MidiInputMapDialog.h"
 #include "MainForm.h"
 #include "PlayerControl.h"
 #include "AudioEngineInfoForm.h"
@@ -346,7 +347,11 @@ void HydrogenApp::showPreferencesDialog()
 	preferencesDialog.exec();
 }
 
-
+void HydrogenApp::showMidiInputMapper()
+{
+        MidiInputMapDialog midiInputMapDialog(m_pMainForm);
+        midiInputMapDialog.exec();
+}
 
 
 void HydrogenApp::setStatusBarMessage( const QString& msg, int msec )

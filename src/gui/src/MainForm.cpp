@@ -308,6 +308,7 @@ void MainForm::createMenuBar()
 
 	m_pToolsMenu->addAction( trUtf8("&Mixer"), this, SLOT( action_window_showMixer() ), QKeySequence( "Alt+M" ) );
 
+        m_pToolsMenu->addAction( trUtf8("&Midi input mapping"), this, SLOT( action_window_showMidiInputMapper() ), QKeySequence( "" ) );
 	m_pToolsMenu->addAction( trUtf8("&Instrument Rack"), this, SLOT( action_window_showDrumkitManagerPanel() ), QKeySequence( "Alt+I" ) );
 	m_pToolsMenu->addAction( trUtf8("&Preferences"), this, SLOT( showPreferencesDialog() ), QKeySequence( "Alt+P" ) );
 
@@ -759,6 +760,12 @@ void MainForm::action_window_show_DirectorWidget()
 {
 
 	h2app->showDirector();
+}
+
+void MainForm::action_window_showMidiInputMapper()
+{
+
+        h2app->showMidiInputMapper();
 }
 
 void MainForm::action_window_showMixer()

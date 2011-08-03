@@ -70,6 +70,7 @@ class HydrogenApp : public QObject, public H2Core::Object
 		void setSong( H2Core::Song* pSong );
 
 		void showPreferencesDialog();
+                void showMidiInputMapper();
 		void showMixer(bool bShow);
 		void showAudioEngineInfoForm();
 		void showPlaylistDialog();

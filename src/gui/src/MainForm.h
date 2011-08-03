@@ -88,6 +88,7 @@ class MainForm : public QMainWindow, public EventListener, public H2Core::Object
 		void action_window_show_DirectorWidget();
 		void action_window_showSongEditor();
 		void action_window_showPatternEditor();
+                void action_window_showMidiInputMapper();
 		void action_window_showDrumkitManagerPanel();
 
 		void action_debug_printObjects();
