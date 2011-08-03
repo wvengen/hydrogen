@@ -15,8 +15,9 @@ public:
 
 signals:
 
-public slots:
-
+private slots:
+    void on_okBtn_clicked();
+    void on_cancelBtn_clicked();
 };
 
 #endif // MIDIINPUTMAPDIALOG_H
