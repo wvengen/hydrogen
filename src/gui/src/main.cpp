@@ -82,6 +82,7 @@ static struct option long_opts[] = {
 //
 void setPalette( QApplication *pQApp )
 {
+
 	// create the default palette
 	QPalette defaultPalette;
 
@@ -128,8 +129,8 @@ void setPalette( QApplication *pQApp )
 
 	// A text color that contrasts with Highlight.
 	defaultPalette.setColor( QPalette::HighlightedText, QColor( 255, 255, 255 ) );
-
 	pQApp->setPalette( defaultPalette );
+
 }
 
 
@@ -476,7 +477,6 @@ void showInfo()
 {
 	cout << "\nHydrogen " + H2Core::get_version() + " [" + __DATE__ + "]  [http://www.hydrogen-music.org]" << endl;
 	cout << "Copyright 2002-2008 Alessandro Cominu" << endl;
-//	___INFOLOG( "Compiled modules: " + QString(COMPILED_FEATURES) << endl;
 
 	if ( H2Core::Object::count_active() ) {
 		cout << "\nObject counting = active" << endl;

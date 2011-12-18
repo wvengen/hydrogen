@@ -200,6 +200,9 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 			_ERRORLOG ( "Error loading the playlist" );
 		}
 	} 
+
+	//load the stylesheet
+	load_stylesheet();
 }
 
 
@@ -246,6 +249,7 @@ void MainForm::createMenuBar()
 
 	m_pFileMenu->addAction( trUtf8( "&New" ), this, SLOT( action_file_new() ), QKeySequence( "Ctrl+N" ) );
 	m_pFileMenu->addAction( trUtf8( "Show &info" ), this, SLOT( action_file_songProperties() ), QKeySequence( "" ) );
+
 
 	m_pFileMenu->addSeparator();				// -----
 
@@ -319,6 +323,7 @@ void MainForm::createMenuBar()
                 // DEBUG menu
 		QMenu *m_pDebugMenu = m_pMenubar->addMenu( trUtf8("De&bug") );
 		m_pDebugMenu->addAction( trUtf8( "Show &audio engine info" ), this, SLOT( action_debug_showAudioEngineInfo() ) );
+		m_pDebugMenu->addAction( trUtf8( "Reload stylesheet" ), this, SLOT( action_reload_stylesheet() ) , QKeySequence( "Alt+1" ) );
                 if(l->bit_mask() == 8) // hydrogen -V8 list object map in console
                     m_pDebugMenu->addAction( trUtf8( "Print Objects" ), this, SLOT( action_debug_printObjects() ) );
 		//~ DEBUG menu
@@ -333,6 +338,19 @@ void MainForm::createMenuBar()
 }
 
 
+void MainForm::load_stylesheet()
+{
+	QString qss_path = H2Core::Filesystem::img_dir().append( "/gray/hydrogen-default.qss");
+    QFile file( qss_path );
+
+    if ( file.open( QIODevice::ReadOnly ) )
+    {
+        QString text = file.readAll();
+        m_pQApp->setStyleSheet( text );
+    } else {
+    	ERRORLOG("Could not load stylesheet: " + qss_path );
+    }
+}
 
 
 void MainForm::onLashPollTimer()
@@ -778,6 +796,10 @@ void MainForm::action_debug_showAudioEngineInfo()
 	h2app->showAudioEngineInfoForm();
 }
 
+void MainForm::action_reload_stylesheet()
+{
+	load_stylesheet();
+}
 
 
 ///

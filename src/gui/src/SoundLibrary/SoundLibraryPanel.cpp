@@ -533,6 +533,7 @@ void SoundLibraryPanel::update_background_color()
 
 void SoundLibraryPanel::restore_background_color()
 {
+	/*
 	for (int i = 0; i < __system_drumkits_item->childCount() ; i++){
 		( __system_drumkits_item->child( i ) )->setBackground( 0, QBrush() );		
 	}
@@ -540,12 +541,14 @@ void SoundLibraryPanel::restore_background_color()
 	for (int i = 0; i < __user_drumkits_item->childCount() ; i++){
 		( __user_drumkits_item->child( i ) )->setBackground(0, QBrush() );
 	}
+	*/
 }
 
 
 
 void SoundLibraryPanel::change_background_color()
 {
+	/*
 	QString curlib =  Hydrogen::get_instance()->getCurrentDrumkitname();
  
 	for (int i = 0; i < __system_drumkits_item->childCount() ; i++){
@@ -561,6 +564,7 @@ void SoundLibraryPanel::change_background_color()
 			break;
 		}
 	}
+	*/
 }
 
 

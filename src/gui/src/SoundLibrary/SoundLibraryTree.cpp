@@ -31,6 +31,7 @@ SoundLibraryTree::SoundLibraryTree( QWidget *pParent )
 {
 	setHeaderLabels( QStringList( trUtf8( "Sound library" ) ) );
 	setAlternatingRowColors(true);
+	//setStyleSheet("alternate-background-color: red");
 	setRootIsDecorated( false );
 
 	setItemHidden( headerItem(), true );	// hides the header

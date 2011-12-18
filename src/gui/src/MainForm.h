@@ -56,6 +56,7 @@ class MainForm : public QMainWindow, public EventListener, public H2Core::Object
                 virtual void jacksessionEvent( int nValue);
                 virtual void playlistLoadSongEvent(int nIndex);
 		static void usr1SignalHandler(int unused);
+		void load_stylesheet();
 
 
 public slots:
@@ -93,6 +94,7 @@ public slots:
 
 		void action_debug_printObjects();
 		void action_debug_showAudioEngineInfo();
+		void action_reload_stylesheet();
 
 		void closeEvent( QCloseEvent* ev );
 
