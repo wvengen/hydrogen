@@ -41,13 +41,11 @@
 */
 
 
-MidiEventMap * MidiEventMap::__instance = 0;
 const char* MidiEventMap::__class_name = "MidiEventMap";
 
 MidiEventMap::MidiEventMap()
  : Object( __class_name )
 {
-	__instance = this;
 	QMutexLocker mx(&__mutex);
 
 	for(int note = 0; note < 128; note++ ) {
@@ -59,21 +57,8 @@ MidiEventMap::~MidiEventMap()
 {
         QMutexLocker mx( &__mutex );
 
-	__instance = NULL;
 }
 
-void MidiEventMap::create_instance()
-{
-	if( __instance == 0 ) {
-                __instance = new MidiEventMap;
-	}
-}
-
-void MidiEventMap::reset_instance()
-{
-	create_instance();
-	__instance->reset();
-}
 
 void MidiEventMap::reset()
 {

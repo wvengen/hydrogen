@@ -35,12 +35,9 @@ class MidiEventMap : public H2Core::Object
     H2_OBJECT
 	public:
                 typedef std::map< int, int > map_t;
-                static MidiEventMap* __instance;
                 ~MidiEventMap();
 
 		static void create_instance();
-		static void reset_instance();  // convenience accessor to reset()
-                static MidiEventMap* get_instance() { assert(__instance); return __instance; }
 
 		void reset();  // Reinitializes the object.
 
