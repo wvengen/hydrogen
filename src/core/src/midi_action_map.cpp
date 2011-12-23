@@ -21,7 +21,7 @@
  */
 
 #include <hydrogen/midi_action.h>
-#include <hydrogen/midiMap.h>
+#include <hydrogen/midi_action_map.h>
 
 #include <map>
 

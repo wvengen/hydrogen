@@ -24,7 +24,7 @@
 #include "MidiSenseWidget.h"
 #include "midiTable.h"
 
-#include <hydrogen/midiMap.h>
+#include <hydrogen/midi_action_map.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/globals.h>
 #include <hydrogen/midi_action.h>
@@ -271,29 +271,45 @@ void MidiTable::saveMidiTable()
 
 		QString eventString;
 		QString actionString;
+                QString outputEventString;
 
-		if( !eventCombo->currentText().isEmpty() && !actionCombo->currentText().isEmpty() ){
-			eventString = eventCombo->currentText();
+                if( !eventCombo->currentText().isEmpty() && !actionCombo->currentText().isEmpty() ){
 
-			actionString = actionCombo->currentText();
-		
-			MidiAction* pAction = new MidiAction( actionString );
+                    if( __role == H2_MIDI_ACTION_MAP ){
 
-			if( actionSpinner->cleanText() != ""){
-				pAction->setParameter1( actionSpinner->cleanText() );
-			}
-	
-			if( eventString.left(2) == "CC" ){
-				mM->registerCCEvent( eventSpinner->cleanText().toInt() , pAction );
-			}
+                            eventString = eventCombo->currentText();
 
-			if( eventString.left(3) == "MMC" ){
-				mM->registerMMCEvent( eventString , pAction );
-			}
-			
-			if( eventString.left(4) == "NOTE" ){
-				mM->registerNoteEvent( eventSpinner->cleanText().toInt() , pAction );
-			}
-		}
+                            actionString = actionCombo->currentText();
+
+                            MidiAction* pAction = new MidiAction( actionString );
+
+                            if( actionSpinner->cleanText() != ""){
+                                    pAction->setParameter1( actionSpinner->cleanText() );
+                            }
+
+                            if( eventString.left(2) == "CC" ){
+                                    mM->registerCCEvent( eventSpinner->cleanText().toInt() , pAction );
+                            }
+
+                            if( eventString.left(3) == "MMC" ){
+                                    mM->registerMMCEvent( eventString , pAction );
+                            }
+
+                            if( eventString.left(4) == "NOTE" ){
+                                    mM->registerNoteEvent( eventSpinner->cleanText().toInt() , pAction );
+                            }
+                    } else {
+
+                            eventString = eventCombo->currentText();
+
+                            outputEventString = actionCombo->currentText();
+
+                            MidiAction* pAction = new MidiAction( actionString );
+
+                            if( eventString.left(4) == "NOTE" ){
+                                    mM->registerNoteEvent( eventSpinner->cleanText().toInt() , pAction );
+                            }
+                      }
+                }
 	}
 }

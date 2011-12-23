@@ -37,7 +37,7 @@
 #include <cstdio>
 #include <list>
 
-#include <hydrogen/midiMap.h>
+#include <hydrogen/midi_action_map.h>
 #include "hydrogen/version.h"
 #include "hydrogen/helpers/filesystem.h"
 
