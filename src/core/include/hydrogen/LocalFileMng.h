@@ -28,6 +28,7 @@
 #include <vector>
 #include <string>
 
+#include <hydrogen/midi_event_map.h>
 #include <hydrogen/object.h>
 
 #include <QDomDocument>
@@ -53,6 +54,9 @@ class LocalFileMng : public H2Core::Object
 public:
 	LocalFileMng();
 	~LocalFileMng();
+
+        MidiEventMap* loadMidiEventMap( const QString& );
+        int saveMidiEventMap( const QString&, MidiEventMap*  );
 	
 	std::vector<QString> getDrumkitsFromDirectory( QString );
 	std::vector<QString> getPatternDirList();

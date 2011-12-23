@@ -40,6 +40,7 @@
 #include <hydrogen/fx/Effects.h>
 
 
+
 #include <cstdlib>
 #include <cassert>
 #include <sys/stat.h>
@@ -53,8 +54,7 @@
 
 
 #include <algorithm>
-//#include <cstdio>
-//#include <vector>
+
 
 namespace H2Core
 {
@@ -73,6 +73,41 @@ LocalFileMng::~LocalFileMng()
 {
 //	infoLog("DESTROY");
 }
+
+
+MidiEventMap* LocalFileMng::loadMidiEventMap( const QString& filename )
+{
+    QDomDocument doc = LocalFileMng::openXmlDocument( filename );
+
+    QDomNode rootNode = doc.firstChildElement( "midi_event_map" );	// root element
+    if (  rootNode.isNull() ) {
+            ERRORLOG( "Error reading MidiEventMap: midi_event_map not found " + filename);
+            return NULL;
+    }
+}
+
+int LocalFileMng::saveMidiEventMap( const QString& filename, MidiEventMap* midiEventMap )
+{
+    QDomDocument doc = LocalFileMng::openXmlDocument( filename );
+    QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+    doc.appendChild( header );
+
+    QDomNode rootNode = doc.createElement( "midi_event_map" );
+
+    int i;
+    for(i=0; i < 128; i++)
+    {
+        int note = midiEventMap->getNoteMapping(i);
+
+        if( note == H2_INVALID_MIDI_NOTE) continue;
+
+        QDomNode mapping = doc.createElement( "mapping" );
+        writeXmlString( rootNode, "Note", QString::number( note ) );
+        rootNode.appendChild(mapping);
+    }
+
+}
+
 
 QString LocalFileMng::getDrumkitNameForPattern( const QString& patternDir )
 {

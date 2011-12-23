@@ -19,8 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef MIDIMAP_H
-#define MIDIMAP_H
+#ifndef MIDI_EVENT_MAP_H
+#define MIDI_EVENT_MAP_H
 
 #include <map>
 #include <cassert>
@@ -28,7 +28,7 @@
 
 #include <QtCore/QMutex>
 
-class Action;
+#define H2_INVALID_MIDI_NOTE 1024
 
 class MidiEventMap : public H2Core::Object
 {
@@ -46,15 +46,13 @@ class MidiEventMap : public H2Core::Object
 
 
                 void registerNoteMapping( int , int );
-
-                map_t getMMCMap();
-
+                int getNoteMapping( int note );
 		void setupNoteArray();
 
 	private:
                 MidiEventMap();
 
-                MidiAction* __note_array[ 128 ];
+                int __note_array[ 128 ];
 
 		QMutex __mutex;
 };

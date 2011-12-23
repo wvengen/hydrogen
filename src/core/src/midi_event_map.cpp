@@ -20,10 +20,8 @@
  *
  */
 
-#include <hydrogen/midi_action.h>
-#include <hydrogen/midi_action_map.h>
-
 #include <map>
+#include <hydrogen/midi_event_map.h>
 
 #include <QMutexLocker>
 
@@ -53,17 +51,13 @@ MidiEventMap::MidiEventMap()
 	QMutexLocker mx(&__mutex);
 
 	for(int note = 0; note < 128; note++ ) {
-                __note_array[ note ] = 256;
+                __note_array[ note ] = H2_INVALID_MIDI_NOTE;
 	}
 }
 
 MidiEventMap::~MidiEventMap()
 {
         QMutexLocker mx( &__mutex );
-
-	for( int i = 0; i < 128; i++ ) {
-		delete __note_array[ i ];
-	}
 
 	__instance = NULL;
 }
@@ -87,8 +81,7 @@ void MidiEventMap::reset()
 
 	int i;
 	for( i = 0 ; i < 128 ; ++i ) {
-		delete __note_array[ i ];
-                __note_array[ i ] = 256 ;
+                __note_array[ i ] = H2_INVALID_MIDI_NOTE ;
 	}
 
 }
@@ -98,11 +91,19 @@ void MidiEventMap::reset()
 void MidiEventMap::registerNoteMapping( int note, int mappedNote )
 {
 	QMutexLocker mx(&__mutex);
-	if( note >= 0 && note < 128 ) {
-		delete __note_array[ note ];
-                __note_array[ note ] = mappedNote;
+        if( note >= 0 && note < 128 ) {
+            __note_array[ note ] = mappedNote;
 	}
 }
 
+int MidiEventMap::getNoteMapping( int note )
+{
+        QMutexLocker mx(&__mutex);
+        if( note >= 0 && note < 128 ) {
+                return __note_array[ note ];
+        } else {
+                return H2_INVALID_MIDI_NOTE;
+        }
+}
 
 
