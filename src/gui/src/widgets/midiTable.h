@@ -46,6 +46,8 @@ class MidiTable : public QTableWidget, public H2Core::Object
 		void setupMidiTable();
 		void saveMidiTable();
                 void insertNewRow( QString, QString, int, int );
+                void loadFromFile( QString filename );
+                void saveToFile( QString filename );
 
 	private slots:
 		void updateTable();
@@ -57,6 +59,7 @@ class MidiTable : public QTableWidget, public H2Core::Object
 		int currentMidiAutosenseRow;
 		QSignalMapper *signalMapper;
 		QTimer* m_pUpdateTimer;
+
 
 };
 

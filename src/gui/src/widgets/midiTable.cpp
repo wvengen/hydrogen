@@ -176,6 +176,23 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 }
 
+
+void MidiTable::loadFromFile( QString filename )
+{
+    if( __role == H2_MIDI_EVENT_MAP ){
+        //load it..
+    }
+
+}
+
+void MidiTable::saveToFile( QString filename )
+{
+    if( __role == H2_MIDI_EVENT_MAP ){
+        //save it..
+    }
+
+}
+
 void MidiTable::setupMidiTable()
 {
 	MidiActionMap *mM = MidiActionMap::get_instance();

@@ -16,8 +16,14 @@ public:
 signals:
 
 private slots:
-    void on_okBtn_clicked();
-    void on_cancelBtn_clicked();
+    void on_loadButton_clicked();
+    void on_saveButton_clicked();
+    void on_saveAsButton_clicked();
+    void on_defaultButton_clicked();
+
+private:
+    QString currentFilename;
+
 };
 
 #endif // MIDIINPUTMAPDIALOG_H
