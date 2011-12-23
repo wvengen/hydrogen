@@ -27,6 +27,13 @@
 
 #include <QtGui>
 
+/*
+ * Possible roles for the MidiTable
+ * H2_MIDI_EVENT_MAP: map events to events
+ * H2_MIDI_ACTION_MAP: map events to actions
+ */
+enum H2_MIDI_TABLE_ROLE { H2_MIDI_EVENT_MAP, H2_MIDI_ACTION_MAP };
+
 class MidiTable : public QTableWidget, public H2Core::Object
 {
     H2_OBJECT
@@ -35,15 +42,17 @@ class MidiTable : public QTableWidget, public H2Core::Object
 		MidiTable( QWidget* pParent );
 		~MidiTable();
 
+                void setRole( H2_MIDI_TABLE_ROLE );
 		void setupMidiTable();
 		void saveMidiTable();
-		void insertNewRow(QString, QString, int, int);
+                void insertNewRow( QString, QString, int, int );
 
 	private slots:
 		void updateTable();
 		void midiSensePressed( int );
 	
 	private:
+                H2_MIDI_TABLE_ROLE __role;
 		int __row_count;
 		int currentMidiAutosenseRow;
 		QSignalMapper *signalMapper;

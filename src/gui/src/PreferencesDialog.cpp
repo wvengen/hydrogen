@@ -231,7 +231,9 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	else {
 		midiPortChannelComboBox->setCurrentIndex( pPref->m_nMidiChannelFilter + 1 );
 	}
-	
+
+        midiTable->setRole( H2_MIDI_ACTION_MAP );
+        midiTable->setupMidiTable();
 
 	// General tab
 	restoreLastUsedSongCheckbox->setChecked( pPref->isRestoreLastSongEnabled() );

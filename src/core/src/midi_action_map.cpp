@@ -31,7 +31,7 @@
 /**
 * @class MidiActionMap
 *
-* @brief The MidiActionMap maps MidiActions to MidiEvents
+* @brief The MidiActionMap maps MidiEvents to MidiActions
 *
 *
 * The MidiActionMap stores the mapping between midi events

@@ -32,6 +32,20 @@
 
 const char* MidiTable::__class_name = "MidiTable";
 
+/**
+* @class MidiTable
+*
+* @brief A widget which maps midi events to other midi events or actions.
+*
+*
+* The MidiTable widget gets used in two places: the MidiAction dialog
+* and the midi input mapping dialog. It enables a user to create a relation
+* between a midi event and an action or between two events.
+*
+* @author Sebastian Moors
+*
+*/
+
 MidiTable::MidiTable( QWidget *pParent )
  : QTableWidget( pParent )
  , Object( __class_name )
@@ -52,6 +66,11 @@ MidiTable::~MidiTable()
 		delete cellWidget( myRow, 2 );
 		delete cellWidget( myRow, 3 );
 	}
+}
+
+void MidiTable::setRole( H2_MIDI_TABLE_ROLE role )
+{
+    this->__role = role;
 }
 
 void MidiTable::midiSensePressed( int row ){
@@ -114,9 +133,16 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 	QComboBox *eventBox = new QComboBox();
 	connect( eventBox , SIGNAL( currentIndexChanged( int ) ) , this , SLOT( updateTable() ) );
-	eventBox->insertItems( oldRowCount , aH->getEventList() );
-	eventBox->setCurrentIndex( eventBox->findText(eventString) );
-	setCellWidget( oldRowCount, 1, eventBox );
+
+        if( __role == H2_MIDI_ACTION_MAP )
+        {
+            eventBox->insertItems( oldRowCount , aH->getEventList() );
+            eventBox->setCurrentIndex( eventBox->findText(eventString) );
+        } else {
+            eventBox->insertItem( oldRowCount , "NOTE" );
+        }
+
+        setCellWidget( oldRowCount, 1, eventBox );
 	
 	
 	QSpinBox *eventParameterSpinner = new QSpinBox();
@@ -127,9 +153,18 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 	QComboBox *actionBox = new QComboBox();
 	connect( actionBox , SIGNAL( currentIndexChanged( int ) ) , this , SLOT( updateTable() ) );
-	actionBox->insertItems( oldRowCount, aH->getActionList());
-	actionBox->setCurrentIndex ( actionBox->findText( actionString ) );
-	setCellWidget( oldRowCount , 3, actionBox );
+
+
+        if( __role == H2_MIDI_ACTION_MAP )
+        {
+            actionBox->insertItems( oldRowCount, aH->getActionList());
+            actionBox->setCurrentIndex ( actionBox->findText( actionString ) );
+        } else {
+            actionBox->insertItem( oldRowCount , "NOTE" );
+        }
+
+
+        setCellWidget( oldRowCount , 3, actionBox );
 	
 
 	QSpinBox *actionParameterSpinner = new QSpinBox();
@@ -146,7 +181,14 @@ void MidiTable::setupMidiTable()
 	MidiActionMap *mM = MidiActionMap::get_instance();
 
 	QStringList items;
-	items << "" << trUtf8("Event")  <<  trUtf8("Param.")  <<  trUtf8("Action") <<  trUtf8("Param.") ;
+
+        __row_count = 0;
+
+        if( __role == H2_MIDI_ACTION_MAP ){
+            items << "" << trUtf8("Event")  <<  trUtf8("Param.")  <<  trUtf8("Action") <<  trUtf8("Param.") ;
+        } else {
+            items << "" << trUtf8("Input Event")  <<  trUtf8("Param.")  <<  trUtf8("Output Event") <<  trUtf8("Param.") ;
+        }
 
 	setRowCount( 0 );
     	setColumnCount( 5 );
@@ -155,58 +197,62 @@ void MidiTable::setupMidiTable()
 
 	setHorizontalHeaderLabels( items );
 	
-	
-	setFixedWidth( 500 );
+        /*
+        setFixedWidth( 600 );
 
 	setColumnWidth( 0 , 25 );
 	setColumnWidth( 1 , 155 );
 	setColumnWidth( 2, 73 );
 	setColumnWidth( 3, 175 );
 	setColumnWidth( 4 , 73 );
-
+        */
 
 	bool ok;
 	std::map< QString , MidiAction* > mmcMap = mM->getMMCMap();
 	std::map< QString , MidiAction* >::iterator dIter( mmcMap.begin() );
 
+        for( int note = 0; note < 128; note++ ) {
+                MidiAction * pAction = mM->getNoteAction( note );
+                QString actionParameter;
+                int actionParameterInteger = 0;
+
+                actionParameter = pAction->getParameter1();
+                actionParameterInteger = actionParameter.toInt(&ok,10);
+
+
+                if ( pAction->getType() == "NOTHING" ) continue;
+
+                insertNewRow(pAction->getType() , "NOTE" , note , actionParameterInteger );
+        }
 	
-	for( dIter = mmcMap.begin(); dIter != mmcMap.end(); dIter++ ) {
-		MidiAction * pAction = dIter->second;
-		QString actionParameter;
-		int actionParameterInteger = 0;
+        if( __role == H2_MIDI_ACTION_MAP )
+        {
 
-		actionParameter = pAction->getParameter1();
-		actionParameterInteger = actionParameter.toInt(&ok,10);
-		
-		insertNewRow(pAction->getType() , dIter->first , 0 , actionParameterInteger );
-	}
+            for( dIter = mmcMap.begin(); dIter != mmcMap.end(); dIter++ ) {
+                    MidiAction * pAction = dIter->second;
+                    QString actionParameter;
+                    int actionParameterInteger = 0;
 
-	for( int note = 0; note < 128; note++ ) {
-		MidiAction * pAction = mM->getNoteAction( note );
-		QString actionParameter;
-		int actionParameterInteger = 0;
+                    actionParameter = pAction->getParameter1();
+                    actionParameterInteger = actionParameter.toInt(&ok,10);
 
-		actionParameter = pAction->getParameter1();
-		actionParameterInteger = actionParameter.toInt(&ok,10);
-		
+                    insertNewRow(pAction->getType() , dIter->first , 0 , actionParameterInteger );
+            }
 
-		if ( pAction->getType() == "NOTHING" ) continue;
 
-		insertNewRow(pAction->getType() , "NOTE" , note , actionParameterInteger );
-	}
+            for( int parameter = 0; parameter < 128; parameter++ ){
+                    MidiAction * pAction = mM->getCCAction( parameter );
+                    QString actionParameter;
+                    int actionParameterInteger = 0;
 
-	for( int parameter = 0; parameter < 128; parameter++ ){
-		MidiAction * pAction = mM->getCCAction( parameter );
-		QString actionParameter;
-		int actionParameterInteger = 0;
+                    actionParameter = pAction->getParameter1();
+                    actionParameterInteger = actionParameter.toInt(&ok,10);
 
-		actionParameter = pAction->getParameter1();
-		actionParameterInteger = actionParameter.toInt(&ok,10);
+                    if ( pAction->getType() == "NOTHING" ) continue;
 
-		if ( pAction->getType() == "NOTHING" ) continue;
-
-		insertNewRow(pAction->getType() , "CC" , parameter , actionParameterInteger );
-	}
+                    insertNewRow(pAction->getType() , "CC" , parameter , actionParameterInteger );
+            }
+        }
 	
 	insertNewRow( "", "", 0, 0 );
 }

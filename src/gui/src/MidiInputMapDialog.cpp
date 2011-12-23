@@ -14,6 +14,9 @@ MidiInputMapDialog::MidiInputMapDialog(QWidget *parent)
             setWindowTitle( trUtf8( "Midi input map editor" ) );
             setWindowIcon( QPixmap( Skin::getImagePath()  + "/icon16.png" ) );
 
+            midiTable->setRole( H2_MIDI_EVENT_MAP );
+            midiTable->setupMidiTable();
+
             setMinimumSize( width(), height() );
             setMaximumSize( width(), height() );
 
