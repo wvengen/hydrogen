@@ -732,6 +732,13 @@ void InstrumentEditor::labelClicked( ClickableLabel* pRef )
 			m_pInstrument->set_name( sNewName );
 			selectedInstrumentChangedEvent();
 
+                        #ifdef H2CORE_HAVE_JACK
+                        AudioEngine::get_instance()->lock( RIGHT_HERE );
+                        Hydrogen *engine = Hydrogen::get_instance();
+                        engine->renameJackPorts();
+                        AudioEngine::get_instance()->unlock();
+                        #endif
+
 			// this will force an update...
 			EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 
@@ -805,7 +812,8 @@ void InstrumentEditor::muteGroupBtnClicked(Button *pRef)
 
 void InstrumentEditor::onIsStopNoteCheckBoxClicked( bool on )
 {
-	m_pInstrument->set_stop_notes( on );
+        m_pInstrument->set_stop_notes( on );
+        selectedInstrumentChangedEvent();	// force an update
 }
 
 void InstrumentEditor::midiOutChannelBtnClicked(Button *pRef)

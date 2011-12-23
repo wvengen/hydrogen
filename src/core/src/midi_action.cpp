@@ -28,29 +28,66 @@
 #include <hydrogen/basics/instrument.h>
 #include <hydrogen/basics/instrument_list.h>
 #include <hydrogen/basics/song.h>
-
+#include <hydrogen/basics/pattern_list.h>
 
 #include <hydrogen/Preferences.h>
-#include <hydrogen/action.h>
+#include <hydrogen/midi_action.h>
 #include <map>
-
-ActionManager* ActionManager::__instance = NULL;
 
 using namespace H2Core;
 
-const char* Action::__class_name = "Action";
 
-/* Class Action */
-Action::Action( QString typeString ) : Object( __class_name ) {
+/* Helperfunction */
 
-	/*
-	    An "Action" is something which can be interpreted and executed by hydrogen.
-	    Example: If hydrogen executes the Action with type "MUTE", it will mute the outputs.
+bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
+{
+        //helper function to set fx levels
 
-	    The two parameters are optional and can be used to carry additional informations, which mean
-	    only something to this very Action. They can have totally different meanings for other Actions.
-	    Example: parameter1 is the Mixer strip and parameter 2 a multiplier for the volume change on this strip
-	*/
+        Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
+
+        Hydrogen *engine = Hydrogen::get_instance();
+        Song *song = engine->getSong();
+        InstrumentList *instrList = song->get_instrument_list();
+        Instrument *instr = instrList->get( nLine );
+        if ( instr == NULL) return false;
+
+        if( fx_param != 0 ){
+                        instr->set_fx_level(  ( (float) (fx_param / 127.0 ) ), fx_channel );
+        } else {
+                        instr->set_fx_level( 0 , fx_channel );
+        }
+
+        Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
+
+        return true;
+
+}
+
+/**
+* @class MidiAction
+*
+* @brief This class represents a midi action.
+*
+* This class represents actions which can be executed
+* after a midi event occured. An example is the "MUTE"
+* action, which mutes the outputs of hydrogen.
+*
+* An action can be linked to an event. If this event occurs,
+* the action gets triggered. The handling of events takes place
+* in midi_input.cpp .
+*
+* Each action has two independ parameters. The two parameters are optional and
+* can be used to carry additional informations, which mean
+* only something to this very Action. They can have totally different meanings for other Actions.
+* Example: parameter1 is the Mixer strip and parameter 2 a multiplier for the volume change on this strip
+*
+* @author Sebastian Moors
+*
+*/
+
+const char* MidiAction::__class_name = "MidiAction";
+
+MidiAction::MidiAction( QString typeString ) : Object( __class_name ) {
 
 	type = typeString;
 	QString parameter1 = "0";
@@ -58,13 +95,28 @@ Action::Action( QString typeString ) : Object( __class_name ) {
 }
 
 
-/* Class ActionManager */
 
-const char* ActionManager::__class_name = "ActionManager";
+/**
+* @class MidiActionManager
+*
+* @brief The MidiActionManager cares for the execution of MidiActions
+*
+*
+* The MidiActionManager handles the execution of midi actions. The class
+* includes the names and implementations of all possible actions.
+*
+*
+* @author Sebastian Moors
+*
+*/
+MidiActionManager* MidiActionManager::__instance = NULL;
+const char* MidiActionManager::__class_name = "ActionManager";
 
-ActionManager::ActionManager() : Object( __class_name )
+MidiActionManager::MidiActionManager() : Object( __class_name )
 {
 	__instance = this;
+
+	int lastBpmChangeCCParameter = -1;
 	
 	/*
 	    the actionList holds all Action identfiers which hydrogen is able to interpret.
@@ -117,45 +169,26 @@ ActionManager::ActionManager() : Object( __class_name )
 }
 
 
-ActionManager::~ActionManager(){
+MidiActionManager::~MidiActionManager(){
 	//INFOLOG( "ActionManager delete" );
 	__instance = NULL;
 }
 
-void ActionManager::create_instance()
+void MidiActionManager::create_instance()
 {
 	if ( __instance == 0 ) {
-		__instance = new ActionManager;
+                __instance = new MidiActionManager;
 	}
 }
 
 
+/**
+ * The handleAction method is the heard of the MidiActionManager class.
+ * It executes the operations that are needed to carry the desired action.
+ */
 
-bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param)
-{
-	//helper function to set fx levels
-			
-	Hydrogen::get_instance()->setSelectedInstrumentNumber( nLine );
 
-	Hydrogen *engine = Hydrogen::get_instance();
-	Song *song = engine->getSong();
-	InstrumentList *instrList = song->get_instrument_list();
-	Instrument *instr = instrList->get( nLine );
-	if ( instr == NULL) return false;
-
-	if( fx_param != 0 ){
-			instr->set_fx_level(  ( (float) (fx_param / 127.0 ) ), fx_channel );
-	} else {
-			instr->set_fx_level( 0 , fx_channel );
-	}
-		
-	Hydrogen::get_instance()->setSelectedInstrumentNumber(nLine);
-	
-	return true;
-
-}
-
-bool ActionManager::handleAction( Action * pAction ){
+bool MidiActionManager::handleAction( MidiAction * pAction ){
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
 
@@ -240,15 +273,17 @@ bool ActionManager::handleAction( Action * pAction ){
 		return true;
 	}
 
-	  if( sActionString == "SELECT_NEXT_PATTERN"){
+          if( sActionString == "SELECT_NEXT_PATTERN" ){
 		bool ok;
 		int row = pAction->getParameter1().toInt(&ok,10);
+                if( row> pEngine->getSong()->get_pattern_list()->size() -1 )
+                    return false;
 		pEngine->setSelectedPatternNumber( row );
 		pEngine->sequencer_setNextPattern( row, false, true );
                 return true;
         }
 
-        if( sActionString == "SELECT_NEXT_PATTERN_PROMPTLY"){
+        if( sActionString == "SELECT_NEXT_PATTERN_PROMPTLY" ){
               bool ok;
               int row = pAction->getParameter2().toInt(&ok,10);
               pEngine->setSelectedPatternNumberWithoutGuiEvent( row );
@@ -546,21 +581,22 @@ bool ActionManager::handleAction( Action * pAction ){
 		mult = pAction->getParameter1().toInt(&ok,10);
 		cc_param = pAction->getParameter2().toInt(&ok,10);
 			
-
+		if( lastBpmChangeCCParameter == -1)
+		{
+			lastBpmChangeCCParameter = cc_param;	
+		}
 
 		Song* pSong = pEngine->getSong();
 
-
-		
-		if ( cc_param == 1 && pSong->__bpm  < 300) {
-			pEngine->setBPM( pSong->__bpm + 1*mult );
-		}
-
-
-		if ( cc_param != 1 && pSong->__bpm  > 40 ) {
+		if ( lastBpmChangeCCParameter >= cc_param && pSong->__bpm  < 300) {
 			pEngine->setBPM( pSong->__bpm - 1*mult );
 		}
 
+		if ( lastBpmChangeCCParameter < cc_param && pSong->__bpm  > 40 ) {
+			pEngine->setBPM( pSong->__bpm + 1*mult );
+		}
+
+		lastBpmChangeCCParameter = cc_param;
 
 		AudioEngine::get_instance()->unlock();
 

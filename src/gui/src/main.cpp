@@ -38,7 +38,7 @@
 #include <jack/session.h>
 #endif
 
-#include <hydrogen/midiMap.h>
+#include <hydrogen/midi_map.h>
 #include <hydrogen/audio_engine.h>
 #include <hydrogen/hydrogen.h>
 #include <hydrogen/globals.h>
@@ -444,7 +444,7 @@ int main(int argc, char *argv[])
 		delete H2Core::AudioEngine::get_instance();
 
 		delete MidiActionMap::get_instance();
-		delete ActionManager::get_instance();
+                delete MidiActionManager::get_instance();
 
 		___INFOLOG( "Quitting..." );
 		cout << "\nBye..." << endl;

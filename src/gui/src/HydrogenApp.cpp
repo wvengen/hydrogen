@@ -182,11 +182,11 @@ void HydrogenApp::setupSinglePanedInterface()
 	m_pMainForm->resize( mainFormProp.width, mainFormProp.height );
 	m_pMainForm->move( mainFormProp.x, mainFormProp.y );
 
-	QSplitter *pSplitter = new QSplitter( NULL );
+        pSplitter = new QSplitter( NULL );
 	pSplitter->setOrientation( Qt::Vertical );
 	pSplitter->setOpaqueResize( true );
 
-        QTabWidget *pTab = new QTabWidget( NULL );
+        pTab = new QTabWidget( NULL );
         pTab->setStyleSheet("color: white;");
 
 	// SONG EDITOR
@@ -336,7 +336,19 @@ void HydrogenApp::setSong(Song* song)
 
 void HydrogenApp::showMixer(bool show)
 {
-	m_pMixer->setVisible( show );
+        /*
+         *   Switch to Mixer tab with alt+m in tabbed mode,
+         *   otherwise open mixer window
+         */
+
+        Preferences *pPref = Preferences::get_instance();
+        int uiLayout = pPref->getDefaultUILayout();
+        if( uiLayout == Preferences::UI_LAYOUT_TABBED)
+        {
+            pTab->setCurrentWidget( m_pMixer );
+        } else {
+            m_pMixer->setVisible( show );
+        }
 }
 
 
@@ -520,9 +532,13 @@ void HydrogenApp::onEventQueueTimer()
 					break;
 
                                 case EVENT_JACK_SESSION:
-                                        pListener->jacksessionEvent(event.value );
+                                        pListener->jacksessionEvent( event.value );
                                         break;
-				default:
+
+                                case EVENT_PLAYLIST_LOADSONG:
+                                        pListener->playlistLoadSongEvent( event.value );
+                                        break;
+                                default:
 					ERRORLOG( QString("[onEventQueueTimer] Unhandled event: %1").arg( event.type ) );
 			}
 

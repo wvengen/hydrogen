@@ -173,7 +173,7 @@ Pattern* LocalFileMng::loadPattern( const QString& directory )
 			float fPan_R = LocalFileMng::readXmlFloat( noteNode, "pan_R", 0.5 );
 			int nLength = LocalFileMng::readXmlInt( noteNode, "length", -1, true );
 			float nPitch = LocalFileMng::readXmlFloat( noteNode, "pitch", 0.0, false, false );
-			QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
+                        QString sKey = LocalFileMng::readXmlString( noteNode, "key", "C0", false, false );
 			QString nNoteOff = LocalFileMng::readXmlString( noteNode, "note_off", "false", false, false );
                         int instrId = LocalFileMng::readXmlInt( noteNode, "instrument", 0, true );
 
@@ -1024,6 +1024,7 @@ int SongWriter::writeSong( Song *song, const QString& filename )
 	LocalFileMng::writeXmlString( songNode, "notes", song->get_notes() );
 	LocalFileMng::writeXmlString( songNode, "license", song->get_license() );
 	LocalFileMng::writeXmlBool( songNode, "loopEnabled", song->is_loop_enabled() );
+        LocalFileMng::writeXmlBool( songNode, "patternModeMode", Preferences::get_instance()->patternModePlaysSelected());
 
 	if ( song->get_mode() == Song::SONG_MODE ) {
 		LocalFileMng::writeXmlString( songNode, "mode", QString( "song" ) );

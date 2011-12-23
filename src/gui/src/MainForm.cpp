@@ -84,7 +84,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
  : QMainWindow( 0, 0 )
  , Object( __class_name )
 {
-	setMinimumSize( QSize( 1000, 600 ) );
+	setMinimumSize( QSize( 1000, 500 ) );
 	setWindowIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
     #ifndef WIN32
@@ -190,7 +190,7 @@ MainForm::MainForm( QApplication *app, const QString& songFilename )
 	EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
 
 	undoView = new QUndoView(h2app->m_undoStack);
-	undoView->setWindowTitle(tr("Command history"));
+	undoView->setWindowTitle(tr("Undo history"));
 	undoView->setWindowIcon( QPixmap( Skin::getImagePath() + "/icon16.png" ) );
 
 	//restore last playlist 
@@ -250,7 +250,7 @@ void MainForm::createMenuBar()
 	m_pFileMenu->addSeparator();				// -----
 
 	m_pFileMenu->addAction( trUtf8( "&Open" ), this, SLOT( action_file_open() ), QKeySequence( "Ctrl+O" ) );
-	m_pFileMenu->addAction( trUtf8( "Open &Demo" ), this, SLOT( action_file_openDemo() ), QKeySequence( "Ctrl+D" ) );
+	m_pFileMenu->addAction( trUtf8( "&Open Demo" ), this, SLOT( action_file_openDemo() ), QKeySequence( "Ctrl+D" ) );
 
 	m_pRecentFilesMenu = m_pFileMenu->addMenu( trUtf8( "Open &recent" ) );
 
@@ -281,10 +281,10 @@ void MainForm::createMenuBar()
 	//~ FILE menu
 
 	// Undo menu
-	QMenu *m_pUndoMenu = m_pMenubar->addMenu( trUtf8( "U&ndo" ) );
+	QMenu *m_pUndoMenu = m_pMenubar->addMenu( trUtf8( "Undo" ) );
 	m_pUndoMenu->addAction( trUtf8( "Undo" ), this, SLOT( action_undo() ), QKeySequence( "Ctrl+Z" ) );
 	m_pUndoMenu->addAction( trUtf8( "Redo" ), this, SLOT( action_redo() ), QKeySequence( "Shift+Ctrl+Z" ) );
-	m_pUndoMenu->addAction( trUtf8( "Command history" ), this, SLOT( openUndoStack() ), QKeySequence( "" ) );
+	m_pUndoMenu->addAction( trUtf8( "Undo history" ), this, SLOT( openUndoStack() ), QKeySequence( "" ) );
 
 	// INSTRUMENTS MENU
 	QMenu *m_pInstrumentsMenu = m_pMenubar->addMenu( trUtf8( "I&nstruments" ) );
@@ -451,8 +451,11 @@ void MainForm::action_file_new()
 	HydrogenApp::get_instance()->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
 	HydrogenApp::get_instance()->getSongEditorPanel()->updatePositionRuler();
 	Hydrogen::get_instance()->m_timelinetagvector.clear();
+
+        // update director tags
 	EventQueue::get_instance()->push_event( EVENT_METRONOME, 2 );
-	EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
+        // update director songname
+        EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
 }
 
 
@@ -513,7 +516,6 @@ void MainForm::action_file_save()
 		return action_file_save_as();
 	}
 
-	LocalFileMng mng;
 	bool saved = false;
 	saved = song->save( filename );
 	
@@ -532,6 +534,7 @@ void MainForm::action_file_save()
 		updateRecentUsedSongList();
 
 		h2app->setScrollStatusBarMessage( trUtf8("Song saved.") + QString(" Into: ") + filename, 2000 );
+                EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
 	}
 }
 
@@ -772,7 +775,6 @@ void MainForm::action_window_showMixer()
 {
 	bool isVisible = HydrogenApp::get_instance()->getMixer()->isVisible();
         h2app->showMixer( !isVisible );
-        qDebug()<< isVisible;
 }
 
 
@@ -822,10 +824,12 @@ void MainForm::action_instruments_clearAll()
 	}
 
 	// Remove all layers
-	AudioEngine::get_instance()->lock( RIGHT_HERE );
+//	AudioEngine::get_instance()->lock( RIGHT_HERE );
 	Song *pSong = Hydrogen::get_instance()->getSong();
-	InstrumentList* pList = pSong->get_instrument_list();
-	for (uint i = 0; i < pList->size(); i++) {
+        InstrumentList* pList = pSong->get_instrument_list();
+        for (uint i = pList->size(); i > 0; i--) {
+            functionDeleteInstrument(i - 1);
+            /*
 		Instrument* pInstr = pList->get( i );
 		pInstr->set_name( (QString( trUtf8( "Instrument %1" ) ).arg( i + 1 )) );
 		// remove all layers
@@ -833,12 +837,40 @@ void MainForm::action_instruments_clearAll()
 			InstrumentLayer* pLayer = pInstr->get_layer( nLayer );
 			delete pLayer;
 			pInstr->set_layer( NULL, nLayer );
-		}
+                }
+             */
 	}
-	AudioEngine::get_instance()->unlock();
+//	AudioEngine::get_instance()->unlock();
 	EventQueue::get_instance()->push_event( EVENT_SELECTED_INSTRUMENT_CHANGED, -1 );
 }
 
+void MainForm::functionDeleteInstrument(int instrument)
+{
+        Hydrogen * H = Hydrogen::get_instance();
+        Instrument *pSelectedInstrument = H->getSong()->get_instrument_list()->get( instrument );
+
+        std::list< Note* > noteList;
+        Song* song = H->getSong();
+        PatternList *patList = song->get_pattern_list();
+
+        QString instrumentName =  pSelectedInstrument->get_name();
+        QString drumkitName = H->getCurrentDrumkitname();
+
+        for ( int i = 0; i < patList->size(); i++ ) {
+            H2Core::Pattern *pPattern = song->get_pattern_list()->get(i);
+            const Pattern::notes_t* notes = pPattern->get_notes();
+            FOREACH_NOTE_CST_IT_BEGIN_END(notes,it) {
+                Note *pNote = it->second;
+                assert( pNote );
+                if ( pNote->get_instrument() == pSelectedInstrument ) {
+                    pNote->set_pattern_idx( i );
+                    noteList.push_back( pNote );
+                }
+            }
+        }
+        SE_deleteInstrumentAction *action = new SE_deleteInstrumentAction( noteList, drumkitName, instrumentName, instrument );
+        HydrogenApp::get_instance()->m_undoStack->push( action );
+}
 
 
 void MainForm::action_instruments_exportLibrary()
@@ -1221,129 +1253,119 @@ void MainForm::initKeyInstMap()
 
 bool MainForm::eventFilter( QObject *o, QEvent *e )
 {
-	UNUSED( o );
+        UNUSED( o );
 
-	if ( e->type() == QEvent::KeyPress) {
-		// special processing for key press
-		QKeyEvent *k = (QKeyEvent *)e;
+        if ( e->type() == QEvent::KeyPress) {
+                // special processing for key press
+                QKeyEvent *k = (QKeyEvent *)e;
 
-		// qDebug( "Got key press for instrument '%c'", k->ascii() );
-		int songnumber = 0;
-        HydrogenApp* app = HydrogenApp::get_instance();
-        Hydrogen* engine = Hydrogen::get_instance();
+                // qDebug( "Got key press for instrument '%c'", k->ascii() );
+                //int songnumber = 0;
+                HydrogenApp* app = HydrogenApp::get_instance();
+                Hydrogen* engine = Hydrogen::get_instance();
 
-		switch (k->key()) {
-			case Qt::Key_Space:
-				onPlayStopAccelEvent();
-				return TRUE; // eat event
+                switch (k->key()) {
+                case Qt::Key_Space:
+                        onPlayStopAccelEvent();
+                        return TRUE; // eat event
 
 
-			case Qt::Key_Comma:
-				engine->handleBeatCounter();
-				return TRUE; // eat even
-				break;
+                case Qt::Key_Comma:
+                        engine->handleBeatCounter();
+                        return TRUE; // eat even
+                        break;
 
-			case Qt::Key_Backspace:
-				onRestartAccelEvent();
-				return TRUE; // eat event
-				break;
+                case Qt::Key_Backspace:
+                        onRestartAccelEvent();
+                        return TRUE; // eat event
+                        break;
 
-			case Qt::Key_Plus:
-				onBPMPlusAccelEvent();
-				return TRUE; // eat event
-				break;
+                case Qt::Key_Plus:
+                        onBPMPlusAccelEvent();
+                        return TRUE; // eat event
+                        break;
 
-			case Qt::Key_Minus:
-				onBPMMinusAccelEvent();
-				return TRUE; // eat event
-				break;
+                case Qt::Key_Minus:
+                        onBPMMinusAccelEvent();
+                        return TRUE; // eat event
+                        break;
 
-			case Qt::Key_Backslash:
-				engine->onTapTempoAccelEvent();
-				return TRUE; // eat event
-				break;
+                case Qt::Key_Backslash:
+                        engine->onTapTempoAccelEvent();
+                        return TRUE; // eat event
+                        break;
 
-			case  Qt::Key_S | Qt::CTRL:
-				onSaveAccelEvent();
-				return TRUE;
-				break;
-			
-			case  Qt::Key_F5 :
-				if( engine->m_PlayList.size() == 0)
-					break;
-                app->setSong ( Playlist::get_instance()->setPrevSongPlaylist() );
-                app->getSongEditorPanel()->updatePositionRuler();
-                songnumber = Playlist::get_instance()->getActiveSongNumber();
-                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-                app->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
-				return TRUE;
-				break;
+                case  Qt::Key_S | Qt::CTRL:
+                        onSaveAccelEvent();
+                        return TRUE;
+                        break;
 
-			case  Qt::Key_F6 :
-				if( Hydrogen::get_instance()->m_PlayList.size() == 0)
-					break;
-                app->setSong ( Playlist::get_instance()->setNextSongPlaylist() );
-                app->getSongEditorPanel()->updatePositionRuler();
-                songnumber = Playlist::get_instance()->getActiveSongNumber();
-                app->getInstrumentRack()->getSoundLibraryPanel()->update_background_color();
-                app->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( songnumber +1 ), 5000 );
-				return TRUE;
-				break;
+                case  Qt::Key_F5 :
+                        if( engine->m_PlayList.size() == 0)
+                                break;
+                        return handleSelectNextPrevSongOnPlaylist( -1 );
+                        break;
 
-			case  Qt::Key_F12 : //panic button stop all playing notes
-				engine->__panic();
-//				QMessageBox::information( this, "Hydrogen", trUtf8( "Panic" ) );
-				return TRUE;
-				break;
+                case  Qt::Key_F6 :
+                        if( Hydrogen::get_instance()->m_PlayList.size() == 0)
+                                break;
+                        return handleSelectNextPrevSongOnPlaylist( 1 );
+                        break;
 
-			case  Qt::Key_F9 : // Qt::Key_Left do not work. Some ideas ?
-				engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() - 1 );
-				return TRUE;
-				break;
+                case  Qt::Key_F12 : //panic button stop all playing notes
+                        engine->__panic();
+                        //				QMessageBox::information( this, "Hydrogen", trUtf8( "Panic" ) );
+                        return TRUE;
+                        break;
 
-			case  Qt::Key_F10 : // Qt::Key_Right do not work. Some ideas ?
-				engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() + 1 );
-				return TRUE;
-				break;
-			
-			case Qt::Key_L :
-                engine->togglePlaysSelected();
-                QString msg = Preferences::get_instance()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
-                app->setStatusBarMessage( msg, 5000 );
-                app->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
-                app->getSongEditorPanel()->updateAll();
-				return TRUE;
-                break;
-			
-		// 	QAccel *a = new QAccel( this );
-// 	a->connectItem( a->insertItem(Key_S + CTRL), this, SLOT( onSaveAccelEvent() ) );
-// 	a->connectItem( a->insertItem(Key_O + CTRL), this, SLOT( onOpenAccelEvent() ) );
+                case  Qt::Key_F9 : // Qt::Key_Left do not work. Some ideas ?
+                        engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() - 1 );
+                        return TRUE;
+                        break;
 
-		}
+                case  Qt::Key_F10 : // Qt::Key_Right do not work. Some ideas ?
+                        engine->setPatternPos( Hydrogen::get_instance()->getPatternPos() + 1 );
+                        return TRUE;
+                        break;
 
-		// virtual keyboard handling
-		map<int,int>::iterator found = keycodeInstrumentMap.find ( k->key() );
-		if (found != keycodeInstrumentMap.end()) {
-//			INFOLOG( "[eventFilter] virtual keyboard event" );
-			// insert note at the current column in time
-			// if event recording enabled
-			int row = (*found).second;
-			Hydrogen* engine = Hydrogen::get_instance();
+                case Qt::Key_L :
+                        engine->togglePlaysSelected();
+                        QString msg = Preferences::get_instance()->patternModePlaysSelected() ? "Single pattern mode" : "Stacked pattern mode";
+                        app->setStatusBarMessage( msg, 5000 );
+                        app->getSongEditorPanel()->setModeActionBtn( Preferences::get_instance()->patternModePlaysSelected() );
+                        app->getSongEditorPanel()->updateAll();
+                        return TRUE;
+                        break;
 
-			float velocity = 0.8;
-			float pan_L = 1.0;
-			float pan_R = 1.0;
+                        // 	QAccel *a = new QAccel( this );
+                        // 	a->connectItem( a->insertItem(Key_S + CTRL), this, SLOT( onSaveAccelEvent() ) );
+                        // 	a->connectItem( a->insertItem(Key_O + CTRL), this, SLOT( onOpenAccelEvent() ) );
 
-			engine->addRealtimeNote (row, velocity, pan_L, pan_R, 0, NULL, NULL , row + 36);
+                }
 
-			return TRUE; // eat event
-		}
-		else {
-			return FALSE; // let it go
-		}
+                // virtual keyboard handling
+                map<int,int>::iterator found = keycodeInstrumentMap.find ( k->key() );
+                if (found != keycodeInstrumentMap.end()) {
+                        //			INFOLOG( "[eventFilter] virtual keyboard event" );
+                        // insert note at the current column in time
+                        // if event recording enabled
+                        int row = (*found).second;
+                        Hydrogen* engine = Hydrogen::get_instance();
+
+                        float velocity = 0.8;
+                        float pan_L = 1.0;
+                        float pan_R = 1.0;
+
+                        engine->addRealtimeNote (row, velocity, pan_L, pan_R, 0, NULL, NULL , row + 36);
+
+                        return TRUE; // eat event
+                }
+                else {
+                        return FALSE; // let it go
+                }
         }
-	else {
-		return FALSE; // standard event processing
+        else {
+                return FALSE; // standard event processing
         }
 }
 
@@ -1435,6 +1457,14 @@ void MainForm::errorEvent( int nErrorCode )
 	QMessageBox::information( this, "Hydrogen", msg );
 }
 
+void MainForm::playlistLoadSongEvent(int nIndex)
+{
+
+        QString selected = Hydrogen::get_instance()->m_PlayList[ nIndex ].m_hFile;
+        openSongFile(selected);
+        EventQueue::get_instance()->push_event( EVENT_METRONOME, 3 );
+        HydrogenApp::get_instance()->setScrollStatusBarMessage( trUtf8( "Playlist: Set song No. %1" ).arg( nIndex +1 ), 5000 );
+}
 
 void MainForm::jacksessionEvent( int nEvent )
 {
@@ -1594,34 +1624,49 @@ bool MainForm::handleUnsavedChanges()
 
 
 void MainForm::usr1SignalHandler(int)
- {
-     char a = 1;
-     size_t ret = ::write(sigusr1Fd[0], &a, sizeof(a));
- }
+{
+        char a = 1;
+        size_t ret = ::write(sigusr1Fd[0], &a, sizeof(a));
+}
 
 void MainForm::handleSigUsr1()
 {
-    snUsr1->setEnabled(false);
-    char tmp;
-    size_t ret = ::read(sigusr1Fd[1], &tmp, sizeof(tmp));
+        snUsr1->setEnabled(false);
+        char tmp;
+        size_t ret = ::read(sigusr1Fd[1], &tmp, sizeof(tmp));
 
-    action_file_save();
-    snUsr1->setEnabled(true);
+        action_file_save();
+        snUsr1->setEnabled(true);
 }
 
 void MainForm::openUndoStack()
 {
-	undoView->show();
-	undoView->setAttribute(Qt::WA_QuitOnClose, false);
-};
+        undoView->show();
+        undoView->setAttribute(Qt::WA_QuitOnClose, false);
+}
 
 void MainForm::action_undo(){
-    h2app->m_undoStack->undo();
-};
+        h2app->m_undoStack->undo();
+}
 
 void MainForm::action_redo(){
-    h2app->m_undoStack->redo();
-};
+        h2app->m_undoStack->redo();
+}
+
+bool MainForm::handleSelectNextPrevSongOnPlaylist( int step )
+{
+        int playlistSize= Hydrogen::get_instance()->m_PlayList.size();
+
+        HydrogenApp* app = HydrogenApp::get_instance();
+        int songnumber = Playlist::get_instance()->getActiveSongNumber();
+        if(songnumber+step >= 0 && songnumber+step <= playlistSize-1){
+                Playlist::get_instance()->setNextSongByNumber( songnumber + step );
+        }
+        else
+                return FALSE;
+
+        return TRUE;
+}
 
 
 

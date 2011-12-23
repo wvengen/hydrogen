@@ -25,14 +25,14 @@
 	#include <QtGui>
 
 	#include <hydrogen/object.h>
-	#include <hydrogen/action.h>
+        #include <hydrogen/midi_action.h>
 
 	class MidiSenseWidget : public QDialog ,public H2Core::Object
 	{
     H2_OBJECT
 	Q_OBJECT
 	public:
-		MidiSenseWidget(QWidget*,bool directWrite = false , Action* action = NULL);
+		MidiSenseWidget(QWidget*,bool directWrite = false , MidiAction* action = NULL);
 		~MidiSenseWidget();
 
 		QString lastMidiEvent;
@@ -44,7 +44,7 @@
 	private:
 		QTimer* m_pUpdateTimer;
 		QLabel* m_pURLLabel;
-		Action* action;
+		MidiAction* action;
 		bool directWrite;
 };
 

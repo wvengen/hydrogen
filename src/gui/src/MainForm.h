@@ -54,10 +54,11 @@ class MainForm : public QMainWindow, public EventListener, public H2Core::Object
 
 		virtual void errorEvent( int nErrorCode );
                 virtual void jacksessionEvent( int nValue);
+                virtual void playlistLoadSongEvent(int nIndex);
 		static void usr1SignalHandler(int unused);
 
 
-	public slots:
+public slots:
 		void showPreferencesDialog();
 		void showUserManual();
 
@@ -128,6 +129,7 @@ class MainForm : public QMainWindow, public EventListener, public H2Core::Object
 		static int sigusr1Fd[2];
 		QSocketNotifier *snUsr1;
 
+                void functionDeleteInstrument(int instrument);
 
 
 		QMenu *m_pRecentFilesMenu;
@@ -157,6 +159,8 @@ class MainForm : public QMainWindow, public EventListener, public H2Core::Object
 		QTimer *lashPollTimer;
 	#endif
 		QUndoView *undoView;///debug only
+
+                bool handleSelectNextPrevSongOnPlaylist(int step);
 
 };
 

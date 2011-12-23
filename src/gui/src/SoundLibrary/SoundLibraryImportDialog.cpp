@@ -346,6 +346,7 @@ void SoundLibraryImportDialog::on_DownloadBtn_clicked()
 				DownloadWidget dl( this, trUtf8( "Downloading SoundLibrary..." ), sURL, sLocalFile );
 				dl.exec();
 
+
 				QString redirect_url = dl.get_redirect_url();
 				if (redirect_url == "" ) {
 					// ok, we have all data

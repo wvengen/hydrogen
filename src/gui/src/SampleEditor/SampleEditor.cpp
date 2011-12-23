@@ -105,12 +105,17 @@ SampleEditor::SampleEditor ( QWidget* pParent, int nSelectedLayer, QString mSamp
 	openDisplays();
 	getAllFrameInfos();
 
+#ifndef H2CORE_HAVE_RUBBERBAND
 	if ( QFile( Preferences::get_instance()->m_rubberBandCLIexecutable ).exists() == false ){
-		RubberbandCframe->setDisabled ( true );
-//pitchdoubleSpinBox
+                RubberbandCframe->setDisabled ( true );
 		__rubberband.use = false;
-		m_pSampleEditorStatus = true;
+                m_pSampleEditorStatus = true;
 	}
+#else
+       RubberbandCframe->setDisabled ( false );
+       m_pSampleEditorStatus = true;
+#endif
+
         __rubberband.pitch = 0.0;
 
 }
@@ -352,7 +357,7 @@ void SampleEditor::createNewLayer()
 			return;
 		}
 
-		AudioEngine::get_instance()->lock( RIGHT_HERE );
+                AudioEngine::get_instance()->lock( RIGHT_HERE );
 
 		H2Core::Instrument *pInstrument = NULL;
 		Song *pSong = Hydrogen::get_instance()->getSong();
@@ -379,7 +384,7 @@ void SampleEditor::createNewLayer()
 		// insert new sample from newInstrument
 		pLayer->set_sample( editSample );
 
-		AudioEngine::get_instance()->unlock();
+                AudioEngine::get_instance()->unlock();
 		m_pTargetSampleView->updateDisplay( pLayer );
 		}
 		

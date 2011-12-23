@@ -24,10 +24,10 @@
 #include "MidiSenseWidget.h"
 #include "midiTable.h"
 
-#include <hydrogen/midiMap.h>
+#include <hydrogen/midi_map.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/globals.h>
-#include <hydrogen/action.h>
+#include <hydrogen/midi_action.h>
 #include <hydrogen/hydrogen.h>
 
 const char* MidiTable::__class_name = "MidiTable";
@@ -88,7 +88,7 @@ void MidiTable::updateTable()
 
 void MidiTable::insertNewRow(QString actionString , QString eventString, int eventParameter , int actionParameter)
 {
-	ActionManager *aH = ActionManager::get_instance();
+        MidiActionManager *aH = MidiActionManager::get_instance();
 
 	insertRow( __row_count );
 	
@@ -166,12 +166,12 @@ void MidiTable::setupMidiTable()
 
 
 	bool ok;
-	std::map< QString , Action* > mmcMap = mM->getMMCMap();
-	std::map< QString , Action* >::iterator dIter( mmcMap.begin() );
+	std::map< QString , MidiAction* > mmcMap = mM->getMMCMap();
+	std::map< QString , MidiAction* >::iterator dIter( mmcMap.begin() );
 
 	
 	for( dIter = mmcMap.begin(); dIter != mmcMap.end(); dIter++ ) {
-		Action * pAction = dIter->second;
+		MidiAction * pAction = dIter->second;
 		QString actionParameter;
 		int actionParameterInteger = 0;
 
@@ -182,7 +182,7 @@ void MidiTable::setupMidiTable()
 	}
 
 	for( int note = 0; note < 128; note++ ) {
-		Action * pAction = mM->getNoteAction( note );
+		MidiAction * pAction = mM->getNoteAction( note );
 		QString actionParameter;
 		int actionParameterInteger = 0;
 
@@ -196,7 +196,7 @@ void MidiTable::setupMidiTable()
 	}
 
 	for( int parameter = 0; parameter < 128; parameter++ ){
-		Action * pAction = mM->getCCAction( parameter );
+		MidiAction * pAction = mM->getCCAction( parameter );
 		QString actionParameter;
 		int actionParameterInteger = 0;
 
@@ -231,7 +231,7 @@ void MidiTable::saveMidiTable()
 
 			actionString = actionCombo->currentText();
 		
-			Action* pAction = new Action( actionString );
+			MidiAction* pAction = new MidiAction( actionString );
 
 			if( actionSpinner->cleanText() != ""){
 				pAction->setParameter1( actionSpinner->cleanText() );

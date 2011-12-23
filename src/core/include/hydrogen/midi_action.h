@@ -29,10 +29,10 @@
 using namespace std;
 
 
-class Action : public H2Core::Object {
+class MidiAction : public H2Core::Object {
     H2_OBJECT
 	public:
-		Action( QString );
+		MidiAction( QString );
 			
 		void setParameter1( QString text ){
 			parameter1 = text;
@@ -65,19 +65,21 @@ class Action : public H2Core::Object {
 bool setAbsoluteFXLevel( int nLine, int fx_channel , int fx_param);
 
 
-class ActionManager : public H2Core::Object
+class MidiActionManager : public H2Core::Object
 {
     H2_OBJECT
 	private:
-		static ActionManager *__instance;
+		static MidiActionManager *__instance;
 		QStringList actionList;
 		QStringList eventList;
 
+		int lastBpmChangeCCParameter;
+
 	public:
-		bool handleAction( Action * );
+		bool handleAction( MidiAction * );
 		
 		static void create_instance();
-		static ActionManager* get_instance() { assert(__instance); return __instance; }
+		static MidiActionManager* get_instance() { assert(__instance); return __instance; }
 		
 		QStringList getActionList(){
 			return actionList;
@@ -87,7 +89,7 @@ class ActionManager : public H2Core::Object
 			return eventList;
 		}
 
-		ActionManager();
-		~ActionManager();
+		MidiActionManager();
+		~MidiActionManager();
 };
 #endif

@@ -29,14 +29,22 @@ SET(LIBSNDFILE_VERSION_PREV "1.0.17")
 #
 SET(WANT_LIBTAR TRUE)
 OPTION(WANT_DEBUG       "build with debug information" ON)
+
 IF(APPLE)
     OPTION(WANT_SHARED      "Build the core library shared." OFF)
 ELSE()
     OPTION(WANT_SHARED      "Build the core library shared." ON)
 ENDIF()
+
 OPTION(WANT_LIBARCHIVE   "Enable use of libarchive instead of libtar" OFF)
 OPTION(WANT_LADSPA       "Enable use of LADSPA plugins" ON)
-OPTION(WANT_JACKSESSION "Enable use of Jack-Session-Handler" ON)
+
+IF(APPLE)
+	OPTION(WANT_JACKSESSION "Enable use of Jack-Session-Handler" OFF)
+ELSE()
+	OPTION(WANT_JACKSESSION "Enable use of Jack-Session-Handler" ON)
+ENDIF()
+
 OPTION(WANT_OSS          "Include OSS (Open Sound System) support" OFF)
 OPTION(WANT_ALSA         "Include ALSA (Advanced Linux Sound Architecture) support" ON)
 OPTION(WANT_JACK         "Include JACK (Jack Audio Connection Kit) support" ON)
@@ -48,7 +56,7 @@ OPTION(WANT_RUBBERBAND   "Include RUbberBand (Audio Time Stretcher Library) supp
 IF(APPLE)
     OPTION(WANT_COREAUDIO   "Include CoreAudio support" ON)
     OPTION(WANT_COREMIDI    "Include CoreMidi support" ON)
-    OPTION(WANT_BUNDLE  "Build a MAC OSX bundle application" OFF)
+    OPTION(WANT_BUNDLE  "Build a MAC OSX bundle application" ON)
 ENDIF()
 
 IF(WANT_DEBUG)
@@ -58,20 +66,29 @@ ELSE()
     SET(CMAKE_BUILD_TYPE Release)
     SET(H2CORE_HAVE_DEBUG FALSE)
 ENDIF()
+
 IF(WANT_BUNDLE)
     SET(H2CORE_HAVE_BUNDLE TRUE)
 ELSE()
     SET(H2CORE_HAVE_BUNDLE FALSE)
 ENDIF()
+
 IF(WANT_SHARED)
     SET(H2CORE_LIBRARY_TYPE SHARED)
 ELSE()
     SET(H2CORE_LIBRARY_TYPE STATIC)
 ENDIF()
+
 #SET(CMAKE_CXX_FLAGS "-fno-implement-inlines -finline-small-functions -findirect-inlining -fpartial-inlining")
 SET(CMAKE_CXX_FLAGS "-O2 -fno-implement-inlines")
 SET(CMAKE_CXX_FLAGS_RELEASE "")
 SET(CMAKE_CXX_FLAGS_DEBUG "-g ")#-Winline")
+
+
+IF(APPLE)
+	#Compile for 32bit and 64bit intel macs
+	SET (CMAKE_OSX_ARCHITECTURES "i386;x86_64;")
+ENDIF()
 #
 # MANDATORY PKGS AND DEFAULT OPTIONS
 #
@@ -93,7 +110,7 @@ ELSE(WIN32)
     IF(APPLE)
         LINK_DIRECTORIES("/opt/local/lib")
     ELSE(APPLE)
-        SET(OSS_LIB_PATHS "/usr/lib/oss/lib" "/usr/local/lib/oss/lib" )
+        SET(OSS_LIB_PATHS "/usr/lib${LIB_SUFFIX}/oss/lib" "/usr/local/lib${LIB_SUFFIX}/oss/lib" )
         SET(RUBBERBAND_INCLUDE_PATHS "/usr/include/rubberband" )
     ENDIF(APPLE)
 ENDIF(WIN32)
@@ -155,11 +172,16 @@ SET(QT_USE_QTXML true)
 SET(QT_USE_QTXMLPATTERNS true)
 FIND_PACKAGE(Qt4 4.3.0 REQUIRED)
 
-# DOXYGEN
-SET(ENABLE_LATEX false)
-SET(DOXYFILE_HTML_DIR   "${CMAKE_BINARY_DIR}/html" )
-SET(DOXYFILE_LATEX_DIR  "${CMAKE_BINARY_DIR}/latex" )
-include(doxygen OPTIONAL)
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	add_custom_target(doc
+		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs
+		COMMENT "Generating API documentation with Doxygen" VERBATIM
+		)
+endif(DOXYGEN_FOUND)
+
 #
 # COMPUTE H2CORE_HAVE_xxx xxx_STATUS_REPORT
 #
@@ -265,7 +287,7 @@ ADD_SUBDIRECTORY(src/player)
 ADD_SUBDIRECTORY(src/synth)
 ADD_SUBDIRECTORY(src/gui)
 
-INSTALL(DIRECTORY data DESTINATION ${SYS_DATA_PATH}/..)
+INSTALL(DIRECTORY data DESTINATION ${SYS_DATA_PATH}/.. PATTERN ".svn" EXCLUDE)
 IF(NOT WIN32 AND NOT APPLE)
     INSTALL(FILES ${CMAKE_SOURCE_DIR}/linux/hydrogen.desktop DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
 ENDIF()
@@ -289,6 +311,8 @@ ENDIF(VERSION_SUFFIX)
 
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "Hydrogen ${VERSION}")
 
+
+
 IF(WIN32)
     # TODO
     #SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/data\\\\nsis_branding.bmp")
@@ -302,31 +326,18 @@ IF(WIN32)
     SET(CPACK_NSIS_MENU_LINKS "hydrogen-gui.exe;Advanced drum machine for GNU/Linux")
     SET(CPACK_SOURCE_GENERATOR "ZIP")
 ELSE(WIN32)
-    IF(APPLE)
-        IF(WANT_BUNDLE)
-            #http://www.cmake.org/cmake/help/cmake-2-8-docs.html#prop_tgt:MACOSX_BUNDLE
-            SET(MACOSX_BUNDLE_INFO_STRING "wazza?!?")
-            SET(MACOSX_BUNDLE_ICON_FILE "${CMAKE_SOURCE_DIR}/data/img/gray/icon.svg")
-            SET(MACOSX_BUNDLE_GUI_IDENTIFIER "Hydrogen")
-            SET(MACOSX_BUNDLE_LONG_VERSION_STRING "${VERSION}")
-            SET(MACOSX_BUNDLE_BUNDLE_NAME "Hydrogen an andvanced drum machine for GNU/Linux")
-            SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${VERSION}")
-            SET(MACOSX_BUNDLE_BUNDLE_VERSION "${VERSION}")
-            SET(MACOSX_BUNDLE_COPYRIGHT "Hydrogen Developers, 2009")
-        ELSE()
-            SET(CPACK_STRIP_FILES "")
-            SET(CPACK_PACKAGE_EXECUTABLES "hydrogen-gui" "Hydrogen binary")
-            SET(CPACK_SOURCE_GENERATOR "TBZ2")
-        ENDIF()
-    ELSE()
-        SET(CPACK_STRIP_FILES "")
-        SET(CPACK_PACKAGE_EXECUTABLES "hydrogen-gui" "Hydrogen binary")
-        SET(CPACK_SOURCE_GENERATOR "TBZ2")
-    ENDIF()
+    #apple stuff was moved to src/gui/CMakeLists.txt
 ENDIF()
 
 SET(CPACK_SOURCE_PACKAGE_FILE_NAME "hydrogen-${VERSION}")
-SET(CPACK_SOURCE_IGNORE_FILES ".*~;\\\\.git;${CMAKE_BINARY_DIR}")
+SET(CPACK_SOURCE_IGNORE_FILES ".*~;\\\\.git;\\\\.svn;${CMAKE_BINARY_DIR}")
+
+#!The following 5 lines are copied from cmake's QtTest example
+
+# To Create a package, one can run "cpack -G DragNDrop CPackConfig.cmake" on Mac OS X
+# where CPackConfig.cmake is created by including CPack
+# And then there's ways to customize this as well
+set(CPACK_BINARY_DRAGNDROP ON)
 INCLUDE(CPack)
 
 #
