@@ -24,7 +24,7 @@
 #include "MidiSenseWidget.h"
 #include "midiTable.h"
 
-#include <hydrogen/midi_map.h>
+#include <hydrogen/midiMap.h>
 #include <hydrogen/Preferences.h>
 #include <hydrogen/globals.h>
 #include <hydrogen/midi_action.h>

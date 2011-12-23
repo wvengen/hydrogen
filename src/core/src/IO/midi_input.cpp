@@ -29,7 +29,7 @@
 #include <hydrogen/basics/note.h>
 #include <hydrogen/midi_action.h>
 #include <hydrogen/audio_engine.h>
-#include <hydrogen/midi_map.h>
+#include <hydrogen/midiMap.h>
 
 namespace H2Core
 {
