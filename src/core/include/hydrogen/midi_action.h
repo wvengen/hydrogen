@@ -77,6 +77,7 @@ class MidiActionManager : public H2Core::Object
 
 	public:
 		bool handleAction( MidiAction * );
+                int  handleMapping( MidiAction * );
 		
 		static void create_instance();
 		static MidiActionManager* get_instance() { assert(__instance); return __instance; }

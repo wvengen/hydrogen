@@ -177,52 +177,51 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
 {
 //	INFOLOG( "handleNoteOnMessage" );
 
-	int nNote = msg.m_nData1;
-	float fVelocity = msg.m_nData2 / 127.0;
+        int nNote = msg.m_nData1;
+        float fVelocity = msg.m_nData2 / 127.0;
 
-	if ( fVelocity == 0 ) {
-		handleNoteOffMessage( msg );
-		return;
-        }
-
-        MidiActionManager * aH = MidiActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
-	Hydrogen *pEngine = Hydrogen::get_instance();
-
-	pEngine->lastMidiEvent = "NOTE";
-	pEngine->lastMidiEventParameter = msg.m_nData1;
-	
-	bool action = aH->handleAction( mM->getNoteAction( msg.m_nData1 ) );
-	
-	if ( action && Preferences::get_instance()->m_bMidiDiscardNoteAfterAction)
-	{
+        if ( fVelocity == 0 ) {
+                handleNoteOffMessage( msg );
                 return;
-	}
-
-	bool bPatternSelect = false;
-
-
-        if ( bPatternSelect ) {
-                int patternNumber = nNote - 36;
-                //INFOLOG( QString( "next pattern = %1" ).arg( patternNumber ) );
-
-                pEngine->sequencer_setNextPattern( patternNumber, false, false );
-        } else {
-                static const float fPan_L = 1.0f;
-                static const float fPan_R = 1.0f;
-
-                int nInstrument = nNote - 36;
-                if ( nInstrument < 0 ) {
-                        nInstrument = 0;
-                }
-                if ( nInstrument > ( MAX_INSTRUMENTS -1 ) ) {
-                        nInstrument = MAX_INSTRUMENTS - 1;
-                }
-
-                pEngine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, false, true, nNote );
         }
 
-	__noteOnTick = pEngine->__getMidiRealtimeNoteTickPosition();
+        MidiActionManager * actionManager = MidiActionManager::get_instance();
+        MidiMap * midiMap = MidiMap::get_instance();
+        Hydrogen *pEngine = Hydrogen::get_instance();
+
+        pEngine->lastMidiEvent = "NOTE";
+        pEngine->lastMidiEventParameter = nNote;
+
+
+        int ret_code =  actionManager->handleMapping( midiMap->getNoteAction( nNote )  );
+
+        if( ret_code >= 0 ){
+            nNote = ret_code;
+            pEngine->lastMidiEventParameter = nNote;
+        } else {
+            bool action = actionManager->handleAction( midiMap->getNoteAction( nNote ) );
+
+            if ( action && Preferences::get_instance()->m_bMidiDiscardNoteAfterAction)
+            {
+                    return;
+            }
+       }
+
+        static const float fPan_L = 1.0f;
+        static const float fPan_R = 1.0f;
+
+        int nInstrument = nNote - 36;
+        if ( nInstrument < 0 ) {
+            nInstrument = 0;
+        }
+        if ( nInstrument > ( MAX_INSTRUMENTS -1 ) ) {
+            nInstrument = MAX_INSTRUMENTS - 1;
+        }
+
+        pEngine->addRealtimeNote( nInstrument, fVelocity, fPan_L, fPan_R, 0.0, false, true, nNote );
+
+
+        __noteOnTick = pEngine->__getMidiRealtimeNoteTickPosition();
 }
 
 

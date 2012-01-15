@@ -121,7 +121,8 @@ MidiActionManager::MidiActionManager() : Object( __class_name )
 	/*
 	    the actionList holds all Action identfiers which hydrogen is able to interpret.
 	*/
-	actionList <<""
+        actionList <<""
+        << "NOTE"
 	<< "PLAY" 
 	<< "PLAY/STOP_TOGGLE"
 	<< "PLAY/PAUSE_TOGGLE"
@@ -182,8 +183,31 @@ void MidiActionManager::create_instance()
 }
 
 
+
 /**
- * The handleAction method is the heard of the MidiActionManager class.
+ * The handleMapping method checks if there is a note -> note mapping
+ * It returns the note value of the mapped note or a negative value if
+ * there is no mapping.
+ */
+
+
+int MidiActionManager::handleMapping( MidiAction * pAction ){
+
+        QString sActionString = pAction->getType();
+
+        if( sActionString == "NOTE" )
+        {
+            qDebug() << "Return parameter:" << pAction->getParameter1().toInt();
+            return pAction->getParameter1().toInt();
+        } else {
+
+            return -1;
+        }
+}
+
+
+/**
+ * The handleAction method is the core of the MidiActionManager class.
  * It executes the operations that are needed to carry the desired action.
  */
 
