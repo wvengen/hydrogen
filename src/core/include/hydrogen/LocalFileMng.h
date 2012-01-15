@@ -29,6 +29,7 @@
 #include <string>
 
 #include <hydrogen/object.h>
+#include <hydrogen/midi_map.h>
 
 #include <QDomDocument>
 
@@ -76,6 +77,9 @@ public:
 
 	Pattern* loadPattern( const QString& directory );
 	int savePattern( Song *song , const QString& drumkit_name, int selectedpattern , const QString& patternname, const QString& realpatternname, int mode);
+
+        int saveMidiMapping( const std::string& , MidiMap *);
+        int loadMidiMapping( const std::string& );
 
 	int savePlayList( const std::string& patternname );
 	int loadPlayList( const std::string& patternname);

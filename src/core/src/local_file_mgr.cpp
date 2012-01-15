@@ -587,6 +587,142 @@ int  LocalFileMng::mergeAllPatternList( std::vector<QString> current )
 	return 0; 
 }
 
+
+int LocalFileMng::saveMidiMapping( const std::string& mappingname, MidiMap * midiMap)
+{
+
+        std::string name = mappingname.c_str();
+
+        std::string realname = name.substr(name.rfind("/")+1);
+
+        QDomDocument doc;
+        QDomProcessingInstruction header = doc.createProcessingInstruction( "xml", "version=\"1.0\" encoding=\"UTF-8\"");
+        doc.appendChild( header );
+
+        QDomNode rootNode = doc.createElement( "midi_mapping" );
+
+        writeXmlString( rootNode, "Name", QString (realname.c_str()) );
+        doc.appendChild( rootNode );
+
+        MidiMap * mM = midiMap;
+        std::map< QString, MidiAction* > mmcMap = mM->getMMCMap();
+
+        //---- MidiMap ----
+        QDomNode midiEventMapNode = doc.createElement( "midiEventMap" );
+
+        std::map< QString, MidiAction* >::iterator dIter( mmcMap.begin() );
+        for( dIter = mmcMap.begin(); dIter != mmcMap.end(); dIter++ ){
+            QString event = dIter->first;
+            MidiAction * pAction = dIter->second;
+            if ( pAction->getType() != "NOTHING" ){
+                QDomNode midiEventNode = doc.createElement( "midiEvent" );
+
+                LocalFileMng::writeXmlString( midiEventNode, "mmcEvent" , event );
+                LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType());
+                LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
+
+                midiEventMapNode.appendChild( midiEventNode );
+            }
+        }
+
+        for( int note=0; note < 128; note++ ){
+            MidiAction * pAction = mM->getNoteAction( note );
+            if( pAction != NULL && pAction->getType() != "NOTHING") {
+                QDomNode midiEventNode = doc.createElement( "midiEvent" );
+
+                LocalFileMng::writeXmlString( midiEventNode, "noteEvent" , QString("NOTE") );
+                LocalFileMng::writeXmlString( midiEventNode, "eventParameter" , QString::number( note ) );
+                LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType() );
+                LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
+
+
+                midiEventMapNode.appendChild(midiEventNode);
+            }
+        }
+
+        for( int parameter=0; parameter < 128; parameter++ ){
+            MidiAction * pAction = mM->getCCAction( parameter );
+            if( pAction != NULL && pAction->getType() != "NOTHING")
+            {
+                QDomNode midiEventNode = doc.createElement( "midiEvent" );
+
+                LocalFileMng::writeXmlString( midiEventNode, "ccEvent" , QString("CC") );
+                LocalFileMng::writeXmlString( midiEventNode, "eventParameter" , QString::number( parameter ) );
+
+
+                LocalFileMng::writeXmlString( midiEventNode, "action" , pAction->getType() );
+
+                LocalFileMng::writeXmlString( midiEventNode, "parameter" , pAction->getParameter1() );
+
+                midiEventMapNode.appendChild( midiEventNode );
+            }
+        }
+
+
+        rootNode.appendChild( midiEventMapNode );
+
+        doc.appendChild( rootNode );
+
+
+
+
+        QString filename = QString( mappingname.c_str() );
+        QFile file(filename);
+        if ( !file.open(QIODevice::WriteOnly) )
+                return 0;
+
+        QTextStream TextStream( &file );
+        doc.save( TextStream, 1 );
+
+        file.close();
+
+        return 0; // ok
+
+}
+
+int LocalFileMng::loadMidiMapping( const std::string& mappingname)
+{
+
+        /*
+        std::string playlistInfoFile = mappingname;
+        std::ifstream verify( playlistInfoFile.c_str() , std::ios::in | std::ios::binary );
+        if ( verify == NULL ) {
+                //ERRORLOG( "Load Playlist: Data file " + playlistInfoFile + " not found." );
+                return 0;
+        }
+
+        QDomDocument doc = LocalFileMng::openXmlDocument( QString( patternname.c_str() ) );
+
+        Hydrogen::get_instance()->m_PlayList.clear();
+
+        QDomNode rootNode = doc.firstChildElement( "playlist" );	// root element
+        if ( rootNode.isNull() ) {
+                ERRORLOG( "Error reading playlist: playlist node not found" );
+                return 0;
+        }
+        QDomNode playlistNode = rootNode.firstChildElement( "Songs" );
+
+        if ( ! playlistNode.isNull() ) {
+                // new code :)
+                Hydrogen::get_instance()->m_PlayList.clear();
+                QDomNode nextNode = playlistNode.firstChildElement( "next" );
+                while (  ! nextNode.isNull() ) {
+                        Hydrogen::HPlayListNode playListItem;
+                        playListItem.m_hFile = LocalFileMng::readXmlString( nextNode, "song", "" );
+                        playListItem.m_hScript = LocalFileMng::readXmlString( nextNode, "script", "" );
+                        playListItem.m_hScriptEnabled = LocalFileMng::readXmlString( nextNode, "enabled", "" );
+                        Hydrogen::get_instance()->m_PlayList.push_back( playListItem );
+                        nextNode = nextNode.nextSiblingElement( "next" );
+                }
+        }
+        return 0; // ok
+        */
+}
+
+
+
+
+
 int LocalFileMng::savePlayList( const std::string& patternname)
 {
 
