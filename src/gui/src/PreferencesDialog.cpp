@@ -192,8 +192,8 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 	uint i = 0;
 	for ( QStringList::Iterator it = list.begin(); it != list.end(); it++) {
 		styleComboBox->addItem( *it );
-		//INFOLOG( "QT Stile: " + *it   );
-		//string sStyle = (*it).latin1();
+                //INFOLOG( "QT Stile: " + *it   );
+                //string sStyle = (*it).latin1();
 		QString sStyle = (*it);
 		if (sStyle == pPref->getQTStyle() ) {
 			styleComboBox->setCurrentIndex( i );
@@ -203,6 +203,27 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 
 
 	// midi tab
+        midiMappingTree->header()->hide();
+
+        QTreeWidgetItem* midiMappingTreeItem;
+        midiMappingTreeItem = new QTreeWidgetItem( midiMappingTree );
+        midiMappingTreeItem->setText( 0, trUtf8( "Midi mappings" ) );
+
+        QStringList mappings = Filesystem::midi_mappings_list();
+        QTreeWidgetItem* pMappingItem = new QTreeWidgetItem( midiMappingTreeItem );
+        pMappingItem->setText( 0, trUtf8("Global") );
+
+
+        for (int i = 0; i < mappings.size(); ++i) {
+                    pMappingItem = new QTreeWidgetItem( midiMappingTreeItem );
+                    pMappingItem->setText( 0, mappings[i] );
+                    pMappingItem->setToolTip( 0, mappings[i] );
+        }
+
+        midiMappingTree->setItemExpanded( midiMappingTreeItem, true );
+
+
+
 	midiPortChannelComboBox->setEnabled( false );
 	midiPortComboBox->setEnabled( false );
 	// list midi output ports

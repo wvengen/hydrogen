@@ -257,6 +257,14 @@ public:
         int m_nInstrumentLookupTable[128];
         //void editInstrumentLookupTable( int instrument, int index);
 
+        /*
+         *  midiMap which results of merging the global midi map with
+         *  the song-specific midi map
+         */
+        MidiMap* currentMidiMap;
+
+
+
 
 private:
 	static Hydrogen* __instance;

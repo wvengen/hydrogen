@@ -156,7 +156,7 @@ void MidiTable::setupMidiTable()
 	setHorizontalHeaderLabels( items );
 	
 	
-	setFixedWidth( 500 );
+        setFixedWidth( 502 );
 
 	setColumnWidth( 0 , 25 );
 	setColumnWidth( 1 , 155 );
