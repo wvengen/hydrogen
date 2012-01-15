@@ -14,6 +14,7 @@
 #define I18N            "/i18n"
 #define SONGS           "/songs"
 #define PATTERNS        "/patterns"
+#define MIDI_MAPPINGS   "/midi_mappings"
 #define DRUMKITS        "/drumkits"
 #define PLAYLISTS       "/playlists"
 #define DEMOS           "/demo_songs"
@@ -30,6 +31,7 @@
 // filters
 #define SONG_FILTER     "*.h2song"
 #define PATTERN_FILTER  "*.h2pattern"
+#define MIDI_MAPPINGS_FILTER  "*.h2midimap"
 #define DRUMKIT_XML     "drumkit.xml"
 #define DRUMKIT_XSD     "drumkit.xsd"
 #define DRUMPAT_XSD     "drumkit_pattern.xsd"
@@ -265,8 +267,10 @@ bool Filesystem::check_usr_paths()
     if( !path_usable( __usr_data_path ) ) return false;
     if( !path_usable( songs_dir() ) ) return false;
     if( !path_usable( patterns_dir() ) ) return false;
+    if( !path_usable( midi_mappings_dir() ) ) return false;
     if( !path_usable( playlists_dir() ) ) return false;
     if( !path_usable( usr_drumkits_dir() ) ) return false;
+
     INFOLOG( QString( "user path %1 is usable." ).arg( __usr_data_path ) );
     return true;
 }
@@ -347,6 +351,10 @@ QString Filesystem::songs_dir()
 QString Filesystem::patterns_dir()
 {
     return __usr_data_path + PATTERNS;
+}
+QString Filesystem::midi_mappings_dir()
+{
+    return __usr_data_path + MIDI_MAPPINGS;
 }
 QString Filesystem::sys_drumkits_dir()
 {
@@ -441,6 +449,13 @@ QStringList Filesystem::patterns_list( )
     return QDir( patterns_dir() ).entryList( QStringList( PATTERN_FILTER ), QDir::Files | QDir::NoDotAndDotDot );
 }
 
+
+// MIDI MAPPINGS
+QStringList Filesystem::midi_mappings_list( )
+{
+    return QDir( midi_mappings_dir() ).entryList( QStringList( MIDI_MAPPINGS_FILTER ), QDir::Files | QDir::NoDotAndDotDot );
+}
+
 // SONGS
 QStringList Filesystem::songs_list( )
 {
@@ -469,6 +484,7 @@ void Filesystem::info()
     INFOLOG( QString( "Songs dir                  : %1" ).arg( songs_dir() ) );
     INFOLOG( QString( "Patterns dir               : %1" ).arg( patterns_dir() ) );
     INFOLOG( QString( "Playlists dir              : %1" ).arg( playlists_dir() ) );
+    INFOLOG( QString( "MidiMappings dir              : %1" ).arg( midi_mappings_dir() ) );
     INFOLOG( QString( "User core cfg file         : %1" ).arg( usr_core_config() ) );
     INFOLOG( QString( "User gui cfg file          : %1" ).arg( usr_gui_config() ) );
 }

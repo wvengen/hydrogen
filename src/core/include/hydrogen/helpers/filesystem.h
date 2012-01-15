@@ -75,6 +75,8 @@ class Filesystem : public H2Core::Object
         static QString usr_drumkits_dir();
         /** returns user playlist path */
         static QString playlists_dir();
+        /** returns user midi mappings path */
+        static QString midi_mappings_dir();
         /** returns system demos path */
         static QString demos_dir();
         /** returns system xsd path */
@@ -127,6 +129,10 @@ class Filesystem : public H2Core::Object
         /* PATTERNS */
         /** returns a list of existing patterns */
         static QStringList patterns_list( );
+
+        /* MIDI MAPPINGS */
+        /** returns a list of existing midi mappings */
+        static QStringList midi_mappings_list( );
 
         /* SONGS */
         /** returns a list of existing songs */
