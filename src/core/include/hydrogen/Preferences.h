@@ -28,6 +28,7 @@
 #include <vector>
 #include <cassert>
 
+#include <hydrogen/midi_map.h>
 #include <hydrogen/midi_action.h>
 #include <hydrogen/globals.h>
 #include <hydrogen/object.h>
@@ -220,6 +221,8 @@ public:
 	int m_nMidiChannelFilter;
 	bool m_bMidiNoteOffIgnore;
 	bool m_bMidiDiscardNoteAfterAction;
+
+        MidiMap* globalMidiMap;
 
 	//___  alsa audio driver properties ___
 	QString m_sAlsaAudioDevice;

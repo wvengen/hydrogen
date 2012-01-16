@@ -654,9 +654,8 @@ void Preferences::loadPreferences( bool bGlobal )
 				m_sDefaultEditor = LocalFileMng::readXmlString( filesNode, "defaulteditor", m_sDefaultEditor, true );
 			}
 
-                        Hydrogen* pEngine = Hydrogen::get_instance();
-                        pEngine->globalMidiMap->reset();
-			
+
+                        globalMidiMap->reset();
 			
 			QDomNode pMidiEventMapNode = rootNode.firstChildElement( "midiEventMap" );
 			if ( !pMidiEventMapNode.isNull() ) {
@@ -669,7 +668,7 @@ void Preferences::loadPreferences( bool bGlobal )
 
                                                 MidiAction* pAction = new MidiAction( s_action );
 						pAction->setParameter1( s_param );
-                                                pEngine->globalMidiMap->registerMMCEvent(event, pAction);
+                                                globalMidiMap->registerMMCEvent(event, pAction);
 					}
 
 					if( pMidiEventNode.firstChildElement().nodeName() == QString("noteEvent")){
@@ -679,7 +678,7 @@ void Preferences::loadPreferences( bool bGlobal )
 						QString s_eventParameter = pMidiEventNode.firstChildElement("eventParameter").text();
                                                 MidiAction* pAction = new MidiAction( s_action );
 						pAction->setParameter1( s_param );
-                                                pEngine->globalMidiMap->registerNoteEvent(s_eventParameter.toInt(), pAction);
+                                                globalMidiMap->registerNoteEvent(s_eventParameter.toInt(), pAction);
 					}
 
 					if( pMidiEventNode.firstChildElement().nodeName() == QString("ccEvent") ){
@@ -689,17 +688,18 @@ void Preferences::loadPreferences( bool bGlobal )
 						QString s_eventParameter = pMidiEventNode.firstChildElement("eventParameter").text();
                                                 MidiAction * pAction = new MidiAction( s_action );
 						pAction->setParameter1( s_param );
-                                                pEngine->globalMidiMap->registerCCEvent( s_eventParameter.toInt(), pAction );
+                                                globalMidiMap->registerCCEvent( s_eventParameter.toInt(), pAction );
 					}
 
 					pMidiEventNode = pMidiEventNode.nextSiblingElement( "midiEvent" );
 
 				}
 
+
 			} else {
 				WARNINGLOG( "midiMap node not found" );
 			}
-			
+
 			
 
 		} // rootNode
@@ -1001,8 +1001,8 @@ void Preferences::savePreferences()
 	}
 	rootNode.appendChild( filesNode );
 
-        Hydrogen* pEngine = Hydrogen::get_instance();
-        std::map< QString, MidiAction* > mmcMap = pEngine->globalMidiMap->getMMCMap();
+
+        std::map< QString, MidiAction* > mmcMap = globalMidiMap->getMMCMap();
 
 	//---- MidiMap ----
 	QDomNode midiEventMapNode = doc.createElement( "midiEventMap" );
@@ -1023,7 +1023,7 @@ void Preferences::savePreferences()
 	}
 		
 	for( int note=0; note < 128; note++ ){
-            MidiAction * pAction = pEngine->globalMidiMap->getNoteAction( note );
+            MidiAction * pAction = globalMidiMap->getNoteAction( note );
 	    if( pAction != NULL && pAction->getType() != "NOTHING") {
 		QDomNode midiEventNode = doc.createElement( "midiEvent" );
 
@@ -1038,7 +1038,7 @@ void Preferences::savePreferences()
 	}
 
 		for( int parameter=0; parameter < 128; parameter++ ){
-                        MidiAction * pAction = pEngine->globalMidiMap->getCCAction( parameter );
+                        MidiAction * pAction = globalMidiMap->getCCAction( parameter );
 			if( pAction != NULL && pAction->getType() != "NOTHING")
 			{
 				QDomNode midiEventNode = doc.createElement( "midiEvent" );
