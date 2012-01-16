@@ -203,24 +203,7 @@ PreferencesDialog::PreferencesDialog(QWidget* parent)
 
 
 	// midi tab
-        midiMappingTree->header()->hide();
 
-        QTreeWidgetItem* midiMappingTreeItem;
-        midiMappingTreeItem = new QTreeWidgetItem( midiMappingTree );
-        midiMappingTreeItem->setText( 0, trUtf8( "Midi mappings" ) );
-
-        QStringList mappings = Filesystem::midi_mappings_list();
-        QTreeWidgetItem* pMappingItem = new QTreeWidgetItem( midiMappingTreeItem );
-        pMappingItem->setText( 0, trUtf8("Global") );
-
-
-        for (int i = 0; i < mappings.size(); ++i) {
-                    pMappingItem = new QTreeWidgetItem( midiMappingTreeItem );
-                    pMappingItem->setText( 0, mappings[i] );
-                    pMappingItem->setToolTip( 0, mappings[i] );
-        }
-
-        midiMappingTree->setItemExpanded( midiMappingTreeItem, true );
 
 
 
@@ -328,11 +311,13 @@ void PreferencesDialog::on_okBtn_clicked()
 
 	Preferences *pPref = Preferences::get_instance();
 
+        /*
         Hydrogen* pEngine = Hydrogen::get_instance();
         MidiMap *mM = pEngine->mergedMidiMap;
         mM->reset();
 
         midiTable->saveMidiTable( mM );
+        */
 
 	// Selected audio driver
 	if (driverComboBox->currentText() == "Auto" ) {
