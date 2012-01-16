@@ -36,12 +36,7 @@ class MidiMap : public H2Core::Object
     H2_OBJECT
 	public:
 		typedef std::map< QString, MidiAction* > map_t;
-		static MidiMap* __instance;
 		~MidiMap();
-
-		static void create_instance();
-		static void reset_instance();  // convenience accessor to reset()
-		static MidiMap* get_instance() { assert(__instance); return __instance; }
 
 		void reset();  // Reinitializes the object.
 

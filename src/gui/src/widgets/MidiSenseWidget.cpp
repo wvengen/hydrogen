@@ -84,7 +84,7 @@ void MidiSenseWidget::updateMidi(){
 
 		if( directWrite ){
 		    //write the action / parameter combination to the midiMap
-		    MidiMap *mM = MidiMap::get_instance();
+                    MidiMap *mM = pEngine->globalMidiMap;
 		    assert(action);
 		    MidiAction* pAction = new MidiAction( action->getType() );
 

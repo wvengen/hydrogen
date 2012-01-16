@@ -43,13 +43,12 @@
 */
 
 
-MidiMap * MidiMap::__instance = 0;
+
 const char* MidiMap::__class_name = "MidiMap";
 
 MidiMap::MidiMap()
  : Object( __class_name )
 {
-	__instance = this;
 	QMutexLocker mx(&__mutex);
 
 	//constructor
@@ -74,20 +73,6 @@ MidiMap::~MidiMap()
 		delete __cc_array[ i ];
 	}
 
-	__instance = NULL;
-}
-
-void MidiMap::create_instance()
-{
-	if( __instance == 0 ) {
-		__instance = new MidiMap;
-	}
-}
-
-void MidiMap::reset_instance()
-{
-	create_instance();
-	__instance->reset();
 }
 
 

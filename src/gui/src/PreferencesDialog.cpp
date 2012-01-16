@@ -328,10 +328,11 @@ void PreferencesDialog::on_okBtn_clicked()
 
 	Preferences *pPref = Preferences::get_instance();
 
-	MidiMap *mM = MidiMap::get_instance();
-	mM->reset_instance();
+        Hydrogen* pEngine = Hydrogen::get_instance();
+        MidiMap *mM = pEngine->mergedMidiMap;
+        mM->reset();
 
-	midiTable->saveMidiTable();
+        midiTable->saveMidiTable( mM );
 
 	// Selected audio driver
 	if (driverComboBox->currentText() == "Auto" ) {

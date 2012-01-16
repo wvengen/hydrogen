@@ -37,7 +37,8 @@ MidiTable::MidiTable( QWidget *pParent )
  , Object( __class_name )
 {
 	__row_count = 0;
-	setupMidiTable();
+
+        setupMidiTable( H2Core::Hydrogen::get_instance()->mergedMidiMap );
 
 	m_pUpdateTimer = new QTimer( this );
 	currentMidiAutosenseRow = 0;
@@ -141,9 +142,8 @@ void MidiTable::insertNewRow(QString actionString , QString eventString, int eve
 
 }
 
-void MidiTable::setupMidiTable()
+void MidiTable::setupMidiTable(MidiMap *mM)
 {
-	MidiMap *mM = MidiMap::get_instance();
 
 	QStringList items;
 	items << "" << trUtf8("Event")  <<  trUtf8("Param.")  <<  trUtf8("Action") <<  trUtf8("Param.") ;
@@ -212,9 +212,8 @@ void MidiTable::setupMidiTable()
 }
 
 
-void MidiTable::saveMidiTable()
+void MidiTable::saveMidiTable( MidiMap *mM )
 {
-	MidiMap *mM = MidiMap::get_instance();
 	
 	for ( int row = 0; row < __row_count; row++ ) {
 

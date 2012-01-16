@@ -260,7 +260,7 @@ bool MidiActionManager::handleAction( MidiAction * pAction ){
 	if( sActionString == "PAUSE" )
 	{	
 		pEngine->sequencer_stop();
-		return true;
+                return true;
 	}
 
 	if( sActionString == "STOP" )

@@ -24,6 +24,7 @@
 #define MIDI_TABLE_H
 
 #include <hydrogen/object.h>
+#include <hydrogen/midi_map.h>
 
 #include <QtGui>
 
@@ -35,9 +36,9 @@ class MidiTable : public QTableWidget, public H2Core::Object
 		MidiTable( QWidget* pParent );
 		~MidiTable();
 
-		void setupMidiTable();
-		void saveMidiTable();
-		void insertNewRow(QString, QString, int, int);
+                void setupMidiTable( MidiMap* );
+                void saveMidiTable( MidiMap* );
+                void insertNewRow( QString, QString, int, int );
 
 	private slots:
 		void updateTable();

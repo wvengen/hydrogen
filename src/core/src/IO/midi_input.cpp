@@ -158,7 +158,7 @@ void MidiInput::handleControlChangeMessage( const MidiMessage& msg )
 
 	Hydrogen *pEngine = Hydrogen::get_instance();
         MidiActionManager * aH = MidiActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
+        MidiMap * mM = pEngine->mergedMidiMap;
 
         MidiAction * pAction;
 
@@ -185,9 +185,10 @@ void MidiInput::handleNoteOnMessage( const MidiMessage& msg )
                 return;
         }
 
-        MidiActionManager * actionManager = MidiActionManager::get_instance();
-        MidiMap * midiMap = MidiMap::get_instance();
         Hydrogen *pEngine = Hydrogen::get_instance();
+        MidiActionManager * actionManager = MidiActionManager::get_instance();
+        MidiMap * midiMap = pEngine->mergedMidiMap;
+
 
         pEngine->lastMidiEvent = "NOTE";
         pEngine->lastMidiEventParameter = nNote;
@@ -314,10 +315,10 @@ void MidiInput::handleSysexMessage( const MidiMessage& msg )
 		240	127	id	6	68	6	1	hr	mn	sc	fr	ff	247
 	*/
 	
-	
+        Hydrogen *pEngine = Hydrogen::get_instance();
         MidiActionManager * aH = MidiActionManager::get_instance();
-	MidiMap * mM = MidiMap::get_instance();
-	Hydrogen *pEngine = Hydrogen::get_instance();
+        MidiMap * mM = pEngine->mergedMidiMap;
+
 
 	pEngine->lastMidiEventParameter = msg.m_nData1;
 

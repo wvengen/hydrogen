@@ -28,6 +28,7 @@
 #include <hydrogen/basics/song.h>
 #include <hydrogen/basics/sample.h>
 #include <hydrogen/object.h>
+#include <hydrogen/midi_map.h>
 #include <hydrogen/IO/AudioOutput.h>
 #include <hydrogen/IO/MidiInput.h>
 #include <hydrogen/IO/MidiOutput.h>
@@ -261,7 +262,12 @@ public:
          *  midiMap which results of merging the global midi map with
          *  the song-specific midi map
          */
-        MidiMap* currentMidiMap;
+        MidiMap* mergedMidiMap;
+
+        /*
+         *  midiMap is which defined in the preferences file
+         */
+        MidiMap* globalMidiMap;
 
 
 
