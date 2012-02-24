@@ -669,14 +669,12 @@ char* JackOutput::getPortNameForInstrument( Song * song, int instrument, int cha
 
         if( channel == 1 ){
             char* port_name = (char*) malloc( jack_port_name_size() );
-            printf("Malloc address %p \n", port_name);
             strncpy(port_name, jack_port_name( track_output_ports_L[ instrument ] ), jack_port_name_size());
             return port_name;
         }
 
         if( channel == 2 ){
             char* port_name = (char*) malloc( jack_port_name_size() );
-            printf("Malloc address %p \n", port_name);
             strncpy(port_name, jack_port_name( track_output_ports_R[ instrument ] ), jack_port_name_size());
             return port_name;
         }
@@ -759,7 +757,6 @@ void JackOutput::restoreConnections( Song * song )
             //this was a result of "jack_port_get_connections"
             jack_free(iter->second);
         }
-        printf("Free address %p \n", iter->first);
         free(iter->first);
     }
 
@@ -777,7 +774,6 @@ void JackOutput::restoreConnections( Song * song )
             //this was a result of "jack_port_get_connections"
             jack_free(iter->second);
         }
-        printf("Free address %p \n", iter->first);
         free(iter->first);
     }
 
