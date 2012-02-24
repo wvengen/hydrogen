@@ -980,9 +980,38 @@ void audioEngine_renameJackPorts()
 	}
 	if ( m_pAudioDriver->class_name() == JackOutput::class_name() ) {
 		static_cast< JackOutput* >( m_pAudioDriver )->makeTrackOutputs( m_pSong );
-	}
+    }
 #endif
 }
+
+void audioEngine_storeJackConnections()
+{
+#ifdef H2CORE_HAVE_JACK
+    // store jack connections before an instrument move operation
+    if ( m_pSong == NULL ) {
+        return;
+    }
+    if ( m_pAudioDriver->class_name() == JackOutput::class_name() ) {
+        static_cast< JackOutput* >( m_pAudioDriver )->storeConnections( m_pSong );
+    }
+#endif
+}
+
+void audioEngine_restoreJackConnections()
+{
+#ifdef H2CORE_HAVE_JACK
+    //restore jack connections after an instrument move operation
+    if ( m_pSong == NULL ) {
+        return;
+    }
+
+    if ( m_pAudioDriver->class_name() == JackOutput::class_name() ) {
+        static_cast< JackOutput* >( m_pAudioDriver )->restoreConnections( m_pSong );
+    }
+#endif
+}
+
+
 
 
 
@@ -2962,6 +2991,21 @@ void Hydrogen::renameJackPorts()
 	if( Preferences::get_instance()->m_bJackTrackOuts == true ){
 		audioEngine_renameJackPorts();
 	}
+}
+
+void Hydrogen::storeJackConnections()
+{
+    if( Preferences::get_instance()->m_bJackTrackOuts == true ){
+        audioEngine_storeJackConnections();
+    }
+}
+
+
+void Hydrogen::restoreJackConnections()
+{
+    if( Preferences::get_instance()->m_bJackTrackOuts == true ){
+        audioEngine_restoreJackConnections();
+    }
 }
 #endif
 

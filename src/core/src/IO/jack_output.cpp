@@ -630,15 +630,14 @@ int JackOutput::init( unsigned /*nBufferSize*/ )
  */
 void JackOutput::makeTrackOutputs( Song * song )
 {
-
 	/// Disable Track Outputs
 	if( Preferences::get_instance()->m_bJackTrackOuts == false )
 			return;
 	///
 
-	InstrumentList * instruments = song->get_instrument_list();
-	Instrument * instr;
-	int nInstruments = ( int )instruments->size();
+    InstrumentList * instruments = song->get_instrument_list();
+    Instrument * instr;
+    int nInstruments = ( int )instruments->size();
 
 	// create dedicated channel output ports
 	WARNINGLOG( QString( "Creating / renaming %1 ports" ).arg( nInstruments ) );
@@ -661,14 +660,140 @@ void JackOutput::makeTrackOutputs( Song * song )
 	track_port_count = nInstruments;
 }
 
+char* JackOutput::getPortNameForInstrument( Song * song, int instrument, int channel )
+{
+    //Channel 1 = Left
+    //Channel 2 = Right
+
+    if ( instrument < track_port_count ) {
+
+        if( channel == 1 ){
+            char* port_name = (char*) malloc( jack_port_name_size() );
+            printf("Malloc address %p \n", port_name);
+            strncpy(port_name, jack_port_name( track_output_ports_L[ instrument ] ), jack_port_name_size());
+            return port_name;
+        }
+
+        if( channel == 2 ){
+            char* port_name = (char*) malloc( jack_port_name_size() );
+            printf("Malloc address %p \n", port_name);
+            strncpy(port_name, jack_port_name( track_output_ports_R[ instrument ] ), jack_port_name_size());
+            return port_name;
+        }
+    }
+
+    return NULL;
+}
+
+/**
+ * Store the connections. This is used before a move takes place. Afterwards
+ * the connections are getting restored with the
+ */
+void JackOutput::storeConnections( Song * song )
+{
+    InstrumentList * instruments = song->get_instrument_list();
+    int nInstruments = ( int )instruments->size();
+    int i;
+    int rc = 0;
+
+    if( Preferences::get_instance()->m_bJackTrackOuts == false )
+            return;
+
+    for ( int n = nInstruments - 1; n >= 0; n-- ) {
+
+        const char** connections = jack_port_get_connections( track_output_ports_L[n] );
+
+        if(connections)
+        {
+            char* portNameL = getPortNameForInstrument( song, n, 1 );
+
+            instrumentConnectionMapL[ portNameL ] =  connections;
+
+            for(i=0; instrumentConnectionMapL[portNameL][i]; i++)
+            {
+                rc = jack_port_disconnect( client, track_output_ports_L[n] );
+                if(rc != 0) ERRORLOG("Jack disconnect failed!");
+            }
+        }
+
+
+        connections = jack_port_get_connections( track_output_ports_R[n] );
+
+        if(connections)
+        {
+            char* portNameR = getPortNameForInstrument( song, n, 2 );
+
+            rc=0;
+            instrumentConnectionMapR[ portNameR ] = connections;
+
+            for(i=0; connections[i]; i++)
+            {
+                rc=jack_port_disconnect( client, track_output_ports_R[n]);
+                if(rc != 0) ERRORLOG("Jack disconnect failed!");
+            }
+
+        }
+    }
+}
+
+
+/**
+ * Restore the previously stored connections. This is used before a move takes place. Afterwards
+ * the connections are getting restored with the
+ */
+void JackOutput::restoreConnections( Song * song )
+{
+    std::map<char*, const char**>::iterator iter;
+    int rc=0;
+
+    for (iter = instrumentConnectionMapL.begin(); iter !=instrumentConnectionMapL.end(); ++iter) {
+        int i;
+
+        if(iter->second)
+        {
+            for(i=0; iter->second[i]; i++)
+            {
+                rc=jack_connect( client, iter->first, iter->second[i] );
+                if(rc != 0) ERRORLOG("Jack connect failed!");
+            }
+            //this was a result of "jack_port_get_connections"
+            jack_free(iter->second);
+        }
+        printf("Free address %p \n", iter->first);
+        free(iter->first);
+    }
+
+
+    for (iter = instrumentConnectionMapR.begin(); iter !=instrumentConnectionMapR.end(); ++iter) {
+        int i;
+        if(iter->second)
+        {
+            for(i=0; iter->second[i]; i++)
+            {
+                rc=jack_connect( client, iter->first, iter->second[i] );
+                if(rc != 0) ERRORLOG("Jack connect failed!");
+            }
+
+            //this was a result of "jack_port_get_connections"
+            jack_free(iter->second);
+        }
+        printf("Free address %p \n", iter->first);
+        free(iter->first);
+    }
+
+   instrumentConnectionMapL.clear();
+   instrumentConnectionMapR.clear();
+
+}
+
+
 /**
  * Give the @a n 'th port the name of @a instr .
  * If the n'th port doesn't exist, new ports up to n are created.
  */
 void JackOutput::setTrackOutput( int n, Instrument * instr )
 {
-
-	QString chName;
+    QString chName;
 
 	if ( track_port_count <= n ) { // need to create more ports
 		for ( int m = track_port_count; m <= n; m++ ) {
@@ -682,7 +807,7 @@ void JackOutput::setTrackOutput( int n, Instrument * instr )
 		track_port_count = n + 1;
 	}
 	// Now we're sure there is an n'th port, rename it.
-	chName = QString( "Track_%1_%2_" ).arg( n + 1 ).arg( instr->get_name() );
+    chName = QString( "%1_" ).arg( instr->get_name() );
 
 	jack_port_set_name( track_output_ports_L[n], ( chName + "L" ).toLocal8Bit() );
 	jack_port_set_name( track_output_ports_R[n], ( chName + "R" ).toLocal8Bit() );
@@ -739,7 +864,7 @@ void JackOutput::setBpm( float fBPM )
 
 void JackOutput::setPortName( int nPort, bool bLeftChannel, const QString& sName )
 {
-//	infoLog( "[setPortName] " + sName );
+    //	infoLog( "[setPortName] " + sName );
 	jack_port_t *pPort;
 	if ( bLeftChannel ) {
 		pPort = track_output_ports_L[ nPort ];

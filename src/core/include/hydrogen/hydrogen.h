@@ -172,6 +172,8 @@ public:
 	void setSelectedInstrumentNumber( int nInstrument );
 #ifdef H2CORE_HAVE_JACK
 	void renameJackPorts();
+    void storeJackConnections();
+    void restoreJackConnections();
 #endif
 
 	///playlist vector

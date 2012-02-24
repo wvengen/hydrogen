@@ -1130,10 +1130,15 @@ void DrumPatternEditor::functionMoveInstrumentAction( int nSourceInstrument,  in
 			return;
 		}
 
+        #ifdef H2CORE_HAVE_JACK
+        engine->storeJackConnections();
+        #endif
+
         pInstrumentList->move( nSourceInstrument, nTargetInstrument );
 
 		#ifdef H2CORE_HAVE_JACK
 		engine->renameJackPorts();
+        engine->restoreJackConnections();
 		#endif
 
 		AudioEngine::get_instance()->unlock();

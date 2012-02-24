@@ -107,6 +107,10 @@ public:
  	void com_release();
 //~ jack timebase callback
 
+    char* getPortNameForInstrument( Song *, int, int);
+    void restoreConnections(Song *);
+    void storeConnections(Song *);
+
 protected:
 //jack timebase callback
 	static void jack_timebase_callback(jack_transport_state_t state,
@@ -143,6 +147,9 @@ private:
 	int track_port_count;
 	jack_port_t *track_output_ports_L[MAX_INSTRUMENTS];
 	jack_port_t *track_output_ports_R[MAX_INSTRUMENTS];
+
+    map<char*,const char**> instrumentConnectionMapL;
+    map<char*,const char**> instrumentConnectionMapR;
 
 	jack_transport_state_t m_JackTransportState;
 	jack_position_t m_JackTransportPos;
