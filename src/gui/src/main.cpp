@@ -30,6 +30,7 @@
 #include "HydrogenApp.h"
 #include "MainForm.h"
 #include "PlaylistEditor/PlaylistDialog.h"
+#include "PatternWatcher.h"
 
 #ifdef H2CORE_HAVE_LASH
 #include <hydrogen/LashClient.h>
@@ -71,6 +72,7 @@ static struct option long_opts[] = {
 	{"help", 0, NULL, 'h'},
 	{"install", required_argument, NULL, 'i'},
 	{"drumkit", required_argument, NULL, 'k'},
+	{"watchpattern", required_argument, NULL, 'w'},
 	{0, 0, 0, 0},
 };
 
@@ -184,6 +186,7 @@ int main(int argc, char *argv[])
 		unsigned logLevelOpt = H2Core::Logger::Error;
 		QString drumkitName;
 		QString drumkitToLoad;
+		QString watchPattern;
 		bool showHelpOpt = false;
 
 		int c;
@@ -237,6 +240,10 @@ int main(int argc, char *argv[])
 					break;
 				case 'n':
 					bNoSplash = true;
+					break;
+				case 'w':
+					// watch pattern filename and reload if changed
+					watchPattern = QString::fromLocal8Bit(optarg);
 					break;
 
 				case 'h':
@@ -432,8 +439,14 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		H2Core::PatternWatcher *patternWatcher = NULL;
+		if ( ! watchPattern.isEmpty() ) {
+			patternWatcher = new H2Core::PatternWatcher( watchPattern, H2Core::Hydrogen::get_instance() );
+		}
+
 		pQApp->exec();
 
+		if ( patternWatcher ) delete patternWatcher;
 		delete pSplash;
 		delete pMainForm;
 		delete pQApp;
@@ -502,6 +515,7 @@ void showUsage()
 	std::cout << "   -p, --playlist FILE - Load a playlist (*.h2playlist) at startup" << std::endl;
 	std::cout << "   -k, --kit drumkit_name - Load a drumkit at startup" << std::endl;
 	std::cout << "   -i, --install FILE - install a drumkit (*.h2drumkit)" << std::endl;
+	std::cout << "   -w, --watchpattern FILE - watch file, load into first pattern on change (*.h2pattern)" << std::endl;
 #ifdef H2CORE_HAVE_LASH
 	std::cout << "   --lash-no-start-server - If LASH server not running, don't start" << endl
 			  << "                            it (LASH 0.5.3 and later)." << std::endl;
